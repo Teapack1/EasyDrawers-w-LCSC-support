@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Stock Monitor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Component Stock Monitor</h1>
+    <div class="container">
+        <div class="form-section">
+            <h2>Add Component</h2>
+            <form id="addComponentForm">
+                <label>Part Number: <input type="text" id="partNumber"></label><br>
+                <label>Category: <input type="text" id="category"></label><br>
+                <label>Value 1: <input type="text" id="value1"></label><br>
+                <label>Value 2: <input type="text" id="value2"></label><br>
+                <label>Value 3: <input type="text" id="value3"></label><br>
+                <label>Footprint: <input type="text" id="footprint"></label><br>
+                <label>Price: <input type="number" step="0.01" id="price"></label><br>
+                <label>Manufacturer: <input type="text" id="manufacturer"></label><br>
+                <label>Manufacturer Part: <input type="text" id="manufacturerPart"></label><br>
+                <label>Quantity: <input type="number" id="quantity"></label><br>
+                <label>Location: <input type="text" id="location"></label><br>
+                <button type="submit">Add Component</button>
+            </form>
+        </div>
+        <div class="search-section">
+            <h2>Search Component</h2>
+            <input type="text" id="searchQuery" placeholder="Search by part number, category, or value">
+            <button onclick="searchComponent()">Search</button>
+            <div id="searchResults"></div>
+        </div>
+        <div class="upload-section">
+            <h2>Upload Components from CSV</h2>
+            <form id="uploadCsvForm" enctype="multipart/form-data">
+                <input type="file" id="csvFile" accept=".csv" required>
+                <button type="submit">Upload CSV</button>
+            </form>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
