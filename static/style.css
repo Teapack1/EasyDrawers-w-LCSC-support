@@ -11,16 +11,26 @@ h1 {
 
 .container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: 20px;
 }
 
-.form-section, .search-section {
+.left-panel {
+    width: 30%;
+}
+
+.right-panel {
+    width: 70%;
+    margin-left: auto;
+}
+
+.form-section, .upload-section, .search-section {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 45%;
+    margin-bottom: 20px;
 }
 
 button {
@@ -35,4 +45,119 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+#searchResults {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    table-layout: fixed; /* Added to make columns fit within the table */
+    word-wrap: break-word; /* Added to ensure long text breaks within cells */
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    overflow: hidden; /* Prevents overflow */
+    white-space: nowrap; /* Prevents long text from wrapping */
+    text-overflow: ellipsis; /* Adds ellipsis for any overflowed text */
+    cursor: pointer; /* Changes cursor to pointer to indicate clickability */
+}
+
+table tr.expanded td {
+    white-space: normal; /* Allows text to wrap within cells */
+    overflow: visible; /* Allows overflowed content to be visible */
+    text-overflow: clip; /* Removes ellipsis */
+}
+
+table td .quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+table td .quantity-controls button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    margin: 0 2px;
+}
+
+table td .quantity-controls button:hover {
+    background-color: #0056b3;
+}
+
+table th {
+    background-color: #007BFF;
+    color: white;
+    white-space: normal;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-controls button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.quantity-controls input.quantity-input {
+    width: 30px;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.quantity-controls button:hover {
+    background-color: #0056b3;
+}
+
+.top-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.top-panel > div {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.top-panel > div:first-child {
+    margin-left: 0;
+}
+
+.top-panel > div:last-child {
+    margin-right: 0;
+}
+
+/* style.css */
+.sortable {
+    cursor: pointer;
+}
+
+.sortable:hover {
+    text-decoration: underline;
+}
+
+.sortable .sort-indicator {
+    margin-left: 5px;
+    font-size: 0.8em;
 }

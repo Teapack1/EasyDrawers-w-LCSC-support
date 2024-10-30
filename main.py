@@ -36,16 +36,19 @@ def create_database():
     cursor.execute('''CREATE TABLE IF NOT EXISTS components (
                         id INTEGER PRIMARY KEY,
                         part_number TEXT UNIQUE,
-                        category TEXT,
-                        value1 TEXT,
-                        value2 TEXT,
-                        value3 TEXT,
-                        footprint TEXT,
-                        price REAL,
                         manufacturer TEXT,
-                        manufacturer_part TEXT,
-                        location TEXT,
-                        quantity INTEGER
+                        package TEXT,
+                        description TEXT,
+                        order_qty INTEGER,
+                        unit_price REAL,
+                        component_type TEXT,
+                        component_branch TEXT,
+                        capacitance TEXT,
+                        resistance TEXT,
+                        voltage TEXT,
+                        tolerance TEXT,
+                        inductance TEXT,
+                        current_power TEXT
                     )''')
     conn.commit()
     conn.close()
@@ -55,16 +58,19 @@ create_database()
 # Pydantic models for request bodies
 class Component(BaseModel):
     part_number: str = None
-    category: str = None
-    value1: str = None
-    value2: str = None
-    value3: str = None
-    footprint: str = None
-    price: float = None
     manufacturer: str = None
-    manufacturer_part: str = None
-    location: str = None
-    quantity: int = None
+    package: str = None
+    description: str = None
+    order_qty: int = None
+    unit_price: float = None
+    component_type: str = None
+    component_branch: str = None
+    capacitance: str = None
+    resistance: str = None
+    voltage: str = None
+    tolerance: str = None
+    inductance: str = None
+    current_power: str = None
 
 # Endpoint to add a new component
 @app.post("/add_component")
@@ -72,11 +78,13 @@ async def add_component(component: Component):
     conn = sqlite3.connect('components.db')
     cursor = conn.cursor()
     try:
-        cursor.execute('''INSERT INTO components (part_number, category, value1, value2, value3, footprint, price, manufacturer, manufacturer_part, location, quantity)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                       (component.part_number, component.category, component.value1, component.value2, component.value3,
-                        component.footprint, component.price, component.manufacturer, component.manufacturer_part,
-                        component.location, component.quantity))
+        cursor.execute('''INSERT INTO components (part_number, manufacturer, package, description, order_qty, unit_price,
+                          component_type, component_branch, capacitance, resistance, voltage, tolerance, inductance, current_power)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                       (component.part_number, component.manufacturer, component.package, component.description,
+                        component.order_qty, component.unit_price, component.component_type, component.component_branch,
+                        component.capacitance, component.resistance, component.voltage, component.tolerance,
+                        component.inductance, component.current_power))
         conn.commit()
         response = {"message": "Component added successfully"}
     except sqlite3.IntegrityError:
@@ -84,146 +92,14 @@ async def add_component(component: Component):
     conn.close()
     return response
 
-# Endpoint to update components from a CSV file
-@app.post("/update_components_from_csv")
-async def update_components_from_csv(file: UploadFile = File(...)):
-    try:
-        df = pd.read_csv(file.file)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error reading CSV file: {str(e)}")
-    
-    conn = sqlite3.connect('components.db')
-    cursor = conn.cursor()
-    
-    for _, row in df.iterrows():
-        part_number = row.get('LCSC Part Number', '').strip()
-        description = row.get('Description', '').strip()
-        footprint = row.get('Footprint', '').strip()
-        price = row.get('Price', 0.0)
-        manufacturer = row.get('Manufacturer', '').strip()
-        manufacturer_part = row.get('Manufacturer Part', '').strip()
-        quantity = row.get('Stock Quantity', 0)
-        location = row.get('Location', '').strip()
-        
-        # Extract category, value1, value2, value3 from description using regex
-        category = ""
-        value1 = ""
-        value2 = ""
-        value3 = ""
-
-        # Regex patterns to extract values
-        resistor_pattern = re.compile(r'(\d+(\.\d+)?[kM]?)\s*ohm', re.IGNORECASE)
-        capacitor_pattern = re.compile(r'(\d+(\.\d+)?[pnuµ]?F)', re.IGNORECASE)
-        inductor_pattern = re.compile(r'(\d+(\.\d+)?[uµm]?H)', re.IGNORECASE)
-        voltage_pattern = re.compile(r'(\d+(\.\d+)?V)', re.IGNORECASE)
-        current_pattern = re.compile(r'(\d+(\.\d+)?[mµ]?A)', re.IGNORECASE)
-        power_pattern = re.compile(r'(\d+(\.\d+)?W)', re.IGNORECASE)
-        frequency_pattern = re.compile(r'(\d+(\.\d+)?[kM]?Hz)', re.IGNORECASE)
-
-        # Identify category and extract values
-        if "resistor" in description.lower():
-            category = "Resistor"
-            match = resistor_pattern.search(description)
-            if match:
-                value1 = match.group(1)
-        elif "capacitor" in description.lower():
-            category = "Capacitor"
-            match = capacitor_pattern.search(description)
-            if match:
-                value1 = match.group(1)
-        elif "inductor" in description.lower():
-            category = "Inductor"
-            match = inductor_pattern.search(description)
-            if match:
-                value1 = match.group(1)
-        elif "buck" in description.lower() or "converter" in description.lower():
-            category = "Buck Converter"
-            match = power_pattern.search(description)
-            if match:
-                value1 = match.group(1)
-            voltage_match = voltage_pattern.search(description)
-            if voltage_match:
-                value2 = voltage_match.group(1)
-        elif "led driver" in description.lower():
-            category = "LED Driver"
-            current_match = current_pattern.search(description)
-            if current_match:
-                value1 = current_match.group(1)
-            voltage_match = voltage_pattern.search(description)
-            if voltage_match:
-                value2 = voltage_match.group(1)
-        elif "mcu" in description.lower() or "microcontroller" in description.lower():
-            category = "Microcontroller"
-            frequency_match = frequency_pattern.search(description)
-            if frequency_match:
-                value1 = frequency_match.group(1)
-        elif "diode" in description.lower():
-            category = "Diode"
-            voltage_match = voltage_pattern.search(description)
-            if voltage_match:
-                value1 = voltage_match.group(1)
-            current_match = current_pattern.search(description)
-            if current_match:
-                value2 = current_match.group(1)
-        elif "transistor" in description.lower():
-            category = "Transistor"
-            power_match = power_pattern.search(description)
-            if power_match:
-                value1 = power_match.group(1)
-            current_match = current_pattern.search(description)
-            if current_match:
-                value2 = current_match.group(1)
-        elif "fuse" in description.lower():
-            category = "Fuse"
-            current_match = current_pattern.search(description)
-            if current_match:
-                value1 = current_match.group(1)
-            voltage_match = voltage_pattern.search(description)
-            if voltage_match:
-                value2 = voltage_match.group(1)
-        elif "crystal" in description.lower() or "oscillator" in description.lower():
-            category = "Crystal/Oscillator"
-            frequency_match = frequency_pattern.search(description)
-            if frequency_match:
-                value1 = frequency_match.group(1)
-        elif "connector" in description.lower():
-            category = "Connector"
-        elif "regulator" in description.lower() or "ldo" in description.lower():
-            category = "Voltage Regulator"
-            voltage_match = voltage_pattern.search(description)
-            if voltage_match:
-                value1 = voltage_match.group(1)
-        elif "sensor" in description.lower():
-            category = "Sensor"
-        elif "switch" in description.lower() or "button" in description.lower():
-            category = "Switch/Button"
-
-        cursor.execute('''SELECT * FROM components WHERE part_number = ?''', (part_number,))
-        result = cursor.fetchone()
-        
-        if result:
-            # Update existing component
-            cursor.execute('''UPDATE components SET category = ?, value1 = ?, value2 = ?, value3 = ?, footprint = ?, price = ?,
-                              manufacturer = ?, manufacturer_part = ?, location = ?, quantity = ? WHERE part_number = ?''',
-                           (category, value1, value2, value3, footprint, price, manufacturer, manufacturer_part, location, quantity, part_number))
-        else:
-            # Insert new component
-            cursor.execute('''INSERT INTO components (part_number, category, value1, value2, value3, footprint, price, manufacturer, manufacturer_part, location, quantity)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                           (part_number, category, value1, value2, value3, footprint, price, manufacturer, manufacturer_part, location, quantity))
-    
-    conn.commit()
-    conn.close()
-    return {"message": "Components updated successfully from CSV"}
-
 # Endpoint to search for components
 @app.get("/search_component")
 async def search_component(query: str):
     conn = sqlite3.connect('components.db')
     conn.row_factory = sqlite3.Row  # Enable dictionary-like access to rows
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM components WHERE part_number LIKE ? OR category LIKE ? OR value1 LIKE ? OR manufacturer LIKE ? OR manufacturer_part LIKE ? OR location LIKE ?", 
-                   (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%'))
+    cursor.execute("SELECT * FROM components WHERE part_number LIKE ? OR manufacturer LIKE ? OR description LIKE ? OR component_type LIKE ?",
+                   (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%'))
     results = cursor.fetchall()
     conn.close()
     if not results:
@@ -235,7 +111,65 @@ async def search_component(query: str):
 async def serve_ui(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Run the app
+# Endpoint to upload and update components from CSV
+@app.post("/update_components_from_csv")
+async def upload_csv(file: UploadFile = File(...)):
+    try:
+        # Load the CSV file using pandas
+        df = pd.read_csv(file.file)
+
+        # Check for missing columns
+        required_columns = [
+            'LCSC Part Number', 'Manufacturer', 'Package', 'Description',
+            'Order Qty.', 'Unit Price($)', 'Component Type', 'Component Branch',
+            'Capacitance', 'Resistance', 'Voltage', 'Tolerance', 'Inductance', 'Current/Power'
+        ]
+        if not all(col in df.columns for col in required_columns):
+            return {"error": "Missing one or more required columns in CSV file"}
+
+        # Insert rows into the database
+        conn = sqlite3.connect('components.db')
+        cursor = conn.cursor()
+        for _, row in df.iterrows():
+            try:
+                cursor.execute('''INSERT INTO components (part_number, manufacturer, package, description, order_qty, unit_price,
+                                  component_type, component_branch, capacitance, resistance, voltage, tolerance, inductance, current_power)
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                               (row['LCSC Part Number'], row['Manufacturer'], row['Package'], row['Description'],
+                                row['Order Qty.'], row['Unit Price($)'], row['Component Type'], row['Component Branch'],
+                                row['Capacitance'], row['Resistance'], row['Voltage'], row['Tolerance'],
+                                row['Inductance'], row['Current/Power']))
+            except sqlite3.IntegrityError:
+                # Handle duplicate entries by skipping or updating, as needed
+                continue
+        conn.commit()
+        conn.close()
+        return {"message": "CSV uploaded and data saved successfully"}
+
+    except Exception as e:
+        return {"error": f"Failed to upload CSV file: {str(e)}"}
+
+@app.post("/update_order_quantity")
+async def update_order_quantity(id: int, change: int):
+    conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row  # Enable dictionary-like access to rows
+    cursor = conn.cursor()
+    cursor.execute("SELECT order_qty FROM components WHERE id = ?", (id,))
+    result = cursor.fetchone()
+    if result:
+        new_qty = result["order_qty"] + change  # Accessing by column name
+        if new_qty < 0:
+            new_qty = 0
+        cursor.execute("UPDATE components SET order_qty = ? WHERE id = ?", (new_qty, id))
+        conn.commit()
+        cursor.execute("SELECT * FROM components WHERE id = ?", (id,))
+        updated_component = cursor.fetchone()
+        conn.close()
+        return dict(updated_component)  # Now this works
+    else:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Component not found")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
