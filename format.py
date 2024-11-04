@@ -20,6 +20,7 @@ df['Tolerance'] = None
 df['Inductance'] = None
 df['Current/Power'] = None
 
+"""
 @app.post("/update_order_quantity")
 async def update_order_quantity(id: int, change: int):
     conn = sqlite3.connect('components.db')
@@ -39,7 +40,7 @@ async def update_order_quantity(id: int, change: int):
     else:
         conn.close()
         raise HTTPException(status_code=404, detail="Component not found")
-    
+"""
     
 # Function to extract resistor details
 def extract_resistor_details(description):

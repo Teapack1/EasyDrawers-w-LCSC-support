@@ -62,6 +62,17 @@ table {
     word-wrap: break-word; /* Added to ensure long text breaks within cells */
 }
 
+/* Adjust the column widths */
+table th:nth-last-child(1), /* Actions column */
+table td:nth-last-child(1) {
+    width: 130px; /* Increase this value as needed */
+}
+
+table th:nth-last-child(2), /* Storage Place column */
+table td:nth-last-child(2) {
+    width: 80px; /* Decrease this value as needed */
+}
+
 table th, table td {
     border: 1px solid #ddd;
     padding: 8px;
@@ -90,6 +101,9 @@ table td .quantity-controls button {
     padding: 5px;
     cursor: pointer;
     margin: 0 2px;
+    width: 30px;     /* Adjust width */
+    height: 30px;    /* Adjust height */
+    font-size: 16px; /* Adjust font size */
 }
 
 table td .quantity-controls button:hover {
@@ -115,17 +129,23 @@ table tr:nth-child(even) {
     background-color: #007BFF;
     color: white;
     border: none;
-    padding: 8px;
+    padding: 5px;
     cursor: pointer;
+    margin: 0 2px;
+    width: 30px;     /* Adjust width */
+    height: 30px;    /* Adjust height */
+    font-size: 16px; /* Adjust font size */
 }
 
 .quantity-controls input.quantity-input {
-    width: 30px;
+    width: 40px;       /* Adjust width */
     text-align: center;
-    margin: 0 5px;
+    margin: 0 2px;
+    height: 30px;      /* Match height to buttons */
+    font-size: 16px;   /* Adjust font size */
 }
 
-.quantity-controls button:hover {
+quantity-controls button:hover {
     background-color: #0056b3;
 }
 
@@ -157,7 +177,33 @@ table tr:nth-child(even) {
     text-decoration: underline;
 }
 
-.sortable .sort-indicator {
+sortable .sort-indicator {
     margin-left: 5px;
     font-size: 0.8em;
+}
+
+.storage-place-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px;
+    font-size: 14px;
+}
+
+/* Styles for the delete button */
+.delete-button {
+    background-color: transparent;
+    color: red;
+    border: none;
+    font-size: 16px; /* Decrease font size for smaller 'X' */
+    cursor: pointer;
+    margin-left: 5px;
+    padding: 0; /* Remove padding */
+    width: 24px; /* Fixed width */
+    height: 24px; /* Fixed height */
+    line-height: 24px; /* Center the 'X' vertically */
+    text-align: center;
+}
+
+.delete-button:hover {
+    color: darkred;
 }

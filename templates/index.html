@@ -12,7 +12,7 @@
         <div class="upload-section">
             <h2>Upload Components from CSV</h2>
             <form id="uploadCsvForm" enctype="multipart/form-data">
-                <input type="file" id="csvFile" accept=".csv" required>
+                <input type="file" id="csvFile" name="file" accept=".csv" required>
                 <button type="submit">Upload CSV</button>
             </form>
         </div>
@@ -33,6 +33,7 @@
                 <label>Tolerance: <input type="text" id="tolerance"></label><br>
                 <label>Inductance: <input type="text" id="inductance"></label><br>
                 <label>Current/Power: <input type="text" id="currentPower"></label><br>
+                <label>Storage Place: <input type="text" id="storagePlace"></label><br>
                 <button type="submit">Add Component</button>
             </form>
         </div>
@@ -79,6 +80,7 @@
                     </th>
                     <th>Current/Power</th>
                     <th>Order Qty.</th>
+                    <th>Storage Place</th>
                     <th>Actions</th>
                 </tr>
             </thead>

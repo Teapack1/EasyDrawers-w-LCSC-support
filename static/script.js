@@ -3,7 +3,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("uploadCsvForm").addEventListener("submit", async (event) => {
         event.preventDefault();
-        const formData = new FormData(event.target);
+        const fileInput = document.getElementById("csvFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("Please select a CSV file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
         try {
             const response = await fetch("/update_components_from_csv", {
                 method: "POST",
@@ -23,7 +33,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("addComponentForm").addEventListener("submit", async (event) => {
         event.preventDefault();
-        // Submit logic for adding a component
+
+        const componentData = {
+            part_number: document.getElementById("partNumber").value,
+            manufacturer: document.getElementById("manufacturer").value,
+            package: document.getElementById("package").value,
+            description: document.getElementById("description").value,
+            order_qty: parseInt(document.getElementById("orderQty").value) || 0,
+            unit_price: parseFloat(document.getElementById("unitPrice").value) || 0.0,
+            component_type: document.getElementById("componentType").value,
+            component_branch: document.getElementById("componentBranch").value,
+            capacitance: document.getElementById("capacitance").value,
+            resistance: document.getElementById("resistance").value,
+            voltage: document.getElementById("voltage").value,
+            tolerance: document.getElementById("tolerance").value,
+            inductance: document.getElementById("inductance").value,
+            current_power: document.getElementById("currentPower").value,
+            storage_place: document.getElementById("storagePlace").value  // Added storagePlace
+        };
+
+        try {
+            const response = await fetch("/add_component", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(componentData),
+            });
+
+            if (response.ok) {
+                alert("Component added successfully!");
+                document.getElementById("addComponentForm").reset();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+            }
+        } catch (error) {
+            alert(`Unexpected error: ${error.message}`);
+        }
     });
 
     document.getElementById("searchQuery").addEventListener("keydown", (event) => {
@@ -69,9 +116,10 @@ async function searchComponent() {
     }
 }
 
+// Existing function
 function displaySearchResults(results) {
     const resultsTableBody = document.getElementById("resultsTableBody");
-    resultsTableBody.innerHTML = "";  // Clear previous results
+    resultsTableBody.innerHTML = "";
 
     if (results.length > 0) {
         results.forEach(component => {
@@ -92,16 +140,22 @@ function displaySearchResults(results) {
                 <td>${component.inductance}</td>
                 <td>${component.current_power}</td>
                 <td class="order-qty">${component.order_qty}</td>
+                <td class="storage-place">
+                    <input type="text" class="storage-place-input" data-id="${component.id}" value="${component.storage_place || ''}">
+                </td>
                 <td class="quantity-controls">
+                    <!-- Quantity controls -->
                     <button class="decrease" data-id="${component.id}">-</button>
                     <input type="number" class="quantity-input" value="1" min="1">
                     <button class="increase" data-id="${component.id}">+</button>
+                    <!-- Delete button -->
+                    <button class="delete-button" data-id="${component.id}">X</button>
                 </td>
             `;
 
-            // Handle row expansion
+            // Handle row expansion (optional)
             row.addEventListener("click", (event) => {
-                if (!event.target.matches('.increase, .decrease, .quantity-input')) {
+                if (!event.target.matches('.increase, .decrease, .quantity-input, .storage-place-input')) {
                     row.classList.toggle("expanded");
                 }
             });
@@ -109,12 +163,16 @@ function displaySearchResults(results) {
             resultsTableBody.appendChild(row);
         });
 
-        // Update event listeners for buttons
+        // Update event listeners for buttons and storage place inputs
         addQuantityControlEventListeners();
+        addStoragePlaceEventListeners();
+        addDeleteButtonEventListeners();
+
     } else {
+        // Handle no results
         const row = document.createElement("tr");
         const noResultCell = document.createElement("td");
-        noResultCell.colSpan = 15;
+        noResultCell.colSpan = 16; // Adjust based on total number of columns
         noResultCell.textContent = "No results found";
         row.appendChild(noResultCell);
         resultsTableBody.appendChild(row);
@@ -202,6 +260,77 @@ function addQuantityControlEventListeners() {
             const quantityInput = event.target.closest("td").querySelector(".quantity-input");
             const change = parseInt(quantityInput.value) || 1;
             await updateOrderQuantity(id, -change);
+        });
+    });
+}
+
+function addStoragePlaceEventListeners() {
+    document.querySelectorAll(".storage-place-input").forEach(input => {
+        // Save the original value to detect changes
+        input.addEventListener("focus", (event) => {
+            event.target.dataset.originalValue = event.target.value;
+        });
+
+        input.addEventListener("change", async (event) => {
+            const id = event.target.getAttribute("data-id");
+            const newStoragePlace = event.target.value;
+            const originalValue = event.target.dataset.originalValue;
+
+            // Check if the value actually changed
+            if (newStoragePlace === originalValue) {
+                return; // No change, do nothing
+            }
+
+            // Update the storage place in the backend
+            try {
+                const response = await fetch(`/update_storage_place`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id: id, storage_place: newStoragePlace }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert(`Error: ${error.detail}`);
+                    // Revert the input field to the original value
+                    event.target.value = originalValue;
+                } else {
+                    // Update the original value
+                    event.target.dataset.originalValue = newStoragePlace;
+                }
+            } catch (error) {
+                alert(`Unexpected error: ${error.message}`);
+                // Revert the input field to the original value
+                event.target.value = originalValue;
+            }
+        });
+    });
+}
+
+function addDeleteButtonEventListeners() {
+    document.querySelectorAll(".delete-button").forEach(button => {
+        button.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            const id = event.target.getAttribute("data-id");
+            const confirmDelete = confirm("Are you sure you want to delete this item?");
+            if (confirmDelete) {
+                try {
+                    const response = await fetch(`/delete_component?id=${id}`, {
+                        method: "DELETE",
+                    });
+                    if (response.ok) {
+                        // Remove the row from the table
+                        event.target.closest("tr").remove();
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.detail}`);
+                    }
+                } catch (error) {
+                    alert(`Unexpected error: ${error.message}`);
+                }
+            }
         });
     });
 }
