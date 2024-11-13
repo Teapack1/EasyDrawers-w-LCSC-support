@@ -1,0 +1,34 @@
+{
+  "Resistor": {
+    "Component Branch": {
+      "Chip Resistor - Surface Mount": ["Resistance", "Voltage", "Tolerance"],
+      "Resistor Network/Array": ["Resistance", "Voltage", "Tolerance"],
+      "Current Sense Resistor": ["Resistance", "Voltage", "Tolerance"],
+      "Potentiometer": ["Resistance", "Voltage", "Tolerance"],
+      "Through Hole Resistor": ["Resistance", "Voltage", "Tolerance"],
+      "Aluminum Case Resistor": ["Resistance", "Voltage", "Tolerance"]
+    }
+  },
+  "Capacitor": {
+    "Component Branch": {
+      "Ceramic Capacitor": ["Capacitance", "Voltage", "Tolerance"],
+      "Electrolytic Capacitor": ["Capacitance", "Voltage", "Tolerance"],
+      "Tantalum Capacitor": ["Capacitance", "Voltage", "Tolerance"],
+      "Film Capacitor": ["Capacitance", "Voltage", "Tolerance"]
+    }
+  },
+  "Inductor": {
+    "Component Branch": {
+      "Power Inductor": ["Inductance", "Current/Power", "Tolerance"],
+      "RF Inductor": ["Inductance", "Current/Power", "Tolerance"],
+      "Choke Coil": ["Inductance", "Current/Power", "Tolerance"]
+    }
+  },
+  "Diode": {
+    "Component Branch": {
+      "Rectifier Diode": ["Voltage", "Current/Power"],
+      "Zener Diode": ["Voltage", "Current/Power"],
+      "Schottky Diode": ["Voltage", "Current/Power"]
+    }
+  }
+}

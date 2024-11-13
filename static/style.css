@@ -207,3 +207,203 @@ sortable .sort-indicator {
 .delete-button:hover {
     color: darkred;
 }
+
+/* Modal Styles */
+.modal {
+    display: block; /* Show the modal by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Centered vertically */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px; /* Adjust as needed */
+    text-align: center;
+    border-radius: 8px;
+}
+
+.user-button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.user-button:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+/* Adjust button styles if needed */
+#changelogButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #28a745; /* Green color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#changelogButton:hover {
+    background-color: #218838;
+}
+
+/* Style for required fields */
+form label {
+    font-weight: bold;
+}
+
+/* Style for optional fields */
+form label.optional {
+    font-weight: normal;
+    color: #666;
+}
+
+/* Additional styles for the form */
+form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+form input, form select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* Adjust the widths of the sections */
+.upload-section {
+    width: 18.75%; /* Reduced from 25% */
+}
+
+.search-section {
+    width: 62.5%; /* Increased from 50% */
+    margin: 0 auto;
+    text-align: center;
+}
+
+.form-section {
+    width: 18.75%; /* Reduced from 25% */
+}
+
+/* Style the search field */
+.search-section .search-field {
+    margin-bottom: 10px;
+}
+
+.search-section input[type="text"] {
+    width: 80%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the search button */
+.search-section .search-button button {
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+/* Reduce font size in the form section */
+.form-section {
+    font-size: 14px; /* Reduced from default */
+}
+
+/* Adjust label styles */
+.form-section label {
+    margin-bottom: 5px; /* Reduced margin */
+}
+
+/* Adjust input and select styles */
+.form-section input, .form-section select {
+    width: 100%;
+    padding: 6px;      /* Reduced padding */
+    margin-top: 3px;
+    margin-bottom: 8px; /* Reduced margin */
+    font-size: 14px;   /* Reduced font size */
+}
+
+/* Adjust optional fields */
+.form-section .optional {
+    margin-bottom: 5px;
+}
+
+/* Adjust button styles */
+.form-section button {
+    padding: 8px 16px; /* Reduced padding */
+    font-size: 14px;   /* Reduced font size */
+}
+
+/* Styles for the revert button */
+.revert-button {
+    padding: 5px 10px;
+    background-color: #dc3545; /* Red color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.revert-button:hover {
+    background-color: #c82333;
+}
+
+/* Changelog styles */
+.reverted {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.revert-button {
+    padding: 4px 8px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.revert-button:hover {
+    background-color: #c82333;
+}
+
+.revert-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Table styles for changelog */
+#changelogTableBody td {
+    vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
+}

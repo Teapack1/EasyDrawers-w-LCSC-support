@@ -1,0 +1,28 @@
+<!-- templates/changelog.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Change Log</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Change Log</h1>
+    <button onclick="window.location.href='/'">Back to Home</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Component ID</th>
+                <th>Details</th>
+                <th>Revert</th>
+            </tr>
+        </thead>
+        <tbody id="changelogTableBody">
+        </tbody>
+    </table>
+    <script src="/static/changelog.js"></script>
+</body>
+</html>

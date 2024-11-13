@@ -7,7 +7,23 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <!-- User Selection Modal -->
+    <div id="userSelectionModal" class="modal">
+        <div class="modal-content">
+            <h2>Select User</h2>
+            <button class="user-button" data-user="Ondrej">Ondrej</button>
+            <button class="user-button" data-user="Pavel">Pavel</button>
+            <button class="user-button" data-user="Lukas">Lukas</button>
+        </div>
+    </div>
+
     <h1>Component Stock Monitor</h1>
+    <p id="currentUserDisplay">Current User: None</p>
+    <div class="top-buttons">
+        <button id="loginButton">Login</button>
+        <button id="changelogButton">Changelog</button>
+    </div>
+
     <div class="top-panel">
         <div class="upload-section">
             <h2>Upload Components from CSV</h2>
@@ -16,34 +32,45 @@
                 <button type="submit">Upload CSV</button>
             </form>
         </div>
-        <div class="form-section">
-            <h2>Add Component</h2>
-            <form id="addComponentForm">
-                <label>Part Number: <input type="text" id="partNumber"></label><br>
-                <label>Manufacturer: <input type="text" id="manufacturer"></label><br>
-                <label>Package: <input type="text" id="package"></label><br>
-                <label>Description: <input type="text" id="description"></label><br>
-                <label>Order Qty: <input type="number" id="orderQty"></label><br>
-                <label>Unit Price($): <input type="number" step="0.01" id="unitPrice"></label><br>
-                <label>Component Type: <input type="text" id="componentType"></label><br>
-                <label>Component Branch: <input type="text" id="componentBranch"></label><br>
-                <label>Capacitance: <input type="text" id="capacitance"></label><br>
-                <label>Resistance: <input type="text" id="resistance"></label><br>
-                <label>Voltage: <input type="text" id="voltage"></label><br>
-                <label>Tolerance: <input type="text" id="tolerance"></label><br>
-                <label>Inductance: <input type="text" id="inductance"></label><br>
-                <label>Current/Power: <input type="text" id="currentPower"></label><br>
-                <label>Storage Place: <input type="text" id="storagePlace"></label><br>
-                <button type="submit">Add Component</button>
-            </form>
-        </div>
 
         <div class="search-section">
             <h2>Search Component</h2>
-            <input type="text" id="searchQuery" placeholder="Search by part number, manufacturer, description, or component type">
-            <button id="searchButton" onclick="searchComponent()">Search</button>
+            <div class="search-field">
+                <input type="text" id="searchQuery" placeholder="Search by part number, manufacturer, description, or component type">
+            </div>
+            <div class="search-button">
+                <button id="searchButton" onclick="searchComponent()">Search</button>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Add Component</h2>
+            <form id="addComponentForm">
+                <label>Component Type:
+                    <select id="componentType" required>
+                        <option value="">Select Type</option>
+                    </select>
+                </label>
+                <label>Component Branch:
+                    <select id="componentBranch" required>
+                        <option value="">Select Branch</option>
+                    </select>
+                </label>
+                <label>Part Number: <input type="text" id="partNumber" required></label>
+                <label>Storage Place: <input type="text" id="storagePlace" required></label>
+                <label>Order Qty: <input type="number" id="orderQty" required></label>
+                <!-- Optional Fields -->
+                <div id="optionalFields"></div>
+                <!-- Other Optional Fields -->
+                <label class="optional">Unit Price($): <input type="number" step="0.01" id="unitPrice"></label>
+                <label class="optional">Description: <input type="text" id="description"></label>
+                <label class="optional">Package: <input type="text" id="package"></label>
+                <label class="optional">Manufacturer: <input type="text" id="manufacturer"></label>
+                <button type="submit">Add Component</button>
+            </form>
         </div>
     </div>
+
     <div id="searchResults">
         <h3>Search Results:</h3>
         <table id="resultsTable">

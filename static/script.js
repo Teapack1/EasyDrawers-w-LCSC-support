@@ -1,5 +1,41 @@
+let currentUser = null;
+let componentConfig = {};
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Load the component configuration from the server
+    fetch('/component_config')
+        .then(response => response.json())
+        .then(config => {
+            componentConfig = config;
+            populateComponentTypes();
+        });
+
     // Existing event listeners...
+
+    // User selection modal logic
+    const userSelectionModal = document.getElementById("userSelectionModal");
+    const userButtons = document.querySelectorAll(".user-button");
+
+    userButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            currentUser = button.getAttribute("data-user");
+            localStorage.setItem("currentUser", currentUser);
+            userSelectionModal.style.display = "none";
+            document.getElementById("currentUserDisplay").textContent = `Current User: ${currentUser}`;
+        });
+    });
+
+    // Always show the modal on page load
+    userSelectionModal.style.display = "block";
+
+    // Display current user
+    document.getElementById("currentUserDisplay").textContent = `Current User: ${currentUser || 'None'}`;
+
+    // Check if user is already selected
+    currentUser = localStorage.getItem("currentUser");
+    if (currentUser) {
+        userSelectionModal.style.display = "none";
+    }
 
     document.getElementById("uploadCsvForm").addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -12,16 +48,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append("file", file);
 
         try {
-            const response = await fetch("/update_components_from_csv", {
-                method: "POST",
-                body: formData,
+            const response = await fetch('/update_components_from_csv', {
+                method: 'POST',
+                body: formData
             });
 
             if (response.ok) {
-                alert("CSV file uploaded successfully!");
+                const result = await response.json();
+                alert(result.message);
+
+                // Display the new components in the search results
+                searchResults = result.components;
+                displaySearchResults(searchResults);
+
+                // Clear the file input
+                fileInput.value = '';
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.detail}`);
@@ -34,39 +78,46 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addComponentForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const componentData = {
-            part_number: document.getElementById("partNumber").value,
-            manufacturer: document.getElementById("manufacturer").value,
-            package: document.getElementById("package").value,
-            description: document.getElementById("description").value,
-            order_qty: parseInt(document.getElementById("orderQty").value) || 0,
-            unit_price: parseFloat(document.getElementById("unitPrice").value) || 0.0,
+        if (!currentUser) {
+            alert("Please select a user before performing this action.");
+            return;
+        }
+
+        const formData = {
             component_type: document.getElementById("componentType").value,
             component_branch: document.getElementById("componentBranch").value,
-            capacitance: document.getElementById("capacitance").value,
-            resistance: document.getElementById("resistance").value,
-            voltage: document.getElementById("voltage").value,
-            tolerance: document.getElementById("tolerance").value,
-            inductance: document.getElementById("inductance").value,
-            current_power: document.getElementById("currentPower").value,
-            storage_place: document.getElementById("storagePlace").value  // Added storagePlace
+            part_number: document.getElementById("partNumber").value,
+            storage_place: document.getElementById("storagePlace").value,
+            order_qty: parseInt(document.getElementById("orderQty").value),
+            unit_price: parseFloat(document.getElementById("unitPrice").value) || null,
+            description: document.getElementById("description").value || null,
+            package: document.getElementById("package").value || null,
+            manufacturer: document.getElementById("manufacturer").value || null,
         };
 
+        // Get dynamic fields
+        const optionalFields = document.querySelectorAll('#optionalFields input');
+        optionalFields.forEach(input => {
+            formData[input.id.toLowerCase()] = input.value || null;
+        });
+
         try {
-            const response = await fetch("/add_component", {
-                method: "POST",
+            const response = await fetch('/add_component', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(componentData),
+                body: JSON.stringify(formData)
             });
 
             if (response.ok) {
-                alert("Component added successfully!");
+                alert('Component added successfully.');
                 document.getElementById("addComponentForm").reset();
+                // Optionally reset optional fields
+                document.getElementById("optionalFields").innerHTML = '';
             } else {
                 const error = await response.json();
-                alert(`Error: ${error.message}`);
+                alert(`Error: ${error.detail}`);
             }
         } catch (error) {
             alert(`Unexpected error: ${error.message}`);
@@ -97,6 +148,29 @@ document.addEventListener("DOMContentLoaded", () => {
             sortResults(column);
         });
     });
+
+    // Changelog button event listener
+    document.getElementById("changelogButton").addEventListener("click", () => {
+        window.location.href = "/changelog";
+    });
+
+    // Event listener for component type change
+    document.getElementById("componentType").addEventListener("change", () => {
+        populateComponentBranches();
+        displayOptionalFields();
+    });
+
+    // Event listener for component branch change
+    document.getElementById("componentBranch").addEventListener("change", () => {
+        displayOptionalFields();
+    });
+});
+
+// Add event listener for the "Login" button
+document.getElementById("loginButton").addEventListener("click", () => {
+    currentUser = null;
+    const userSelectionModal = document.getElementById("userSelectionModal");
+    userSelectionModal.style.display = "block";
 });
 
 let searchResults = []; // Store current search results
@@ -180,8 +254,17 @@ function displaySearchResults(results) {
 }
 
 async function updateOrderQuantity(id, change) {
-    const response = await fetch(`/update_order_quantity?id=${id}&change=${change}`, {
-        method: "POST"
+    if (!currentUser) {
+        alert("Please select a user before performing this action.");
+        return;
+    }
+
+    const response = await fetch(`/update_order_quantity`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: id, change: change, user: currentUser }),
     });
 
     if (response.ok) {
@@ -316,10 +399,20 @@ function addDeleteButtonEventListeners() {
             const id = event.target.getAttribute("data-id");
             const confirmDelete = confirm("Are you sure you want to delete this item?");
             if (confirmDelete) {
+                if (!currentUser) {
+                    alert("Please select a user before performing this action.");
+                    return;
+                }
+
                 try {
-                    const response = await fetch(`/delete_component?id=${id}`, {
+                    const response = await fetch(`/delete_component`, {
                         method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ id: id, user: currentUser }),
                     });
+
                     if (response.ok) {
                         // Remove the row from the table
                         event.target.closest("tr").remove();
@@ -333,4 +426,39 @@ function addDeleteButtonEventListeners() {
             }
         });
     });
+}
+
+function populateComponentTypes() {
+    const componentTypeSelect = document.getElementById("componentType");
+    componentTypeSelect.innerHTML = '<option value="">Select Type</option>';
+    for (let type in componentConfig) {
+        componentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+    }
+}
+
+function populateComponentBranches() {
+    const componentBranchSelect = document.getElementById("componentBranch");
+    componentBranchSelect.innerHTML = '<option value="">Select Branch</option>';
+    const selectedType = document.getElementById("componentType").value;
+    if (selectedType && componentConfig[selectedType]) {
+        const branches = componentConfig[selectedType]["Component Branch"];
+        for (let branch in branches) {
+            componentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
+        }
+    }
+}
+
+function displayOptionalFields() {
+    const optionalFieldsDiv = document.getElementById("optionalFields");
+    optionalFieldsDiv.innerHTML = '';
+    const selectedType = document.getElementById("componentType").value;
+    const selectedBranch = document.getElementById("componentBranch").value;
+    if (selectedType && selectedBranch && componentConfig[selectedType]) {
+        const params = componentConfig[selectedType]["Component Branch"][selectedBranch];
+        if (params) {
+            params.forEach(param => {
+                optionalFieldsDiv.innerHTML += `<label>${param}: <input type="text" id="${param.replace('/', '')}" required></label><br>`;
+            });
+        }
+    }
 }
