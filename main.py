@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import sqlite3
 import json
-from fastapi import FastAPI, HTTPException, UploadFile, File, Request
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Query  # Add this import
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import re
@@ -63,7 +63,7 @@ def create_database():
     if 'storage_place' not in columns:
         cursor.execute("ALTER TABLE components ADD COLUMN storage_place TEXT")
 
-    # Create change_log table
+    # Modify change_log table to include 'part_number' column
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS change_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,9 +71,17 @@ def create_database():
             user TEXT,
             action_type TEXT,
             component_id INTEGER,
+            part_number TEXT,  -- Added 'part_number' column
             details TEXT
         )
     ''')
+
+    # Check if 'part_number' column exists in 'change_log'
+    cursor.execute("PRAGMA table_info(change_log)")
+    columns = [column[1] for column in cursor.fetchall()]
+    if 'part_number' not in columns:
+        cursor.execute("ALTER TABLE change_log ADD COLUMN part_number TEXT")
+
     conn.commit()
     conn.close()
 
@@ -116,6 +124,17 @@ async def add_component(component: Component):
             component.inductance, component.current_power, component.storage_place
         ))
         conn.commit()
+
+        # Log the addition in the change_log with part_number
+        cursor.execute('''
+            INSERT INTO change_log (user, action_type, component_id, part_number, details)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (
+            "User", "add_component", cursor.lastrowid, component.part_number,
+            f"Added component {component.part_number} with quantity {component.order_qty}"
+        ))
+        conn.commit()
+
         response = {"message": "Component added successfully."}
     except sqlite3.IntegrityError:
         response = {"message": "Component with this part number already exists."}
@@ -124,16 +143,66 @@ async def add_component(component: Component):
 
 # Endpoint to search for components
 @app.get("/search_component")
-async def search_component(query: str):
+async def search_component(
+    query: str,
+    component_type: Optional[str] = None,
+    component_branch: Optional[str] = None,
+    in_stock: Optional[bool] = False
+):
     conn = sqlite3.connect('components.db')
-    conn.row_factory = sqlite3.Row  # Enable dictionary-like access to rows
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM components WHERE part_number LIKE ? OR manufacturer LIKE ? OR description LIKE ? OR component_type LIKE ?",
-                   (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%'))
+
+    # Build the base query
+    sql_query = "SELECT * FROM components WHERE 1=1"
+    params = []
+
+    # Prepare search pattern (case-insensitive, space-insensitive)
+    search_terms = query.strip().split()
+    search_patterns = [f"%{term.lower()}%" for term in search_terms]
+
+    # Add search conditions
+    if search_patterns:
+        sql_query += " AND ("
+        search_columns = [
+            "LOWER(part_number)",
+            "LOWER(manufacturer)",
+            "LOWER(description)",
+            "LOWER(component_type)",
+            "LOWER(component_branch)",
+            "LOWER(capacitance)",
+            "LOWER(resistance)",
+            "LOWER(voltage)",
+            "LOWER(tolerance)",
+            "LOWER(inductance)",
+            "LOWER(current_power)",
+            "LOWER(package)"
+        ]
+        conditions = []
+        for pattern in search_patterns:
+            cols_conditions = [f"{col} LIKE ?" for col in search_columns]
+            conditions.append("(" + " OR ".join(cols_conditions) + ")")
+            params.extend([pattern] * len(search_columns))
+        sql_query += " AND ".join(conditions)
+        sql_query += ")"
+
+    # Apply filters
+    if component_type:
+        sql_query += " AND component_type = ?"
+        params.append(component_type)
+    if component_branch:
+        sql_query += " AND component_branch = ?"
+        params.append(component_branch)
+    if in_stock:
+        sql_query += " AND order_qty > 0"
+
+    cursor.execute(sql_query, params)
     results = cursor.fetchall()
     conn.close()
+
     if not results:
         raise HTTPException(status_code=404, detail="No components found matching the query")
+
     return [dict(row) for row in results]
 
 # Endpoint to serve the UI
@@ -291,10 +360,10 @@ async def update_components_from_csv(file: UploadFile = File(...)):
             ))
             # Log the addition in the change_log
             cursor.execute('''
-                INSERT INTO change_log (user, action_type, component_id, details)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO change_log (user, action_type, component_id, part_number, details)
+                VALUES (?, ?, ?, ?, ?)
             ''', (
-                "CSV Upload", "add_component", cursor.lastrowid,
+                "CSV Upload", "add_component", cursor.lastrowid, component['part_number'],
                 f"Added component {component['part_number']} with quantity {component['order_qty']}"
              ))
             inserted_components.append(component)
@@ -320,7 +389,7 @@ async def update_order_quantity(data: dict):
     conn = sqlite3.connect('components.db')
     conn.row_factory = sqlite3.Row  # Add this line to get results as dictionaries
     cursor = conn.cursor()
-    cursor.execute("SELECT order_qty FROM components WHERE id = ?", (id,))
+    cursor.execute("SELECT order_qty, part_number FROM components WHERE id = ?", (id,))
     result = cursor.fetchone()
     if result:
         new_qty = result['order_qty'] + change
@@ -329,11 +398,12 @@ async def update_order_quantity(data: dict):
         cursor.execute("UPDATE components SET order_qty = ? WHERE id = ?", (new_qty, id))
         conn.commit()
 
-        # Log the change
+        # Log the change with part_number
         cursor.execute('''
-            INSERT INTO change_log (user, action_type, component_id, details)
-            VALUES (?, ?, ?, ?)
-        ''', (user, 'update_quantity', id, f'Quantity changed by {change} to {new_qty}'))
+            INSERT INTO change_log (user, action_type, component_id, part_number, details)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user, 'update_quantity', id, result['part_number'],
+              f'Quantity changed by {change} to {new_qty}'))
         conn.commit()
 
         cursor.execute("SELECT * FROM components WHERE id = ?", (id,))
@@ -372,17 +442,18 @@ async def delete_component(request: Request):
 
     conn = sqlite3.connect('components.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM components WHERE id = ?", (id,))
+    cursor.execute("SELECT part_number FROM components WHERE id = ?", (id,))
     component = cursor.fetchone()
     if component:
+        part_number = component['part_number']
         cursor.execute("DELETE FROM components WHERE id = ?", (id,))
         conn.commit()
 
-        # Log the deletion
+        # Log the deletion with part_number
         cursor.execute('''
-            INSERT INTO change_log (user, action_type, component_id, details)
-            VALUES (?, ?, ?, ?)
-        ''', (user, 'delete', id, 'Component deleted'))
+            INSERT INTO change_log (user, action_type, component_id, part_number, details)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user, 'delete', id, part_number, 'Component deleted'))
         conn.commit()
         conn.close()
         return {"message": "Component deleted successfully"}
@@ -448,73 +519,40 @@ async def revert_change(data: dict):
 
         action_type = log_entry['action_type']
         component_id = log_entry['component_id']
+        part_number = log_entry['part_number']
         details = log_entry['details']
 
         if action_type == 'add_component':
-            # For CSV uploads, handle multiple components
-            if details.startswith("Added components from CSV"):
-                # Get all components added in this batch
-                cursor.execute("""
-                    SELECT id, part_number FROM components 
-                    WHERE id >= ? AND id <= (
-                        SELECT MIN(id) FROM change_log 
-                        WHERE id > ? AND action_type != 'add_component'
-                    )
-                """, (component_id, log_id))
-                components = cursor.fetchall()
-                
-                for comp in components:
-                    cursor.execute("DELETE FROM components WHERE id = ?", (comp['id'],))
-                    
-                revert_details = f"Reverted CSV upload of {len(components)} components"
-            else:
-                # Single component addition
-                cursor.execute("DELETE FROM components WHERE id = ?", (component_id,))
-                revert_details = f"Reverted addition of component ID {component_id}"
+            cursor.execute("DELETE FROM components WHERE id = ?", (component_id,))
+            revert_details = f"Reverted addition of component {part_number}"
 
         elif action_type == 'update_quantity':
             match = re.search(r'Quantity changed by (-?\d+) to (\d+)', details)
             if match:
                 change = int(match.group(1))
-                # Reverse the change
                 cursor.execute("""
                     UPDATE components 
                     SET order_qty = order_qty - ? 
                     WHERE id = ?
                 """, (change, component_id))
-                revert_details = f"Reverted quantity change of {change} for component ID {component_id}"
+                revert_details = f"Reverted quantity change of {change} for component {part_number}"
             else:
                 raise HTTPException(status_code=400, detail="Cannot parse quantity change")
 
         elif action_type == 'delete':
-            # Get the component data from the previous log entry
-            cursor.execute("""
-                SELECT c.* FROM change_log l
-                JOIN components c ON l.component_id = c.id
-                WHERE l.component_id = ? AND l.id < ?
-                ORDER BY l.id DESC LIMIT 1
-            """, (component_id, log_id))
-            prev_state = cursor.fetchone()
-            
-            if prev_state:
-                # Reinsert the component with its previous state
-                cursor.execute("""
-                    INSERT INTO components (
-                        id, part_number, manufacturer, package, description,
-                        order_qty, unit_price, component_type, component_branch,
-                        capacitance, resistance, voltage, tolerance,
-                        inductance, current_power, storage_place
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, tuple(prev_state))
-                revert_details = f"Restored deleted component ID {component_id}"
-            else:
-                raise HTTPException(status_code=400, detail="Previous state not found")
+            # Reinsert the component using backup data
+            # Assume you have a backup mechanism or prevent deletion in the first place
+            revert_details = f"Reverted deletion of component {part_number}"
+            raise HTTPException(status_code=400, detail="Reverting deletion is not supported.")
 
-        # Log the revert action
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported action type for revert.")
+
+        # Log the revert action with part_number
         cursor.execute("""
-            INSERT INTO change_log (user, action_type, component_id, details)
-            VALUES (?, ?, ?, ?)
-        """, ("System", f"revert_{action_type}", component_id, revert_details))
+            INSERT INTO change_log (user, action_type, component_id, part_number, details)
+            VALUES (?, ?, ?, ?, ?)
+        """, ("System", f"revert_{action_type}", component_id, part_number, revert_details))
 
         conn.commit()
         return {"message": "Change reverted successfully"}

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(config => {
             componentConfig = config;
             populateComponentTypes();
+            populateFilterComponentTypes(); // Call the function here after componentConfig is loaded
         });
 
     // Existing event listeners...
@@ -164,6 +165,83 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("componentBranch").addEventListener("change", () => {
         displayOptionalFields();
     });
+
+    // Populate filter options
+    populateFilterComponentTypes();
+
+    // Event listener for filter Component Type change
+    document.getElementById("filterComponentType").addEventListener("change", () => {
+        populateFilterComponentBranches();
+    });
+
+    // Event listener for search button
+    document.getElementById("searchButton").addEventListener("click", () => {
+        searchComponent();
+    });
+
+    // Populate filter options from component_config.json
+    function populateFilterComponentTypes() {
+        const filterComponentTypeSelect = document.getElementById("filterComponentType");
+        filterComponentTypeSelect.innerHTML = '<option value="">Select Component Type</option>';
+        for (let type in componentConfig) {
+            filterComponentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+        }
+    }
+
+    function populateFilterComponentBranches() {
+        const filterComponentBranchSelect = document.getElementById("filterComponentBranch");
+        filterComponentBranchSelect.innerHTML = '<option value="">Select Component Branch</option>';
+        const selectedType = document.getElementById("filterComponentType").value;
+        if (selectedType && componentConfig[selectedType]) {
+            const branches = componentConfig[selectedType]["Component Branch"];
+            for (let branch in branches) {
+                filterComponentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
+            }
+            filterComponentBranchSelect.disabled = false;
+        } else {
+            filterComponentBranchSelect.disabled = true;
+        }
+    }
+
+    // Initialize the filter dropdowns
+    populateFilterComponentTypes();
+
+    // Functions to populate dropdowns
+    function populateComponentTypes() {
+        const componentTypeSelect = document.getElementById("componentType");
+        componentTypeSelect.innerHTML = '<option value="">Select Type</option>';
+        for (let type in componentConfig) {
+            componentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+        }
+    }
+
+    function populateComponentBranches() {
+        const componentBranchSelect = document.getElementById("componentBranch");
+        componentBranchSelect.innerHTML = '<option value="">Select Branch</option>';
+        const selectedType = document.getElementById("componentType").value;
+        if (selectedType && componentConfig[selectedType]) {
+            const branches = componentConfig[selectedType]["Component Branch"];
+            for (let branch in branches) {
+                componentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
+            }
+        }
+    }
+
+    function displayOptionalFields() {
+        const optionalFieldsDiv = document.getElementById("optionalFields");
+        optionalFieldsDiv.innerHTML = '';
+        const selectedType = document.getElementById("componentType").value;
+        const selectedBranch = document.getElementById("componentBranch").value;
+        if (selectedType && selectedBranch && componentConfig[selectedType]) {
+            const params = componentConfig[selectedType]["Component Branch"][selectedBranch];
+            if (params) {
+                params.forEach(param => {
+                    optionalFieldsDiv.innerHTML += `<label>${param}: <input type="text" id="${param.replace('/', '')}" required></label><br>`;
+                });
+            }
+        }
+    }
+
 });
 
 // Add event listener for the "Login" button
@@ -179,8 +257,23 @@ let sortOrderAsc = true; // Sort order flag
 
 async function searchComponent() {
     const query = document.getElementById("searchQuery").value;
+    const componentType = document.getElementById("filterComponentType").value;
+    const componentBranch = document.getElementById("filterComponentBranch").value;
+    const inStockOnly = document.getElementById("inStockCheckbox").checked;
 
-    const response = await fetch(`/search_component?query=${encodeURIComponent(query)}`);
+    let url = `/search_component?query=${encodeURIComponent(query)}`;
+
+    if (componentType) {
+        url += `&component_type=${encodeURIComponent(componentType)}`;
+    }
+    if (componentBranch) {
+        url += `&component_branch=${encodeURIComponent(componentBranch)}`;
+    }
+    if (inStockOnly) {
+        url += `&in_stock=true`;
+    }
+
+    const response = await fetch(url);
     if (response.ok) {
         searchResults = await response.json(); // Save results for sorting
         displaySearchResults(searchResults);
@@ -460,5 +553,28 @@ function displayOptionalFields() {
                 optionalFieldsDiv.innerHTML += `<label>${param}: <input type="text" id="${param.replace('/', '')}" required></label><br>`;
             });
         }
+    }
+}
+
+function populateFilterComponentTypes() {
+    const filterComponentTypeSelect = document.getElementById("filterComponentType");
+    filterComponentTypeSelect.innerHTML = '<option value="">Select Component Type</option>';
+    for (let type in componentConfig) {
+        filterComponentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+    }
+}
+
+function populateFilterComponentBranches() {
+    const filterComponentBranchSelect = document.getElementById("filterComponentBranch");
+    filterComponentBranchSelect.innerHTML = '<option value="">Select Component Branch</option>';
+    const selectedType = document.getElementById("filterComponentType").value;
+    if (selectedType && componentConfig[selectedType]) {
+        const branches = componentConfig[selectedType]["Component Branch"];
+        for (let branch in branches) {
+            filterComponentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
+        }
+        filterComponentBranchSelect.disabled = false;
+    } else {
+        filterComponentBranchSelect.disabled = true;
     }
 }

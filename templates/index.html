@@ -17,55 +17,79 @@
         </div>
     </div>
 
-    <h1>Component Stock Monitor</h1>
-    <p id="currentUserDisplay">Current User: None</p>
-    <div class="top-buttons">
+
+    <!-- Top Bar with Login, Changelog, and Current User Display -->
+    <div class="top-bar">
         <button id="loginButton">Login</button>
         <button id="changelogButton">Changelog</button>
+        <span id="currentUserDisplay">Current User: None</span>
     </div>
 
-    <div class="top-panel">
-        <div class="upload-section">
-            <h2>Upload Components from CSV</h2>
-            <form id="uploadCsvForm" enctype="multipart/form-data">
-                <input type="file" id="csvFile" name="file" accept=".csv" required>
+    <h1>Electronics Stock Search</h1>
+    <div class="container">
+        <!-- Left Panel: Upload Components from CSV -->
+        <div class="left-panel">
+            <form id="uploadCsvForm">
+                <h2>Upload Components from CSV</h2>
+                <input type="file" id="csvFile" accept=".csv">
                 <button type="submit">Upload CSV</button>
             </form>
         </div>
 
-        <div class="search-section">
-            <h2>Search Component</h2>
-            <div class="search-field">
-                <input type="text" id="searchQuery" placeholder="Search by part number, manufacturer, description, or component type">
+        <!-- Middle Panel: Search Components -->
+        <div class="middle-panel">
+            <!-- Filters -->
+            <div class="filter-container">
+                <select id="filterComponentType">
+                    <option value="">Select Component Type</option>
+                    <!-- Options populated dynamically -->
+                </select>
+                <select id="filterComponentBranch" disabled>
+                    <option value="">Select Component Branch</option>
+                    <!-- Options populated dynamically -->
+                </select>
+                <label>
+                    <input type="checkbox" id="inStockCheckbox">
+                    In Stock
+                </label>
             </div>
-            <div class="search-button">
-                <button id="searchButton" onclick="searchComponent()">Search</button>
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="searchQuery" placeholder="Search Component">
+                <button id="searchButton">Search</button>
             </div>
         </div>
 
-        <div class="form-section">
-            <h2>Add Component</h2>
+        <!-- Right Panel: Add Component -->
+        <div class="right-panel">
             <form id="addComponentForm">
-                <label>Component Type:
-                    <select id="componentType" required>
-                        <option value="">Select Type</option>
-                    </select>
-                </label>
-                <label>Component Branch:
-                    <select id="componentBranch" required>
-                        <option value="">Select Branch</option>
-                    </select>
-                </label>
-                <label>Part Number: <input type="text" id="partNumber" required></label>
-                <label>Storage Place: <input type="text" id="storagePlace" required></label>
-                <label>Order Qty: <input type="number" id="orderQty" required></label>
+                <h2>Add Component</h2>
+                <label for="componentType">Component Type:</label>
+                <select id="componentType" required>
+                    <option value="">Select Type</option>
+                    <!-- Options populated dynamically -->
+                </select>
+                <label for="componentBranch">Component Branch:</label>
+                <select id="componentBranch" required>
+                    <option value="">Select Branch</option>
+                    <!-- Options populated dynamically -->
+                </select>
+                <label for="partNumber">Part Number:</label>
+                <input type="text" id="partNumber" required>
+                <label for="storagePlace">Storage Place:</label>
+                <input type="text" id="storagePlace">
+                <label for="orderQty">Order Quantity:</label>
+                <input type="number" id="orderQty" value="0">
+                <label for="unitPrice">Unit Price ($):</label>
+                <input type="number" id="unitPrice" step="0.01">
+                <label for="description">Description:</label>
+                <input type="text" id="description">
+                <label for="package">Package:</label>
+                <input type="text" id="package">
+                <label for="manufacturer">Manufacturer:</label>
+                <input type="text" id="manufacturer">
                 <!-- Optional Fields -->
                 <div id="optionalFields"></div>
-                <!-- Other Optional Fields -->
-                <label class="optional">Unit Price($): <input type="number" step="0.01" id="unitPrice"></label>
-                <label class="optional">Description: <input type="text" id="description"></label>
-                <label class="optional">Package: <input type="text" id="package"></label>
-                <label class="optional">Manufacturer: <input type="text" id="manufacturer"></label>
                 <button type="submit">Add Component</button>
             </form>
         </div>

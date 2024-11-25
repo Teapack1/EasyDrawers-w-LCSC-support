@@ -31,6 +31,7 @@ function displayChangelog(logs) {
                 <td>${log.user}</td>
                 <td>${log.action_type}</td>
                 <td>${log.component_id || ''}</td>
+                <td>${log.part_number || ''}</td>
                 <td>${log.details}</td>
                 <td>
                     ${log.action_type.startsWith('revert_') ? 

@@ -9,20 +9,43 @@ h1 {
     text-align: center;
 }
 
+/* Container for the three panels */
 .container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
-    margin-top: 20px;
+    align-items: flex-start; /* Align items at the top */
+    margin: 20px auto;
+    max-width: 1200px; /* Center the container */
+    margin-top: 10px;
 }
 
+/* Left Panel */
 .left-panel {
-    width: 30%;
+    width: 24%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
+/* Middle Panel */
+.middle-panel {
+    width: 48%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Right Panel */
 .right-panel {
-    width: 70%;
-    margin-left: auto;
+    width: 24%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Panel Styles */
+.left-panel, .middle-panel, .right-panel {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 .form-section, .upload-section, .search-section {
@@ -35,12 +58,13 @@ h1 {
 
 button {
     margin-top: 10px;
-    padding: 10px 20px;
+    padding: 8px 16px;
     background-color: #007BFF;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
 }
 
 button:hover {
@@ -53,6 +77,7 @@ button:hover {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 table {
@@ -271,27 +296,43 @@ form label.optional {
 }
 
 /* Additional styles for the form */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form h2 {
+    margin-top: 0;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
 form label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 form input, form select {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 14px;
 }
 
 form button {
-    padding: 10px 20px;
+    align-self: flex-start;
+    padding: 8px 16px;
     background-color: #007BFF;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
 }
 
 form button:hover {
@@ -407,3 +448,170 @@ form button:hover {
     white-space: normal;
     word-break: break-word;
 }
+
+/* ...existing code... */
+
+.middle-panel {
+    /* ...existing styles... */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Logo and heading */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.app-logo {
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+}
+
+.app-heading {
+    margin: 10px 0;
+    font-size: 24px;
+}
+
+/* Filters */
+.filter-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-container select,
+.filter-container label {
+    margin-right: 10px;
+}
+
+.filter-container select {
+    padding: 5px;
+}
+
+.in-stock-label {
+    display: flex;
+    align-items: center;
+}
+
+/* Search bar at the bottom */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-container input {
+    padding: 8px;
+    width: 300px;
+    /* ...existing styles... */
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .left-panel, .middle-panel, .right-panel {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+/* ...existing code... */
+
+/* Top Buttons */
+.top-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0;
+}
+
+.top-buttons button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Adjusted button widths to fit text */
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Form Styles */
+form h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+form label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="file"],
+form select {
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding: 6px;
+}
+
+form button {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+/* Adjust the Upload CSV button */
+#uploadCsvForm button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Make the Add Component section more compact */
+.right-panel form {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Adjust headings and text to fit within section width */
+.left-panel h2,
+.right-panel h2 {
+    font-size: 18px;
+    margin-top: 0;
+}
+
+/* Adjust input field widths */
+.left-panel input,
+.right-panel input,
+.right-panel select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Top Bar Styles */
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+}
+
+.top-bar button {
+    margin-right: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+#currentUserDisplay {
+    margin-left: auto;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* ...existing code... */
