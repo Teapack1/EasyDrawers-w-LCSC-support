@@ -1,34 +1,978 @@
 {
   "Resistor": {
     "Component Branch": {
-      "Chip Resistor - Surface Mount": ["Resistance", "Voltage", "Tolerance"],
-      "Resistor Network/Array": ["Resistance", "Voltage", "Tolerance"],
-      "Current Sense Resistor": ["Resistance", "Voltage", "Tolerance"],
-      "Potentiometer": ["Resistance", "Voltage", "Tolerance"],
-      "Through Hole Resistor": ["Resistance", "Voltage", "Tolerance"],
-      "Aluminum Case Resistor": ["Resistance", "Voltage", "Tolerance"]
+      "Chip Resistor - Surface Mount": {
+        "Parameters": ["Resistance", "Voltage", "Tolerance"],
+        "Storage Place": "A1"
+      },
+      "Through Hole Resistors": {
+        "Parameters": ["Resistance", "Voltage", "Tolerance"],
+        "Storage Place": "A2"
+      },
+      "Aluminum Case/Porcelain Tube Resistance": {
+        "Parameters": ["Resistance", "Voltage", "Tolerance"],
+        "Storage Place": "A2"
+      },
+      "Current Sense Resistors / Shunt Resistors": {
+        "Parameters": ["Resistance", "Voltage", "Tolerance"],
+        "Storage Place": "A1"
+      },
+      "Potentiometers, Variable Resistors": {
+        "Parameters": ["Resistance", "Voltage", "Tolerance"],
+        "Storage Place": "A2"
+      },
+      "Resistor Networks, Arrays": {
+        "Parameters": ["Resistance", "Voltage", "Tolerance"],
+        "Storage Place": "A1"
+      }
     }
   },
   "Capacitor": {
     "Component Branch": {
-      "Ceramic Capacitor": ["Capacitance", "Voltage", "Tolerance"],
-      "Electrolytic Capacitor": ["Capacitance", "Voltage", "Tolerance"],
-      "Tantalum Capacitor": ["Capacitance", "Voltage", "Tolerance"],
-      "Film Capacitor": ["Capacitance", "Voltage", "Tolerance"]
+      "Aluminum Electrolytic Capacitors - SMD": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A3"
+      },
+      "Aluminum Electrolytic Capacitors - Leaded": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      },
+      "Multilayer Ceramic Capacitors MLCC - SMD/SMT": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A3"
+      },
+      "Multilayer Ceramic Capacitors MLCC - Leaded": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      },
+      "Film Capacitors": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      },
+      "Tantalum Capacitors": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A3"
+      },
+      "Through Hole Ceramic Capacitors": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      },
+      "Trimmers, Variable Capacitors": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      },
+      "Polypropylene Film Capacitors (CBB)": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      },
+      "Capacitor Networks, Arrays": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A3"
+      },
+      "Polymer Aluminum Capacitors": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A3"
+      },
+      "Mica and PTFE Capacitors": {
+        "Parameters": ["Capacitance", "Voltage", "Tolerance"],
+        "Storage Place": "A4"
+      }
     }
   },
   "Inductor": {
     "Component Branch": {
-      "Power Inductor": ["Inductance", "Current/Power", "Tolerance"],
-      "RF Inductor": ["Inductance", "Current/Power", "Tolerance"],
-      "Choke Coil": ["Inductance", "Current/Power", "Tolerance"]
+      "Inductors (SMD)": {
+        "Parameters": ["Inductance", "Current/Power", "Tolerance"],
+        "Storage Place": "A5"
+      },
+      "Color Ring Inductors / Through Hole Inductors": {
+        "Parameters": ["Inductance", "Current/Power", "Tolerance"],
+        "Storage Place": "A5"
+      },
+      "Power Inductors": {
+        "Parameters": ["Inductance", "Current/Power", "Tolerance"],
+        "Storage Place": "A5"
+      },
+      "Adjustable Inductors": {
+        "Parameters": ["Inductance", "Current/Power", "Tolerance"],
+        "Storage Place": "A5"
+      }
     }
   },
-  "Diode": {
+  "Diodes": {
     "Component Branch": {
-      "Rectifier Diode": ["Voltage", "Current/Power"],
-      "Zener Diode": ["Voltage", "Current/Power"],
-      "Schottky Diode": ["Voltage", "Current/Power"]
+      "Bridge Rectifiers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Fast Recovery / High Efficiency Diodes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Diodes - Variable Capacitance": {
+        "Parameters": ["Capacitance", "Voltage"],
+        "Storage Place": "A6"
+      },
+      "Super Barrier Rectifiers (SBR)": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Avalanche Diodes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Schottky Diodes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Zener Diodes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Diodes - General Purpose": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Trigger Diodes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      },
+      "Switching Diodes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A6"
+      }
+    }
+  },
+  "LED Drivers": {
+    "Component Branch": {
+      "LCD Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A7"
+      },
+      "Digital Tube Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A7"
+      },
+      "OLED Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A7"
+      },
+      "Laser Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A7"
+      },
+      "Lighting Drivers & Controllers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A7"
+      },
+      "LED Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A7"
+      }
+    }
+  },
+  "Power Management (PMIC)": {
+    "Component Branch": {
+      "Charge Pumps": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Voltage Regulators - Linear, Low Drop Out (LDO) Regulators": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Supervisor and Reset ICs": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A8"
+      },
+      "Power Management - Specialized": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "ORing Controllers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Motor Driver ICs": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Power Over Ethernet (PoE) Controllers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Synchronous Rectifier Controllers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Power Distribution Switches": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "AC-DC Controllers and Regulators": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "USB PD": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Isolated DC/DC Converters": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Wireless Charge-Discharge ICs": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Transformer Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Current Source / Constant Current Source": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Battery Management": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "DC-DC Converters": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Voltage Reference": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A8"
+      },
+      "Leakage Protection ICs": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      },
+      "Isolators - Gate Drivers": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A8"
+      }
+    }
+  },
+  "Connectors": {
+    "Component Branch": {
+      "Banana Connectors / Alligator Clips": {
+        "Parameters": ["Current/Power"],
+        "Storage Place": "A9"
+      },
+      "PCB Welding Terminal": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Cold-pressed Terminals": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Housing Contact": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Edgeboard Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Feed-Voltage/Radio-Frequency Insulator": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Housings (Wire To Board / Wire To Wire )": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "DC Power Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "DIN41612 Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Automobile Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Spring Clamp System Terminal Block": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Pluggable System Terminal Block": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "SIM Card Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Fiber Optic Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Micro-Match Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Audio Connectors (Headphones)": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Female Headers": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Connector Accessories": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Wiring Quick-Connect Terminals": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Board-to-Board and Backplane Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "PCI / PCIe Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Hard Disk Connector (SAS/SATA/M.2)": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "RCA Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Memory Connector (DDR)": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Screw Terminal Blocks": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Connector Housings": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "USB Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "XLR (Cannon) Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Optical Module Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "IC / Transistor Socket": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Test Points / Test Rings": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Pin / Jack": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Barrier Terminal Blocks": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Coaxial Connectors (RF)": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "DisplayPort (DP) Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Shunts, Jumpers": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "FFC, FPC (Flat Flexible) Connector Assemblies": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Pre-ordered Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "D-Sub / VGA Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Ethernet Connectors / Modular Connectors (RJ45 RJ11)": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "AC Power Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Wire To Board Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "HDMI Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Circular Connectors & Cable Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Pin Headers": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Blade / Shrapnel Contact Battery Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "DVI Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Circular DIN Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "IEEE 1394 / Firewire Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Button And Strip Battery Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "SD Card / Memory Card Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "IDC Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Pogo Pin Spring Probe Connector": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "Photovoltaic(Solar Panel)Connectors": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      },
+      "FFC Cable (Flexible Flat Cable)": {
+        "Parameters": [],
+        "Storage Place": "A9"
+      }
+    }
+  },
+  "Circuit Protection": {
+    "Component Branch": {
+      "Glass Discharge Tubes": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A10"
+      },
+      "Surge Protection Devices (SPDs)": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A10"
+      },
+      "Disposable fuses": {
+        "Parameters": ["Current/Power"],
+        "Storage Place": "A10"
+      },
+      "ESD and Surge Protection (TVS/ESD)": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A10"
+      },
+      "Fuseholders": {
+        "Parameters": [],
+        "Storage Place": "A10"
+      },
+      "Resettable Fuses": {
+        "Parameters": ["Current/Power"],
+        "Storage Place": "A10"
+      },
+      "Thermal Fuses (TCO)": {
+        "Parameters": ["Temperature"],
+        "Storage Place": "A10"
+      },
+      "LED Protection": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A10"
+      },
+      "Gas Discharge Tube Arresters (GDT)": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A10"
+      },
+      "Varistors": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A10"
+      },
+      "Automotive Fuses": {
+        "Parameters": ["Current/Power"],
+        "Storage Place": "A10"
+      },
+      "Semiconductor Discharge Tubes (TSS)": {
+        "Parameters": ["Voltage"],
+        "Storage Place": "A10"
+      }
+    }
+  },
+  "Sensors": {
+    "Component Branch": {
+      "Proximity Sensors": {
+        "Parameters": [],
+        "Storage Place": "A11"
+      },
+      "Ultrasonic Receivers, Transmitters": {
+        "Parameters": [],
+        "Storage Place": "A11"
+      },
+      "Ambient Light Sensors": {
+        "Parameters": [],
+        "Storage Place": "A11"
+      },
+      "Accelerometers": {
+        "Parameters": ["Acceleration"],
+        "Storage Place": "A11"
+      },
+      "Temperature and Humidity Sensor": {
+        "Parameters": ["Temperature", "Humidity"],
+        "Storage Place": "A11"
+      },
+      "Specialized Sensors": {
+        "Parameters": [],
+        "Storage Place": "A11"
+      },
+      "Position Sensors": {
+        "Parameters": ["Position"],
+        "Storage Place": "A11"
+      },
+      "Touch Sensors": {
+        "Parameters": ["Touch Resistance"],
+        "Storage Place": "A11"
+      },
+      "Float Level Senors": {
+        "Parameters": ["Level"],
+        "Storage Place": "A11"
+      },
+      "Force Sensors, Load Cells": {
+        "Parameters": ["Force"],
+        "Storage Place": "A11"
+      },
+      "Heart Rate Sensors": {
+        "Parameters": ["Heart Rate"],
+        "Storage Place": "A11"
+      },
+      "Sensor Modules": {
+        "Parameters": [],
+        "Storage Place": "A11"
+      },
+      "NTC Thermistors": {
+        "Parameters": ["Temperature"],
+        "Storage Place": "A11"
+      },
+      "Fiber Optic / Laser Sensors": {
+        "Parameters": ["Signal Strength"],
+        "Storage Place": "A11"
+      },
+      "Flow Sensors": {
+        "Parameters": ["Flow Rate"],
+        "Storage Place": "A11"
+      },
+      "PTC Thermistors": {
+        "Parameters": ["Temperature"],
+        "Storage Place": "A11"
+      },
+      "PM2.5 Sensors": {
+        "Parameters": ["Particle Concentration"],
+        "Storage Place": "A11"
+      },
+      "Gas Sensors": {
+        "Parameters": ["Gas Concentration"],
+        "Storage Place": "A11"
+      },
+      "Photointerrupters - Slot Type - Logic Output": {
+        "Parameters": ["Interrupt Signal"],
+        "Storage Place": "A11"
+      },
+      "Human Body Sensing Sensor": {
+        "Parameters": ["Proximity"],
+        "Storage Place": "A11"
+      },
+      "Temperature Sensors": {
+        "Parameters": ["Temperature"],
+        "Storage Place": "A11"
+      },
+      "Pressure Sensors": {
+        "Parameters": ["Pressure"],
+        "Storage Place": "A11"
+      },
+      "Thermostat Switches": {
+        "Parameters": ["Temperature"],
+        "Storage Place": "A11"
+      },
+      "VOC Sensors": {
+        "Parameters": ["VOC Levels"],
+        "Storage Place": "A11"
+      },
+      "Photoresistors": {
+        "Parameters": ["Light Intensity"],
+        "Storage Place": "A11"
+      },
+      "Vibration Sensors": {
+        "Parameters": ["Vibration Frequency"],
+        "Storage Place": "A11"
+      },
+      "Image Sensors": {
+        "Parameters": ["Image Resolution"],
+        "Storage Place": "A11"
+      }
+    }
+  },
+  "Transistors/Thyristors": {
+    "Component Branch": {
+      "Pre-ordered transistors": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "MOSFETs": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "Digital Transistors": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "Intelligent Power Modules (IPM)": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "Darlington Transistors": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "Bipolar (BJT)": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "Thyristors (SCR)/Modules": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "IGBT Transistors / Modules": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "JFETs": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      },
+      "Darlington Transistor Arrays": {
+        "Parameters": ["Voltage", "Current/Power"],
+        "Storage Place": "A12"
+      }
+    }
+  },
+  "Optoelectronics": {
+    "Component Branch": {
+      "Infrared Remote Receiver (IRM)": {
+        "Parameters": [],
+        "Storage Place": "A13"
+      },
+      "Infrared LED Emitters": {
+        "Parameters": ["Wavelength"],
+        "Storage Place": "A13"
+      },
+      "Photointerrupters - Slot Type - Transistor Output": {
+        "Parameters": ["Interrupt Signal"],
+        "Storage Place": "A13"
+      },
+      "Optoelectronics Accessories": {
+        "Parameters": [],
+        "Storage Place": "A13"
+      },
+      "Laser Diodes": {
+        "Parameters": ["Wavelength"],
+        "Storage Place": "A13"
+      },
+      "Photodiodes": {
+        "Parameters": ["Sensitivity"],
+        "Storage Place": "A13"
+      },
+      "RGB LEDs": {
+        "Parameters": ["Color"],
+        "Storage Place": "A13"
+      },
+      "Ultraviolet LEDs (UVLED)": {
+        "Parameters": ["Wavelength"],
+        "Storage Place": "A13"
+      },
+      "LED Indication - Discrete": {
+        "Parameters": ["Color"],
+        "Storage Place": "A13"
+      },
+      "Reflective Optical Interrupters": {
+        "Parameters": ["Interrupt Signal"],
+        "Storage Place": "A13"
+      },
+      "IrDA Transceiver Modules": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A13"
+      },
+      "RGB LEDs (Built-in IC)": {
+        "Parameters": ["Color"],
+        "Storage Place": "A13"
+      },
+      "Phototransistors": {
+        "Parameters": ["Sensitivity"],
+        "Storage Place": "A13"
+      },
+      "Chip On Board (COB) Light Sources": {
+        "Parameters": ["Brightness"],
+        "Storage Place": "A13"
+      },
+      "Fiber Optical Transceivers": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A13"
+      }
+    }
+  },
+  "Interface": {
+    "Component Branch": {
+      "Telecom Interface ICs": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "LIN Transceivers": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "Audio Interface ICs": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "CAN Transceivers": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "Analog Switches - Special Purpose": {
+        "Parameters": ["Switching Speed"],
+        "Storage Place": "A14"
+      },
+      "Interface - Specialized": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "LVDS ICs": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A14"
+      },
+      "Signal Buffers, Repeaters, Splitters": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "Video Interface ICs": {
+        "Parameters": ["Resolution"],
+        "Storage Place": "A14"
+      },
+      "Ethernet Switches": {
+        "Parameters": ["Port Count"],
+        "Storage Place": "A14"
+      },
+      "UART": {
+        "Parameters": ["Baud Rate"],
+        "Storage Place": "A14"
+      },
+      "Security Verification / Encryption ICs": {
+        "Parameters": ["Encryption Standard"],
+        "Storage Place": "A14"
+      },
+      "Analog Switches, Multiplexers": {
+        "Parameters": ["Switching Speed"],
+        "Storage Place": "A14"
+      },
+      "CAN Controllers": {
+        "Parameters": [],
+        "Storage Place": "A14"
+      },
+      "I/O Expanders": {
+        "Parameters": ["Number of I/O Ports"],
+        "Storage Place": "A14"
+      },
+      "Serializers, Deserializers": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A14"
+      },
+      "USB Converters": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A14"
+      },
+      "RS232 ICs": {
+        "Parameters": ["Baud Rate"],
+        "Storage Place": "A14"
+      },
+      "RS-485 / RS-422 ICs": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A14"
+      },
+      "Interface - PCIs / PCIEs": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A14"
+      },
+      "Ethernet Transceivers": {
+        "Parameters": ["Data Rate"],
+        "Storage Place": "A14"
+      },
+      "Ethernet Controllers": {
+        "Parameters": ["Port Count"],
+        "Storage Place": "A14"
+      },
+      "USB HUB Controllers": {
+        "Parameters": ["Port Count"],
+        "Storage Place": "A14"
+      }
+    }
+  },
+  "Switches": {
+    "Component Branch": {
+      "Toggle Switches": {
+        "Parameters": ["Actuation Force"],
+        "Storage Place": "A15"
+      },
+      "Rotary Wheel Switches": {
+        "Parameters": ["Rotation Degrees"],
+        "Storage Place": "A15"
+      },
+      "Navigation Switches, Joystick": {
+        "Parameters": ["Movement Axis"],
+        "Storage Place": "A15"
+      },
+      "Limit Switches": {
+        "Parameters": ["Actuation Point"],
+        "Storage Place": "A15"
+      },
+      "Rotary Encoders": {
+        "Parameters": ["Resolution"],
+        "Storage Place": "A15"
+      },
+      "Multi-Directional Switches": {
+        "Parameters": ["Direction Count"],
+        "Storage Place": "A15"
+      },
+      "Metal Dome Pot": {
+        "Parameters": [],
+        "Storage Place": "A15"
+      },
+      "Rocker Switches": {
+        "Parameters": ["Actuation Force"],
+        "Storage Place": "A15"
+      },
+      "Specialty Switches": {
+        "Parameters": [],
+        "Storage Place": "A15"
+      },
+      "Pushbutton Switches": {
+        "Parameters": ["Actuation Force"],
+        "Storage Place": "A15"
+      },
+      "DIP Switches": {
+        "Parameters": ["Number of Switches"],
+        "Storage Place": "A15"
+      },
+      "Rotary Coding Switch": {
+        "Parameters": ["Coding Pins"],
+        "Storage Place": "A15"
+      },
+      "Mechanical Keyboard Shaft": {
+        "Parameters": ["Key Tactility"],
+        "Storage Place": "A15"
+      },
+      "Multidirectional Switch": {
+        "Parameters": ["Movement Axis"],
+        "Storage Place": "A15"
+      },
+      "Rotary Switches": {
+        "Parameters": ["Rotation Degrees"],
+        "Storage Place": "A15"
+      },
+      "Keylock Switches": {
+        "Parameters": ["Locking Mechanism"],
+        "Storage Place": "A15"
+      },
+      "Tactile Switches": {
+        "Parameters": ["Feedback"],
+        "Storage Place": "A15"
+      },
+      "Switch Accessories / Caps": {
+        "Parameters": [],
+        "Storage Place": "A15"
+      },
+      "Slide Switches": {
+        "Parameters": ["Sliding Distance"],
+        "Storage Place": "A15"
+      }
+    }
+  },
+  "Embedded Processors & Controllers": {
+    "Component Branch": {
+      "Microcontrollers (MCU/MPU/SOC)": {
+        "Parameters": ["Clock Speed", "Memory"],
+        "Storage Place": "A16"
+      },
+      "Programmable Logic Device (CPLDs/FPGAs)": {
+        "Parameters": ["Logic Cells", "Memory"],
+        "Storage Place": "A16"
+      },
+      "Digital Signal Processors (DSP/DSC)": {
+        "Parameters": ["Processing Speed"],
+        "Storage Place": "A16"
+      },
+      "Pre-ordered MCUs": {
+        "Parameters": ["Clock Speed", "Memory"],
+        "Storage Place": "A16"
+      }
+    }
+  },
+  "Audio Products / Vibration Motors": {
+    "Component Branch": {
+      "Microphones": {
+        "Parameters": ["Sensitivity"],
+        "Storage Place": "A17"
+      },
+      "Buzzer Plates": {
+        "Parameters": ["Frequency"],
+        "Storage Place": "A17"
+      },
+      "Speakers": {
+        "Parameters": ["Impedance", "Power"],
+        "Storage Place": "A17"
+      },
+      "Vibration Motors": {
+        "Parameters": ["Rotation Speed"],
+        "Storage Place": "A17"
+      },
+      "MEMS Microphones": {
+        "Parameters": ["Sensitivity"],
+        "Storage Place": "A17"
+      },
+      "Buzzers": {
+        "Parameters": ["Frequency"],
+        "Storage Place": "A17"
+      }
     }
   }
 }

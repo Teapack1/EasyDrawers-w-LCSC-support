@@ -36,6 +36,8 @@ templates = Jinja2Templates(directory="templates")
 def create_database():
     conn = sqlite3.connect('components.db')
     cursor = conn.cursor()
+    
+    # Create or verify the 'components' table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS components (
             id INTEGER PRIMARY KEY,
@@ -57,13 +59,13 @@ def create_database():
         )
     ''')
 
-    # Check if 'storage_place' column exists
+    # Check if 'storage_place' column exists in 'components' table
     cursor.execute("PRAGMA table_info(components)")
     columns = [column[1] for column in cursor.fetchall()]
     if 'storage_place' not in columns:
         cursor.execute("ALTER TABLE components ADD COLUMN storage_place TEXT")
 
-    # Modify change_log table to include 'part_number' column
+    # Create or verify the 'change_log' table without 'part_number' column initially
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS change_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,15 +73,14 @@ def create_database():
             user TEXT,
             action_type TEXT,
             component_id INTEGER,
-            part_number TEXT,  -- Added 'part_number' column
             details TEXT
         )
     ''')
 
-    # Check if 'part_number' column exists in 'change_log'
+    # Check if 'part_number' column exists in 'change_log' table
     cursor.execute("PRAGMA table_info(change_log)")
-    columns = [column[1] for column in cursor.fetchall()]
-    if 'part_number' not in columns:
+    changelog_columns = [column[1] for column in cursor.fetchall()]
+    if 'part_number' not in changelog_columns:
         cursor.execute("ALTER TABLE change_log ADD COLUMN part_number TEXT")
 
     conn.commit()
@@ -108,6 +109,14 @@ class Component(BaseModel):
 # Endpoint to add a new component
 @app.post("/add_component")
 async def add_component(component: Component):
+    # Get storage place from component_config.json based on component branch
+    storage_place = component.storage_place
+    if not storage_place and component.component_type and component.component_branch:
+        c_type_data = component_config.get(component.component_type, {})
+        branch_data = c_type_data.get('Component Branch', {}).get(component.component_branch, {})
+        storage_place = branch_data.get('Storage Place')
+
+    # Insert the component into the database
     conn = sqlite3.connect('components.db')
     cursor = conn.cursor()
     try:
@@ -121,25 +130,25 @@ async def add_component(component: Component):
             component.part_number, component.manufacturer, component.package, component.description,
             component.order_qty, component.unit_price, component.component_type, component.component_branch,
             component.capacitance, component.resistance, component.voltage, component.tolerance,
-            component.inductance, component.current_power, component.storage_place
+            component.inductance, component.current_power, storage_place
         ))
-        conn.commit()
-
-        # Log the addition in the change_log with part_number
+        component_id = cursor.lastrowid
+        # Log the addition in the change_log
         cursor.execute('''
-            INSERT INTO change_log (user, action_type, component_id, part_number, details)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO change_log (user, action_type, component_id, details)
+            VALUES (?, ?, ?, ?)
         ''', (
-            "User", "add_component", cursor.lastrowid, component.part_number,
+            "Manual Entry", "add_component", component_id,
             f"Added component {component.part_number} with quantity {component.order_qty}"
         ))
         conn.commit()
+    except sqlite3.IntegrityError as e:
+        conn.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        conn.close()
 
-        response = {"message": "Component added successfully."}
-    except sqlite3.IntegrityError:
-        response = {"message": "Component with this part number already exists."}
-    conn.close()
-    return response
+    return {"message": "Component added successfully."}
 
 # Endpoint to search for components
 @app.get("/search_component")
@@ -241,46 +250,58 @@ async def update_components_from_csv(file: UploadFile = File(...)):
         component_type = None
         component_branch = None
         parameters = {}
+        storage_place = None
 
-        # Iterate over component types
-        for c_type, branches in component_config.items():
-            if re.search(c_type, description, re.IGNORECASE):
+        # Flatten component branches with their corresponding types
+        branches_with_types = []
+        for c_type, c_data in component_config.items():
+            for branch, branch_data in c_data['Component Branch'].items():
+                branches_with_types.append((branch, c_type, branch_data))
+
+        # Iterate over component branches
+        for branch, c_type, branch_data in branches_with_types:
+            if re.search(re.escape(branch), description, re.IGNORECASE):
+                component_branch = branch
                 component_type = c_type
-                # Iterate over component branches
-                for branch, params in branches['Component Branch'].items():
-                    if re.search(branch, description, re.IGNORECASE):
-                        component_branch = branch
-                        # Extract parameters based on params list
-                        for param in params:
-                            # Implement extraction logic for each param
-                            if param == 'Resistance':
-                                res_match = re.search(r'(\d+(?:\.\d+)?\s*(?:[kKmM]?Ω|Ohm|R))', description, re.IGNORECASE)
-                                if res_match:
-                                    parameters['Resistance'] = res_match.group(1)
-                            elif param == 'Capacitance':
-                                cap_match = re.search(r'(\d+(?:\.\d+)?[pµunF]{1,2}F)', description, re.IGNORECASE)
-                                if cap_match:
-                                    parameters['Capacitance'] = cap_match.group(1)
-                            elif param == 'Inductance':
-                                ind_match = re.search(r'(\d+(?:\.\d+)?[µunHm]{1,2}H)', description, re.IGNORECASE)
-                                if ind_match:
-                                    parameters['Inductance'] = ind_match.group(1)
-                            elif param == 'Voltage':
-                                volt_match = re.search(r'(\d+(?:\.\d+)?V)', description, re.IGNORECASE)
-                                if volt_match:
-                                    parameters['Voltage'] = volt_match.group(1)
-                            elif param == 'Current/Power':
-                                curr_match = re.search(r'(\d+(?:\.\d+)?[mµu]?A|[mµu]?W)', description, re.IGNORECASE)
-                                if curr_match:
-                                    parameters['Current/Power'] = curr_match.group(1)
-                            elif param == 'Tolerance':
-                                tol_match = re.search(r'([±\+-]?\d+(?:\.\d+)?%)', description, re.IGNORECASE)
-                                if tol_match:
-                                    parameters['Tolerance'] = tol_match.group(1)
-                        break
-                break
+                # Extract parameters based on Parameters list
+                for param in branch_data['Parameters']:
+                    if param == 'Resistance':
+                        res_match = re.search(
+                            r'(?<!\w)(\d+\.?\d*\s*[kKmM]?\s*(?:[ΩΩ]|Ohm))(?!\w)',
+                            description, re.IGNORECASE)
+                        if res_match:
+                            parameters['Resistance'] = res_match.group(1).strip()
+                    elif param == 'Capacitance':
+                        cap_match = re.search(
+                            r'(\d+\.?\d*\s*[pPnNuUµμ]?F)', description, re.IGNORECASE)
+                        if cap_match:
+                            parameters['Capacitance'] = cap_match.group(1).strip()
+                    elif param == 'Inductance':
+                        ind_match = re.search(
+                            r'(\d+\.?\d*\s*[pPnNuUµμmM]?H)', description, re.IGNORECASE)
+                        if ind_match:
+                            parameters['Inductance'] = ind_match.group(1).strip()
+                    elif param == 'Voltage':
+                        volt_match = re.search(
+                            r'(\d+\.?\d*\s*[Vv])', description)
+                        if volt_match:
+                            parameters['Voltage'] = volt_match.group(1).strip()
+                    elif param == 'Tolerance':
+                        tol_match = re.search(
+                            r'(±\d+%|\d+%)', description)
+                        if tol_match:
+                            parameters['Tolerance'] = tol_match.group(1).strip()
+                    elif param == 'Current/Power':
+                        curr_match = re.search(
+                            r'(\d+\.?\d*\s*[mMuU]?A|\d+\.?\d*\s*[mMkKuU]?W)', description, re.IGNORECASE)
+                        if curr_match:
+                            parameters['Current/Power'] = curr_match.group(1).strip()
+                    # Add extraction logic for other parameters as needed
+                # Get storage place
+                storage_place = branch_data.get('Storage Place')
+                break  # Stop after finding the first matching branch
 
-        return component_type, component_branch, parameters
+        return component_type, component_branch, parameters, storage_place
 
     # Apply the function to each row in the DataFrame
     for index, row in df.iterrows():
@@ -288,11 +309,12 @@ async def update_components_from_csv(file: UploadFile = File(...)):
 
         # Ensure the description is a string
         if isinstance(desc, str):
-            component_type, component_branch, parameters = extract_component_details(desc)
+            component_type, component_branch, parameters, storage_place = extract_component_details(desc)
 
             # Update DataFrame with extracted values
             df.at[index, 'Component Type'] = component_type
             df.at[index, 'Component Branch'] = component_branch
+            df.at[index, 'Storage Place'] = storage_place
             for param, value in parameters.items():
                 df.at[index, param] = value
 
@@ -434,32 +456,35 @@ async def update_storage_place(request: Request):
 @app.delete("/delete_component")
 async def delete_component(request: Request):
     data = await request.json()
-    id = data.get('id')
+    component_id = data.get('component_id')
     user = data.get('user')
 
-    if not id or not user:
-        raise HTTPException(status_code=400, detail="ID and user are required")
-
     conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT part_number FROM components WHERE id = ?", (id,))
-    component = cursor.fetchone()
-    if component:
-        part_number = component['part_number']
-        cursor.execute("DELETE FROM components WHERE id = ?", (id,))
-        conn.commit()
 
-        # Log the deletion with part_number
-        cursor.execute('''
-            INSERT INTO change_log (user, action_type, component_id, part_number, details)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (user, 'delete', id, part_number, 'Component deleted'))
-        conn.commit()
+    # Fetch the component
+    component = cursor.execute("SELECT * FROM components WHERE id=?", (component_id,)).fetchone()
+    if not component:
         conn.close()
-        return {"message": "Component deleted successfully"}
-    else:
-        conn.close()
-        raise HTTPException(status_code=404, detail="Component not found")
+        raise HTTPException(status_code=404, detail="Component not found.")
+
+    part_number = component['part_number']
+
+    # Delete the component
+    cursor.execute("DELETE FROM components WHERE id=?", (component_id,))
+    conn.commit()
+
+    # Log the deletion in the change_log
+    cursor.execute("""
+        INSERT INTO change_log (user, action_type, component_id, part_number, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (user, 'delete', component_id, part_number, f"Deleted component ID {component_id}, Part Number {part_number}"))
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Component deleted successfully."}
 
 @app.get("/changelog", response_class=HTMLResponse)
 async def serve_changelog(request: Request):

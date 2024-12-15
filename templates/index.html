@@ -62,36 +62,38 @@
 
         <!-- Right Panel: Add Component -->
         <div class="right-panel">
-            <form id="addComponentForm">
-                <h2>Add Component</h2>
-                <label for="componentType">Component Type:</label>
-                <select id="componentType" required>
-                    <option value="">Select Type</option>
-                    <!-- Options populated dynamically -->
-                </select>
-                <label for="componentBranch">Component Branch:</label>
-                <select id="componentBranch" required>
-                    <option value="">Select Branch</option>
-                    <!-- Options populated dynamically -->
-                </select>
-                <label for="partNumber">Part Number:</label>
-                <input type="text" id="partNumber" required>
-                <label for="storagePlace">Storage Place:</label>
-                <input type="text" id="storagePlace">
-                <label for="orderQty">Order Quantity:</label>
-                <input type="number" id="orderQty" value="0">
-                <label for="unitPrice">Unit Price ($):</label>
-                <input type="number" id="unitPrice" step="0.01">
-                <label for="description">Description:</label>
-                <input type="text" id="description">
-                <label for="package">Package:</label>
-                <input type="text" id="package">
-                <label for="manufacturer">Manufacturer:</label>
-                <input type="text" id="manufacturer">
-                <!-- Optional Fields -->
-                <div id="optionalFields"></div>
-                <button type="submit">Add Component</button>
-            </form>
+            <h2><button id="toggleAddComponentButton">Add Component</button></h2>
+            <div id="addComponentContainer" style="display: none;">
+                <form id="addComponentForm">
+                    <label for="componentType">Component Type:</label>
+                    <select id="componentType" required>
+                        <option value="">Select Type</option>
+                        <!-- Options populated dynamically -->
+                    </select>
+                    <label for="componentBranch">Component Branch:</label>
+                    <select id="componentBranch" required>
+                        <option value="">Select Branch</option>
+                        <!-- Options populated dynamically -->
+                    </select>
+                    <label for="partNumber">Part Number:</label>
+                    <input type="text" id="partNumber" required>
+                    <label for="storagePlace">Storage Place:</label>
+                    <input type="text" id="storagePlace">
+                    <label for="orderQty">Order Quantity:</label>
+                    <input type="number" id="orderQty" value="0">
+                    <label for="unitPrice">Unit Price ($):</label>
+                    <input type="number" id="unitPrice" step="0.01">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description">
+                    <label for="package">Package:</label>
+                    <input type="text" id="package">
+                    <label for="manufacturer">Manufacturer:</label>
+                    <input type="text" id="manufacturer">
+                    <!-- Optional Fields -->
+                    <div id="optionalFields"></div>
+                    <button type="submit">Add Component</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -101,36 +103,20 @@
             <thead>
                 <tr>
                     <th>LCSC Part Number</th>
+                    <th>Manufacture Part Number</th>  <!-- Added new column -->
                     <th>Manufacturer</th>
                     <th>Package</th>
                     <th>Description</th>
                     <th>Unit Price($)</th>
                     <th>Component Type</th>
                     <th>Component Branch</th>
-                    <th>
-                        <span class="sortable" data-column="capacitance">
-                            Capacitance
-                            <span class="sort-indicator"></span>
-                        </span>
-                    </th>
-                    <th>
-                        <span class="sortable" data-column="resistance">Resistance
-                            <span class="sort-indicator"></span>
-                        </span>
-                    </th>
-                    <th>
-                        <span class="sortable" data-column="voltage">Voltage
-                            <span class="sort-indicator"></span>
-                        </span>
-                    </th>
+                    <th>Capacitance</th>
+                    <th>Resistance</th>
+                    <th>Voltage</th>
                     <th>Tolerance</th>
-                    <th>
-                        <span class="sortable" data-column="inductance">Inductance
-                            <span class="sort-indicator"></span>
-                        </span>
-                    </th>
+                    <th>Inductance</th>
                     <th>Current/Power</th>
-                    <th>Order Qty.</th>
+                    <th>Quantity</th>  <!-- Renamed from Order Qty. -->
                     <th>Storage Place</th>
                     <th>Actions</th>
                 </tr>

@@ -615,3 +615,18 @@ form button {
 }
 
 /* ...existing code... */
+
+#toggleAddComponentButton {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#toggleAddComponentButton:hover {
+    background-color: #0056b3;
+}
+
+/* ...existing code... */

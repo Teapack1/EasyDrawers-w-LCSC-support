@@ -84,12 +84,23 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const componentType = document.getElementById("componentType").value;
+        const componentBranch = document.getElementById("componentBranch").value;
+
+        // Determine storage place based on component branch from component_config
+        let storagePlace = '';
+        if (componentType && componentBranch) {
+            const typeData = componentConfig[componentType];
+            const branchData = typeData['Component Branch'][componentBranch];
+            storagePlace = branchData['Storage Place'] || '';
+        }
+
         const formData = {
-            component_type: document.getElementById("componentType").value,
-            component_branch: document.getElementById("componentBranch").value,
+            component_type: componentType,
+            component_branch: componentBranch,
             part_number: document.getElementById("partNumber").value,
-            storage_place: document.getElementById("storagePlace").value,
-            order_qty: parseInt(document.getElementById("orderQty").value),
+            storage_place: storagePlace,  // Automatically assigned
+            order_qty: parseInt(document.getElementById("orderQty").value) || 0,
             unit_price: parseFloat(document.getElementById("unitPrice").value) || null,
             description: document.getElementById("description").value || null,
             package: document.getElementById("package").value || null,
@@ -241,6 +252,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+
+    document.getElementById("componentBranch").addEventListener("change", () => {
+        const componentType = document.getElementById("componentType").value;
+        const componentBranch = document.getElementById("componentBranch").value;
+        let storagePlace = '';
+
+        if (componentType && componentBranch) {
+            const typeData = componentConfig[componentType];
+            const branchData = typeData['Component Branch'][componentBranch];
+            storagePlace = branchData['Storage Place'] || '';
+        }
+
+        // Set the storage place input value
+        document.getElementById("storagePlace").value = storagePlace;
+    });
 
 });
 
