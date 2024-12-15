@@ -79,54 +79,70 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addComponentForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        if (!currentUser) {
-            alert("Please select a user before performing this action.");
+        const requiredFields = ["componentType", "componentBranch", "partNumber", "storagePlace", "orderQty"];
+        let allValid = true;
+
+        requiredFields.forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            if (!field || !field.value.trim()) {
+                field.classList.add("invalid");
+                allValid = false;
+            } else {
+                field.classList.remove("invalid");
+            }
+        });
+
+        // Validate dynamic fields
+        const dynamicFieldIds = Array.from(document.querySelectorAll("#dynamicFields input")).map(input => input.id);
+        dynamicFieldIds.forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            if (field.required && !field.value.trim()) {
+                field.classList.add("invalid");
+                allValid = false;
+            } else {
+                field.classList.remove("invalid");
+            }
+        });
+
+        if (!allValid) {
+            alert("Please fill in all required fields.");
             return;
         }
 
-        const componentType = document.getElementById("componentType").value;
-        const componentBranch = document.getElementById("componentBranch").value;
-
-        // Determine storage place based on component branch from component_config
-        let storagePlace = '';
-        if (componentType && componentBranch) {
-            const typeData = componentConfig[componentType];
-            const branchData = typeData['Component Branch'][componentBranch];
-            storagePlace = branchData['Storage Place'] || '';
-        }
-
+        // Collect form data with field names matching the server's expected field names
         const formData = {
-            component_type: componentType,
-            component_branch: componentBranch,
-            part_number: document.getElementById("partNumber").value,
-            storage_place: storagePlace,  // Automatically assigned
-            order_qty: parseInt(document.getElementById("orderQty").value) || 0,
+            component_type: document.getElementById("componentType").value,
+            component_branch: document.getElementById("componentBranch").value,
+            part_number: document.getElementById("partNumber").value.trim(),
+            storage_place: document.getElementById("storagePlace").value.trim(),
+            order_qty: parseInt(document.getElementById("orderQty").value),
             unit_price: parseFloat(document.getElementById("unitPrice").value) || null,
-            description: document.getElementById("description").value || null,
-            package: document.getElementById("package").value || null,
-            manufacturer: document.getElementById("manufacturer").value || null,
+            description: document.getElementById("description").value.trim() || null,
+            package: document.getElementById("package").value.trim() || null,
+            manufacturer: document.getElementById("manufacturer").value.trim() || null,
+            manufacture_part_number: document.getElementById("manufacturePartNumber").value.trim() || null,
         };
 
-        // Get dynamic fields
-        const optionalFields = document.querySelectorAll('#optionalFields input');
-        optionalFields.forEach(input => {
-            formData[input.id.toLowerCase()] = input.value || null;
+        // Collect dynamic fields
+        dynamicFieldIds.forEach((fieldId) => {
+            const fieldName = fieldId.toLowerCase().replace('_', '');
+            formData[fieldName] = document.getElementById(fieldId).value.trim();
         });
 
         try {
-            const response = await fetch('/add_component', {
-                method: 'POST',
+            const response = await fetch("/add_component", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
 
             if (response.ok) {
-                alert('Component added successfully.');
+                alert("Component added successfully.");
                 document.getElementById("addComponentForm").reset();
-                // Optionally reset optional fields
-                document.getElementById("optionalFields").innerHTML = '';
+                document.getElementById("searchQuery").value = formData.part_number;
+                searchComponent();
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.detail}`);
@@ -170,11 +186,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("componentType").addEventListener("change", () => {
         populateComponentBranches();
         displayOptionalFields();
+        displayDynamicFields();
     });
 
     // Event listener for component branch change
     document.getElementById("componentBranch").addEventListener("change", () => {
         displayOptionalFields();
+        displayDynamicFields();
     });
 
     // Populate filter options
@@ -220,21 +238,32 @@ document.addEventListener("DOMContentLoaded", () => {
     // Functions to populate dropdowns
     function populateComponentTypes() {
         const componentTypeSelect = document.getElementById("componentType");
-        componentTypeSelect.innerHTML = '<option value="">Select Type</option>';
-        for (let type in componentConfig) {
-            componentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
-        }
+        componentTypeSelect.innerHTML = '<option value="">Select Component Type</option>';
+
+        Object.keys(componentConfig).forEach(type => {
+            const option = document.createElement("option");
+            option.value = type;
+            option.textContent = type;
+            componentTypeSelect.appendChild(option);
+        });
     }
 
     function populateComponentBranches() {
         const componentBranchSelect = document.getElementById("componentBranch");
-        componentBranchSelect.innerHTML = '<option value="">Select Branch</option>';
+        componentBranchSelect.innerHTML = '<option value="">Select Component Branch</option>';
+
         const selectedType = document.getElementById("componentType").value;
         if (selectedType && componentConfig[selectedType]) {
             const branches = componentConfig[selectedType]["Component Branch"];
-            for (let branch in branches) {
-                componentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
-            }
+            Object.keys(branches).forEach(branch => {
+                const option = document.createElement("option");
+                option.value = branch;
+                option.textContent = branch;
+                componentBranchSelect.appendChild(option);
+            });
+            componentBranchSelect.disabled = false;
+        } else {
+            componentBranchSelect.disabled = true;
         }
     }
 
@@ -244,12 +273,67 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedType = document.getElementById("componentType").value;
         const selectedBranch = document.getElementById("componentBranch").value;
         if (selectedType && selectedBranch && componentConfig[selectedType]) {
-            const params = componentConfig[selectedType]["Component Branch"][selectedBranch];
-            if (params) {
-                params.forEach(param => {
-                    optionalFieldsDiv.innerHTML += `<label>${param}: <input type="text" id="${param.replace('/', '')}" required></label><br>`;
-                });
+            const optionalFields = componentConfig[selectedType][selectedBranch]["optional_fields"];
+            optionalFields.forEach((field) => {
+                const label = document.createElement("label");
+                label.setAttribute("for", field);
+                label.textContent = field.charAt(0).toUpperCase() + field.slice(1) + ":";
+
+                const input = document.createElement("input");
+                input.setAttribute("id", field);
+                input.setAttribute("name", field);
+                input.setAttribute("type", "text");
+
+                if (
+                    (selectedBranch === "Resistors" && field === "resistance") ||
+                    (selectedBranch === "Capacitors" && field === "capacitance") ||
+                    (selectedBranch === "Inductors" && field === "inductance")
+                ) {
+                    input.required = true;
+                }
+
+                optionalFieldsDiv.appendChild(label);
+                optionalFieldsDiv.appendChild(input);
+            });
+
+            const packageInput = document.getElementById("package");
+            if (packageInput) {
+                packageInput.required =
+                    selectedBranch === "Resistors" ||
+                    selectedBranch === "Capacitors" ||
+                    selectedBranch === "Inductors";
             }
+        }
+    }
+
+    function displayDynamicFields() {
+        const dynamicFieldsDiv = document.getElementById("dynamicFields");
+        dynamicFieldsDiv.innerHTML = '';
+        const selectedType = document.getElementById("componentType").value;
+        const selectedBranch = document.getElementById("componentBranch").value;
+
+        if (selectedType && selectedBranch && componentConfig[selectedType]["Component Branch"][selectedBranch]) {
+            const fieldsToShow = componentConfig[selectedType]["Component Branch"][selectedBranch]["Parameters"];
+
+            fieldsToShow.forEach(field => {
+                const fieldId = field.replace(/\s+/g, '_').toLowerCase();
+                const label = document.createElement("label");
+                label.setAttribute("for", fieldId);
+                label.textContent = field + ":";
+
+                const input = document.createElement("input");
+                input.setAttribute("type", "text");
+                input.setAttribute("id", fieldId);
+                input.required = true;
+
+                // Set default value to 'Ω' for the resistance field
+                if (fieldId === "resistance") {
+                    input.value = "Ω";
+                }
+
+                dynamicFieldsDiv.appendChild(label);
+                dynamicFieldsDiv.appendChild(input);
+            });
         }
     }
 
@@ -266,6 +350,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Set the storage place input value
         document.getElementById("storagePlace").value = storagePlace;
+    });
+
+    document.getElementById("toggleAddComponentButton").addEventListener("click", () => {
+        const container = document.getElementById("addComponentContainer");
+        if (container.style.display === "none" || container.style.display === "") {
+            container.style.display = "block";
+        } else {
+            container.style.display = "none";
+        }
     });
 
 });
@@ -320,6 +413,7 @@ function displaySearchResults(results) {
 
             row.innerHTML = `
                 <td>${component.part_number}</td>
+                <td>${component.manufacture_part_number || ''}</td>
                 <td>${component.manufacturer}</td>
                 <td>${component.package}</td>
                 <td>${component.description}</td>
@@ -549,21 +643,32 @@ function addDeleteButtonEventListeners() {
 
 function populateComponentTypes() {
     const componentTypeSelect = document.getElementById("componentType");
-    componentTypeSelect.innerHTML = '<option value="">Select Type</option>';
-    for (let type in componentConfig) {
-        componentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
-    }
+    componentTypeSelect.innerHTML = '<option value="">Select Component Type</option>';
+
+    Object.keys(componentConfig).forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type;
+        componentTypeSelect.appendChild(option);
+    });
 }
 
 function populateComponentBranches() {
     const componentBranchSelect = document.getElementById("componentBranch");
-    componentBranchSelect.innerHTML = '<option value="">Select Branch</option>';
+    componentBranchSelect.innerHTML = '<option value="">Select Component Branch</option>';
+
     const selectedType = document.getElementById("componentType").value;
     if (selectedType && componentConfig[selectedType]) {
         const branches = componentConfig[selectedType]["Component Branch"];
-        for (let branch in branches) {
-            componentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
-        }
+        Object.keys(branches).forEach(branch => {
+            const option = document.createElement("option");
+            option.value = branch;
+            option.textContent = branch;
+            componentBranchSelect.appendChild(option);
+        });
+        componentBranchSelect.disabled = false;
+    } else {
+        componentBranchSelect.disabled = true;
     }
 }
 
@@ -573,34 +678,75 @@ function displayOptionalFields() {
     const selectedType = document.getElementById("componentType").value;
     const selectedBranch = document.getElementById("componentBranch").value;
     if (selectedType && selectedBranch && componentConfig[selectedType]) {
-        const params = componentConfig[selectedType]["Component Branch"][selectedBranch];
-        if (params) {
-            params.forEach(param => {
-                optionalFieldsDiv.innerHTML += `<label>${param}: <input type="text" id="${param.replace('/', '')}" required></label><br>`;
-            });
+        const optionalFields = componentConfig[selectedType][selectedBranch]["optional_fields"];
+        optionalFields.forEach((field) => {
+            const label = document.createElement("label");
+            label.setAttribute("for", field);
+            label.textContent = field.charAt(0).toUpperCase() + field.slice(1) + ":";
+
+            const input = document.createElement("input");
+            input.setAttribute("id", field);
+            input.setAttribute("name", field);
+            input.setAttribute("type", "text");
+
+            if (
+                (selectedBranch === "Resistors" && field === "resistance") ||
+                (selectedBranch === "Capacitors" && field === "capacitance") ||
+                (selectedBranch === "Inductors" && field === "inductance")
+            ) {
+                input.required = true;
+            }
+
+            optionalFieldsDiv.appendChild(label);
+            optionalFieldsDiv.appendChild(input);
+        });
+
+        const packageInput = document.getElementById("package");
+        if (packageInput) {
+            packageInput.required =
+                selectedBranch === "Resistors" ||
+                selectedBranch === "Capacitors" ||
+                selectedBranch === "Inductors";
         }
     }
 }
 
-function populateFilterComponentTypes() {
-    const filterComponentTypeSelect = document.getElementById("filterComponentType");
-    filterComponentTypeSelect.innerHTML = '<option value="">Select Component Type</option>';
-    for (let type in componentConfig) {
-        filterComponentTypeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+function displayDynamicFields() {
+    const dynamicFieldsDiv = document.getElementById("dynamicFields");
+    dynamicFieldsDiv.innerHTML = '';
+    const selectedType = document.getElementById("componentType").value;
+    const selectedBranch = document.getElementById("componentBranch").value;
+
+    if (selectedType && selectedBranch && componentConfig[selectedType]["Component Branch"][selectedBranch]) {
+        const fieldsToShow = componentConfig[selectedType]["Component Branch"][selectedBranch]["Parameters"];
+
+        fieldsToShow.forEach(field => {
+            const fieldId = field.replace(/\s+/g, '_').toLowerCase();
+            const label = document.createElement("label");
+            label.setAttribute("for", fieldId);
+            label.textContent = field + ":";
+
+            const input = document.createElement("input");
+            input.setAttribute("type", "text");
+            input.setAttribute("id", fieldId);
+            input.required = true;
+
+            // Set default value to 'Ω' for the resistance field
+            if (fieldId === "resistance") {
+                input.value = "Ω";
+            }
+
+            dynamicFieldsDiv.appendChild(label);
+            dynamicFieldsDiv.appendChild(input);
+        });
     }
 }
 
-function populateFilterComponentBranches() {
-    const filterComponentBranchSelect = document.getElementById("filterComponentBranch");
-    filterComponentBranchSelect.innerHTML = '<option value="">Select Component Branch</option>';
-    const selectedType = document.getElementById("filterComponentType").value;
-    if (selectedType && componentConfig[selectedType]) {
-        const branches = componentConfig[selectedType]["Component Branch"];
-        for (let branch in branches) {
-            filterComponentBranchSelect.innerHTML += `<option value="${branch}">${branch}</option>`;
-        }
-        filterComponentBranchSelect.disabled = false;
-    } else {
-        filterComponentBranchSelect.disabled = true;
-    }
-}
+document.getElementById("componentBranch").addEventListener("change", () => {
+    displayDynamicFields();
+});
+
+document.getElementById("componentType").addEventListener("change", () => {
+    // ...existing code to populate component branches...
+    displayDynamicFields();
+});

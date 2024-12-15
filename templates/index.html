@@ -67,20 +67,22 @@
                 <form id="addComponentForm">
                     <label for="componentType">Component Type:</label>
                     <select id="componentType" required>
-                        <option value="">Select Type</option>
                         <!-- Options populated dynamically -->
                     </select>
                     <label for="componentBranch">Component Branch:</label>
                     <select id="componentBranch" required>
-                        <option value="">Select Branch</option>
                         <!-- Options populated dynamically -->
                     </select>
                     <label for="partNumber">Part Number:</label>
                     <input type="text" id="partNumber" required>
+                    <label for="manufacturePartNumber">Manufacturer Part Number:</label>
+                    <input type="text" id="manufacturePartNumber">
+                    <!-- Dynamic Fields Container -->
+                    <div id="dynamicFields"></div>
                     <label for="storagePlace">Storage Place:</label>
-                    <input type="text" id="storagePlace">
+                    <input type="text" id="storagePlace" required>
                     <label for="orderQty">Order Quantity:</label>
-                    <input type="number" id="orderQty" value="0">
+                    <input type="number" id="orderQty" value="0" required>
                     <label for="unitPrice">Unit Price ($):</label>
                     <input type="number" id="unitPrice" step="0.01">
                     <label for="description">Description:</label>
@@ -103,7 +105,7 @@
             <thead>
                 <tr>
                     <th>LCSC Part Number</th>
-                    <th>Manufacture Part Number</th>  <!-- Added new column -->
+                    <th>MPN</th>
                     <th>Manufacturer</th>
                     <th>Package</th>
                     <th>Description</th>

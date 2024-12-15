@@ -55,7 +55,8 @@ def create_database():
             tolerance TEXT,
             inductance TEXT,
             current_power TEXT,
-            storage_place TEXT  -- Added new column
+            storage_place TEXT,  -- Added new column
+            manufacture_part_number TEXT  -- Added new column
         )
     ''')
 
@@ -64,6 +65,8 @@ def create_database():
     columns = [column[1] for column in cursor.fetchall()]
     if 'storage_place' not in columns:
         cursor.execute("ALTER TABLE components ADD COLUMN storage_place TEXT")
+    if 'manufacture_part_number' not in columns:
+        cursor.execute("ALTER TABLE components ADD COLUMN manufacture_part_number TEXT")
 
     # Create or verify the 'change_log' table without 'part_number' column initially
     cursor.execute('''
@@ -105,41 +108,50 @@ class Component(BaseModel):
     tolerance: Optional[str] = None
     inductance: Optional[str] = None
     current_power: Optional[str] = None
+    manufacture_part_number: Optional[str] = None
 
 # Endpoint to add a new component
 @app.post("/add_component")
 async def add_component(component: Component):
-    # Get storage place from component_config.json based on component branch
-    storage_place = component.storage_place
-    if not storage_place and component.component_type and component.component_branch:
-        c_type_data = component_config.get(component.component_type, {})
-        branch_data = c_type_data.get('Component Branch', {}).get(component.component_branch, {})
-        storage_place = branch_data.get('Storage Place')
-
-    # Insert the component into the database
     conn = sqlite3.connect('components.db')
     cursor = conn.cursor()
     try:
         cursor.execute('''
             INSERT INTO components (
-                part_number, manufacturer, package, description, order_qty, unit_price,
-                component_type, component_branch, capacitance, resistance, voltage,
-                tolerance, inductance, current_power, storage_place
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                part_number,
+                storage_place,
+                order_qty,
+                component_type,
+                component_branch,
+                unit_price,
+                description,
+                package,
+                manufacturer,
+                capacitance,
+                resistance,
+                voltage,
+                tolerance,
+                inductance,
+                current_power,
+                manufacture_part_number
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
-            component.part_number, component.manufacturer, component.package, component.description,
-            component.order_qty, component.unit_price, component.component_type, component.component_branch,
-            component.capacitance, component.resistance, component.voltage, component.tolerance,
-            component.inductance, component.current_power, storage_place
-        ))
-        component_id = cursor.lastrowid
-        # Log the addition in the change_log
-        cursor.execute('''
-            INSERT INTO change_log (user, action_type, component_id, details)
-            VALUES (?, ?, ?, ?)
-        ''', (
-            "Manual Entry", "add_component", component_id,
-            f"Added component {component.part_number} with quantity {component.order_qty}"
+            component.part_number,
+            component.storage_place,
+            component.order_qty,
+            component.component_type,
+            component.component_branch,
+            component.unit_price,
+            component.description,
+            component.package,
+            component.manufacturer,
+            component.capacitance,
+            component.resistance,
+            component.voltage,
+            component.tolerance,
+            component.inductance,
+            component.current_power,
+            component.manufacture_part_number
         ))
         conn.commit()
     except sqlite3.IntegrityError as e:
@@ -147,7 +159,6 @@ async def add_component(component: Component):
         raise HTTPException(status_code=400, detail=str(e))
     finally:
         conn.close()
-
     return {"message": "Component added successfully."}
 
 # Endpoint to search for components
@@ -185,7 +196,8 @@ async def search_component(
             "LOWER(tolerance)",
             "LOWER(inductance)",
             "LOWER(current_power)",
-            "LOWER(package)"
+            "LOWER(package)",
+            "LOWER(manufacture_part_number)"  # Add this line
         ]
         conditions = []
         for pattern in search_patterns:
@@ -237,7 +249,8 @@ async def update_components_from_csv(file: UploadFile = File(...)):
     required_columns = [
         'LCSC Part Number', 'Manufacturer', 'Package', 'Description',
         'Order Qty.', 'Unit Price($)', 'Component Type', 'Component Branch',
-        'Capacitance', 'Resistance', 'Voltage', 'Tolerance', 'Inductance', 'Current/Power', 'Storage Place'
+        'Capacitance', 'Resistance', 'Voltage', 'Tolerance', 'Inductance', 'Current/Power', 'Storage Place',
+        'Manufacture Part Number'  # Add this line
     ]
 
     # Initialize new columns with None
@@ -354,6 +367,7 @@ async def update_components_from_csv(file: UploadFile = File(...)):
             'tolerance': row.get('Tolerance'),
             'inductance': row.get('Inductance'),
             'current_power': row.get('Current/Power'),
+            'manufacture_part_number': row.get('Manufacture Part Number')  # Add this line
         }
         new_components.append(component_data)
 
@@ -371,14 +385,15 @@ async def update_components_from_csv(file: UploadFile = File(...)):
                 INSERT INTO components (
                     part_number, manufacturer, package, description, order_qty, unit_price,
                     component_type, component_branch, capacitance, resistance, voltage,
-                    tolerance, inductance, current_power, storage_place
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    tolerance, inductance, current_power, storage_place, manufacture_part_number
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 component['part_number'], component['manufacturer'], component['package'],
                 component['description'], component['order_qty'], component['unit_price'],
                 component['component_type'], component['component_branch'], component['capacitance'],
                 component['resistance'], component['voltage'], component['tolerance'],
-                component['inductance'], component['current_power'], component['storage_place']
+                component['inductance'], component['current_power'], component['storage_place'],
+                component['manufacture_part_number']  # Add this line
             ))
             # Log the addition in the change_log
             cursor.execute('''
