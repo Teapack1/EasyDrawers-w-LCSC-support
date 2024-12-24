@@ -404,67 +404,97 @@ async function searchComponent() {
 
 // Existing function
 function displaySearchResults(results) {
-    const resultsTableBody = document.getElementById("resultsTableBody");
-    resultsTableBody.innerHTML = "";
-
-    if (results.length > 0) {
-        results.forEach(component => {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${component.part_number}</td>
-                <td>${component.manufacture_part_number || ''}</td>
-                <td>${component.manufacturer}</td>
-                <td>${component.package}</td>
-                <td>${component.description}</td>
-                <td>${component.unit_price}</td>
-                <td>${component.component_type}</td>
-                <td>${component.component_branch}</td>
-                <td>${component.capacitance}</td>
-                <td>${component.resistance}</td>
-                <td>${component.voltage}</td>
-                <td>${component.tolerance}</td>
-                <td>${component.inductance}</td>
-                <td>${component.current_power}</td>
-                <td class="order-qty">${component.order_qty}</td>
-                <td class="storage-place">
-                    <input type="text" class="storage-place-input" data-id="${component.id}" value="${component.storage_place || ''}">
-                </td>
-                <td class="quantity-controls">
-                    <!-- Quantity controls -->
+    const tableView = document.getElementById("tableViewContainer");
+    const cardView = document.getElementById("cardViewContainer");
+    const resultsGrid = cardView.querySelector(".results-grid");
+    
+    // Clear previous results
+    resultsGrid.innerHTML = "";
+    
+    results.forEach(component => {
+        // Create card element
+        const card = document.createElement("div");
+        card.className = "component-card";
+        
+        // Essential info header
+        card.innerHTML = `
+            <div class="card-header">
+                <span class="essential-field">${component.part_number}</span>
+                <span>${component.order_qty} pcs</span>
+            </div>
+            <div class="card-content">
+                <div class="essential-info">
+                    <div><span class="card-label">Type:</span> ${component.component_type}</div>
+                    <div><span class="card-label">Branch:</span> ${component.component_branch}</div>
+                    <div><span class="card-label">Storage:</span> ${component.storage_place}</div>
+                </div>
+                <div class="specs-info">
+                    ${component.resistance ? `<div><span class="card-label">Resistance:</span> ${component.resistance}</div>` : ''}
+                    ${component.capacitance ? `<div><span class="card-label">Capacitance:</span> ${component.capacitance}</div>` : ''}
+                    ${component.voltage ? `<div><span class="card-label">Voltage:</span> ${component.voltage}</div>` : ''}
+                </div>
+                <button class="show-more">Show More Details</button>
+                <div class="optional-fields">
+                    <div><span class="card-label">MPN:</span> ${component.manufacture_part_number}</div>
+                    <div><span class="card-label">Manufacturer:</span> ${component.manufacturer}</div>
+                    <div><span class="card-label">Package:</span> ${component.package}</div>
+                    <div><span class="card-label">Description:</span> ${component.description}</div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <div class="quantity-controls">
                     <button class="decrease" data-id="${component.id}">-</button>
                     <input type="number" class="quantity-input" value="1" min="1">
                     <button class="increase" data-id="${component.id}">+</button>
-                    <!-- Delete button -->
-                    <button class="delete-button" data-id="${component.id}">X</button>
-                </td>
-            `;
-
-            // Handle row expansion (optional)
-            row.addEventListener("click", (event) => {
-                if (!event.target.matches('.increase, .decrease, .quantity-input, .storage-place-input')) {
-                    row.classList.toggle("expanded");
-                }
-            });
-
-            resultsTableBody.appendChild(row);
+                </div>
+                <button class="delete-button" data-id="${component.id}">Delete</button>
+            </div>
+        `;
+        
+        resultsGrid.appendChild(card);
+    });
+    
+    // Add event listeners for show more/less
+    document.querySelectorAll('.show-more').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const optionalFields = e.target.nextElementSibling;
+            if (optionalFields.style.display === 'none') {
+                optionalFields.style.display = 'block';
+                e.target.textContent = 'Show Less';
+            } else {
+                optionalFields.style.display = 'none';
+                e.target.textContent = 'Show More Details';
+            }
         });
+    });
+    
+    // Add event listeners for quantity controls and delete buttons
+    addQuantityControlEventListeners();
+    addDeleteButtonEventListeners();
+}
 
-        // Update event listeners for buttons and storage place inputs
-        addQuantityControlEventListeners();
-        addStoragePlaceEventListeners();
-        addDeleteButtonEventListeners();
+// View toggle handling
+document.querySelectorAll('.view-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const viewType = button.id;
+        document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        document.querySelectorAll('.view-container').forEach(container => {
+            container.style.display = container.id === viewType + 'Container' ? 'block' : 'none';
+        });
+    });
+});
 
-    } else {
-        // Handle no results
-        const row = document.createElement("tr");
-        const noResultCell = document.createElement("td");
-        noResultCell.colSpan = 16; // Adjust based on total number of columns
-        noResultCell.textContent = "No results found";
-        row.appendChild(noResultCell);
-        resultsTableBody.appendChild(row);
+// Automatically switch to card view on mobile
+function checkViewMode() {
+    if (window.innerWidth <= 768) {
+        document.getElementById('cardView').click();
     }
 }
+
+window.addEventListener('load', checkViewMode);
+window.addEventListener('resize', checkViewMode);
 
 async function updateOrderQuantity(id, change) {
     if (!currentUser) {

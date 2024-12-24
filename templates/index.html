@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Component Stock Monitor</title>
     <link rel="stylesheet" href="/static/style.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon_io/site.webmanifest">
 </head>
 <body>
     <!-- User Selection Modal -->
@@ -101,31 +106,47 @@
 
     <div id="searchResults">
         <h3>Search Results:</h3>
-        <table id="resultsTable">
-            <thead>
-                <tr>
-                    <th>LCSC Part Number</th>
-                    <th>MPN</th>
-                    <th>Manufacturer</th>
-                    <th>Package</th>
-                    <th>Description</th>
-                    <th>Unit Price($)</th>
-                    <th>Component Type</th>
-                    <th>Component Branch</th>
-                    <th>Capacitance</th>
-                    <th>Resistance</th>
-                    <th>Voltage</th>
-                    <th>Tolerance</th>
-                    <th>Inductance</th>
-                    <th>Current/Power</th>
-                    <th>Quantity</th>  <!-- Renamed from Order Qty. -->
-                    <th>Storage Place</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="resultsTableBody">
-            </tbody>
-        </table>
+        <!-- Mobile view selector -->
+        <div class="view-toggle">
+            <button id="tableView" class="view-button active">Table View</button>
+            <button id="cardView" class="view-button">Card View</button>
+        </div>
+
+        <!-- Table view (original) -->
+        <div id="tableViewContainer" class="view-container">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>LCSC Part Number</th>
+                        <th>MPN</th>
+                        <th>Manufacturer</th>
+                        <th>Package</th>
+                        <th>Description</th>
+                        <th>Unit Price($)</th>
+                        <th>Component Type</th>
+                        <th>Component Branch</th>
+                        <th>Capacitance</th>
+                        <th>Resistance</th>
+                        <th>Voltage</th>
+                        <th>Tolerance</th>
+                        <th>Inductance</th>
+                        <th>Current/Power</th>
+                        <th>Quantity</th>  <!-- Renamed from Order Qty. -->
+                        <th>Storage Place</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Card view (new mobile-friendly view) -->
+        <div id="cardViewContainer" class="view-container" style="display: none">
+            <div class="results-grid">
+                <!-- Cards will be inserted here by JavaScript -->
+            </div>
+        </div>
     </div>
     <script src="/static/script.js"></script>
 </body>
