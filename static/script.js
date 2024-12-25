@@ -407,12 +407,68 @@ function displaySearchResults(results) {
     const tableView = document.getElementById("tableViewContainer");
     const cardView = document.getElementById("cardViewContainer");
     const resultsGrid = cardView.querySelector(".results-grid");
+    const tableBody = document.getElementById("resultsTableBody");
     
     // Clear previous results
     resultsGrid.innerHTML = "";
+    tableBody.innerHTML = "";
     
     results.forEach(component => {
-        // Create card element
+        // Create table row
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${component.part_number}</td>
+            <td>${component.manufacture_part_number || ''}</td>
+            <td>${component.manufacturer || ''}</td>
+            <td>${component.package || ''}</td>
+            <td>${component.description || ''}</td>
+            <td>${component.unit_price || ''}</td>
+            <td>${component.component_type || ''}</td>
+            <td>${component.component_branch || ''}</td>
+            <td>${component.capacitance || ''}</td>
+            <td>${component.resistance || ''}</td>
+            <td>${component.voltage || ''}</td>
+            <td>${component.tolerance || ''}</td>
+            <td>${component.inductance || ''}</td>
+            <td>${component.current_power || ''}</td>
+            <td class="order-qty">${component.order_qty}</td>
+            <td>${component.storage_place || ''}</td>
+            <td>
+                <div class="quantity-controls">
+                    <button class="decrease" data-id="${component.id}">-</button>
+                    <input type="number" class="quantity-input" value="1" min="1">
+                    <button class="increase" data-id="${component.id}">+</button>
+                </div>
+                <button class="delete-button" data-id="${component.id}">×</button>
+            </td>
+        `;
+        
+        // Add click handler for row expansion
+        row.addEventListener('click', (event) => {
+            // Don't expand if clicking buttons or inputs
+            if (event.target.tagName === 'BUTTON' || 
+                event.target.tagName === 'INPUT' ||
+                event.target.classList.contains('delete-button')) {
+                return;
+            }
+            
+            // Toggle expanded class
+            row.classList.toggle('expanded');
+            
+            // If row is expanded, collapse any other expanded rows
+            if (row.classList.contains('expanded')) {
+                const otherExpandedRows = tableBody.querySelectorAll('tr.expanded');
+                otherExpandedRows.forEach(otherRow => {
+                    if (otherRow !== row) {
+                        otherRow.classList.remove('expanded');
+                    }
+                });
+            }
+        });
+        
+        tableBody.appendChild(row);
+
+        // Create card element (existing card creation code)
         const card = document.createElement("div");
         card.className = "component-card";
         
