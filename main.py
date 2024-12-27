@@ -86,6 +86,18 @@ def create_database():
     if 'part_number' not in changelog_columns:
         cursor.execute("ALTER TABLE change_log ADD COLUMN part_number TEXT")
 
+    # Create cart_items table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS cart_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user TEXT NOT NULL,
+            component_id INTEGER NOT NULL,
+            quantity INTEGER DEFAULT 1,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (component_id) REFERENCES components(id)
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -602,6 +614,170 @@ async def revert_change(data: dict):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
+
+# Cart endpoints
+@app.post("/add_to_cart")
+async def add_to_cart(data: dict):
+    user = data.get('user')
+    component_id = data.get('component_id')
+    
+    if not user or not component_id:
+        raise HTTPException(status_code=400, detail="User and component ID are required")
+    
+    conn = sqlite3.connect('components.db')
+    cursor = conn.cursor()
+    
+    try:
+        # Check if item already exists in cart
+        cursor.execute("""
+            SELECT id FROM cart_items 
+            WHERE user = ? AND component_id = ?
+        """, (user, component_id))
+        
+        if cursor.fetchone():
+            raise HTTPException(status_code=400, detail="Item already in cart")
+        
+        cursor.execute("""
+            INSERT INTO cart_items (user, component_id)
+            VALUES (?, ?)
+        """, (user, component_id))
+        
+        conn.commit()
+        return {"message": "Item added to cart"}
+    finally:
+        conn.close()
+
+@app.get("/get_cart")
+async def get_cart(user: str):
+    conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT c.*, ci.quantity as cart_quantity, ci.id as cart_item_id
+        FROM components c
+        JOIN cart_items ci ON c.id = ci.component_id
+        WHERE ci.user = ?
+    """, (user,))
+    
+    items = cursor.fetchall()
+    conn.close()
+    
+    return [dict(item) for item in items]
+
+@app.post("/update_cart_quantity")
+async def update_cart_quantity(data: dict):
+    user = data.get('user')
+    cart_item_id = data.get('cart_item_id')
+    quantity = data.get('quantity')
+    
+    conn = sqlite3.connect('components.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        UPDATE cart_items
+        SET quantity = ?
+        WHERE id = ? AND user = ?
+    """, (quantity, cart_item_id, user))
+    
+    conn.commit()
+    conn.close()
+    
+    return {"message": "Cart updated"}
+
+@app.delete("/remove_from_cart")
+async def remove_from_cart(cart_item_id: int, user: str):
+    conn = sqlite3.connect('components.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        DELETE FROM cart_items
+        WHERE id = ? AND user = ?
+    """, (cart_item_id, user))
+    
+    conn.commit()
+    conn.close()
+    
+    return {"message": "Item removed from cart"}
+
+class CartAction(BaseModel):
+    user: str
+
+@app.post("/process_cart")
+async def process_cart(data: CartAction):
+    user = data.user
+    
+    conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    try:
+        # Get all cart items with component details
+        cursor.execute("""
+            SELECT c.*, ci.quantity as cart_quantity
+            FROM components c
+            JOIN cart_items ci ON c.id = ci.component_id
+            WHERE ci.user = ?
+        """, (user,))
+        
+        cart_items = cursor.fetchall()
+        
+        if not cart_items:
+            raise HTTPException(status_code=400, detail="Cart is empty")
+            
+        # Update quantities and create log entries
+        for item in cart_items:
+            new_qty = item['order_qty'] - (item['cart_quantity'] or 1)
+            if new_qty < 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Insufficient quantity for {item['part_number']}"
+                )
+            
+            cursor.execute("""
+                UPDATE components
+                SET order_qty = ?
+                WHERE id = ?
+            """, (new_qty, item['id']))
+            
+            # Log the transaction
+            cursor.execute("""
+                INSERT INTO change_log (user, action_type, component_id, part_number, details)
+                VALUES (?, 'cart_checkout', ?, ?, ?)
+            """, (user, item['id'], item['part_number'],
+                 f"Removed {item['cart_quantity'] or 1} units from stock"))
+        
+        # Clear the user's cart
+        cursor.execute("DELETE FROM cart_items WHERE user = ?", (user,))
+        
+        conn.commit()
+        return {"message": "Cart processed successfully", "items": [dict(item) for item in cart_items]}
+    
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@app.post("/clear_cart")
+async def clear_cart(data: CartAction):
+    conn = sqlite3.connect('components.db')
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM cart_items WHERE user = ?", (data.user,))
+        conn.commit()
+        return {"message": "Cart cleared"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+# Add cart page route (add this before the other routes)
+@app.get("/cart", response_class=HTMLResponse)
+async def serve_cart(request: Request):
+    return templates.TemplateResponse("cart.html", {"request": request})
 
 if __name__ == "__main__":
     import uvicorn

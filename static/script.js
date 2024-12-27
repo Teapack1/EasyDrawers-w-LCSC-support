@@ -434,12 +434,21 @@ function displaySearchResults(results) {
             <td class="order-qty">${component.order_qty}</td>
             <td>${component.storage_place || ''}</td>
             <td>
-                <div class="quantity-controls">
-                    <button class="decrease" data-id="${component.id}">-</button>
-                    <input type="number" class="quantity-input" value="1" min="1">
-                    <button class="increase" data-id="${component.id}">+</button>
+                <div class="actions-container">
+                    <button class="add-to-cart-button" data-id="${component.id}"
+                        data-tooltip="Add to cart">Add to Cart</button>
+                    <div class="controls-row">
+                        <div class="quantity-controls">
+                            <button class="decrease" data-id="${component.id}" 
+                                data-tooltip="Decrease stock quantity">-</button>
+                            <input type="number" class="quantity-input" value="1" min="1">
+                            <button class="increase" data-id="${component.id}"
+                                data-tooltip="Increase stock quantity">+</button>
+                        </div>
+                        <button class="delete-button" data-id="${component.id}"
+                            data-tooltip="Delete component">×</button>
+                    </div>
                 </div>
-                <button class="delete-button" data-id="${component.id}">×</button>
             </td>
         `;
         
@@ -503,6 +512,7 @@ function displaySearchResults(results) {
                     <input type="number" class="quantity-input" value="1" min="1">
                     <button class="increase" data-id="${component.id}">+</button>
                 </div>
+                <button class="add-to-cart-button" data-id="${component.id}">Add</button>
                 <button class="delete-button" data-id="${component.id}">Delete</button>
             </div>
         `;
@@ -527,6 +537,40 @@ function displaySearchResults(results) {
     // Add event listeners for quantity controls and delete buttons
     addQuantityControlEventListeners();
     addDeleteButtonEventListeners();
+    
+    // Add event listener for Add to Cart button
+    document.querySelectorAll('.add-to-cart-button').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            if (!currentUser) {
+                alert('Please log in first');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/add_to_cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user: currentUser,
+                        component_id: event.target.dataset.id
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Item added to cart');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail);
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add item to cart');
+            }
+        });
+    });
 }
 
 // View toggle handling
@@ -835,4 +879,9 @@ document.getElementById("componentBranch").addEventListener("change", () => {
 document.getElementById("componentType").addEventListener("change", () => {
     // ...existing code to populate component branches...
     displayDynamicFields();
+});
+
+// Add event listener for Cart button
+document.getElementById('cartButton').addEventListener('click', () => {
+    window.location.href = '/cart';
 });

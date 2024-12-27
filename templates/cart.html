@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Cart</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="top-bar">
+        <button onclick="window.location.href='/'">Back to Search</button>
+        <span id="currentUserDisplay">Current User: None</span>
+    </div>
+
+    <h1>Component Cart</h1>
+    
+    <div id="cartContent">
+        <table id="cartTable">
+            <thead>
+                <tr>
+                    <th>LCSC Part Number</th>
+                    <th>MPN</th>
+                    <th>Component Type</th>
+                    <th>Package</th>
+                    <th>Description</th>
+                    <th>Storage Place</th>
+                    <th>Available Qty</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="cartTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="cart-actions">
+        <button id="clearCartBtn" class="warning-button">Clear Cart</button>
+        <div class="right-buttons">
+            <button id="printBtn" class="secondary-button">Print</button>
+            <button id="getPartsBtn" class="primary-button">Get Parts</button>
+        </div>
+    </div>
+
+    <script src="/static/cart.js"></script>
+</body>
+</html>
