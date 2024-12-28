@@ -16,6 +16,7 @@
     <div id="userSelectionModal" class="modal">
         <div class="modal-content">
             <h2>Select User</h2>
+            <button class="user-button" data-user="guest">Guest</button>
             <button class="user-button" data-user="Ondrej">Ondrej</button>
             <button class="user-button" data-user="Pavel">Pavel</button>
             <button class="user-button" data-user="Lukas">Lukas</button>
@@ -106,7 +107,43 @@
     </div>
 
     <div id="searchResults">
-        <h3>Search Results:</h3>
+        <div class="results-header">
+            <h3>Search Results</h3>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="filterCategory">Filter by:</label>
+                    <select id="filterCategory" class="select-control">
+                        <option value="">Select category...</option>
+                        <option value="manufacturer">Manufacturer</option>
+                        <option value="package">Package</option>
+                        <option value="capacitance">Capacitance</option>
+                        <option value="resistance">Resistance</option>
+                        <option value="inductance">Inductance</option>
+                        <option value="storage_place">Storage Place</option>
+                    </select>
+                    <select id="filterValue" class="select-control" disabled>
+                        <option value="">Select value...</option>
+                    </select>
+                </div>
+                <div class="sort-group">
+                    <label for="sortColumn">Sort by:</label>
+                    <select id="sortColumn" class="select-control">
+                        <option value="">Select field...</option>
+                        <option value="resistance" data-unit="Ω">Resistance</option>
+                        <option value="capacitance" data-unit="F">Capacitance</option>
+                        <option value="inductance" data-unit="H">Inductance</option>
+                        <option value="voltage" data-unit="V">Voltage</option>
+                        <option value="current_power" data-unit="[AW]">Current/Power</option>
+                        <option value="order_qty">Quantity</option>
+                        <option value="package">Package</option>
+                        <option value="storage_place">Storage Place</option>
+                    </select>
+                    <button id="sortOrderBtn" class="icon-button fixed-width-small" title="Toggle sort order">
+                        <span class="material-icons sort-icon">↑</span>
+                    </button>
+                </div>
+            </div>
+        </div>
         <!-- Mobile view selector -->
         <div class="view-toggle">
             <button id="tableView" class="view-button active">Table View</button>

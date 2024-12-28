@@ -1,4 +1,4 @@
-let currentUser = null;
+let currentUser = localStorage.getItem('currentUser') || 'guest';
 let componentConfig = {};
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,11 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Always show the modal on page load
-    userSelectionModal.style.display = "block";
+    // Remove auto-show of modal, only show when Login button is clicked
+    userSelectionModal.style.display = "none";
 
     // Display current user
-    document.getElementById("currentUserDisplay").textContent = `Current User: ${currentUser || 'None'}`;
+    document.getElementById("currentUserDisplay").textContent = `Current User: ${currentUser}`;
 
     // Check if user is already selected
     currentUser = localStorage.getItem("currentUser");
@@ -361,6 +361,240 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Add unit conversion helper function
+    function extractNumber(value, unit) {
+        if (!value) return 0;
+        value = value.toLowerCase();
+        const multipliers = {
+            'p': 1e-12,
+            'n': 1e-9,
+            'u': 1e-6,
+            'µ': 1e-6,
+            'm': 1e-3,
+            'k': 1e3,
+            'meg': 1e6,
+            'M': 1e6
+        };
+
+        // Extract numeric value and unit prefix
+        const match = value.match(/([0-9.]+)([pnuµmkM])?/);
+        if (!match) return 0;
+
+        let num = parseFloat(match[1]);
+        const prefix = match[2];
+
+        // Apply multiplier if prefix exists
+        if (prefix && multipliers[prefix]) {
+            num *= multipliers[prefix];
+        }
+
+        return num;
+    }
+
+    // Update sort function
+    function sortResults(column) {
+        if (currentSortColumn === column) {
+            sortOrderAsc = !sortOrderAsc;
+        } else {
+            currentSortColumn = column;
+            sortOrderAsc = true;
+        }
+
+        const columnElement = document.querySelector(`.sortable[data-column="${column}"]`);
+        const unit = columnElement ? columnElement.dataset.unit : null;
+
+        searchResults.sort((a, b) => {
+            let valA = a[column];
+            let valB = b[column];
+
+            if (unit) {
+                valA = extractNumber(valA, unit);
+                valB = extractNumber(valB, unit);
+            } else {
+                valA = valA !== null && valA !== undefined ? valA : '';
+                valB = valB !== null && valB !== undefined ? valB : '';
+
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+            }
+
+            if (valA < valB) return sortOrderAsc ? -1 : 1;
+            if (valA > valB) return sortOrderAsc ? 1 : -1;
+            return 0;
+        });
+
+        displaySearchResults(searchResults);
+
+        // Update sort indicators
+        document.querySelectorAll(".sort-indicator").forEach(indicator => {
+            indicator.textContent = '';
+        });
+
+        const indicator = document.querySelector(`.sortable[data-column="${column}"] .sort-indicator`);
+        if (indicator) {
+            indicator.textContent = sortOrderAsc ? '▲' : '▼';
+        }
+    }
+
+    // Initialize sorting controls
+    const sortColumn = document.getElementById('sortColumn');
+    const sortOrderBtn = document.getElementById('sortOrderBtn');
+    let sortAscending = true;
+
+    sortColumn.addEventListener('change', () => {
+        if (sortColumn.value) {
+            const column = sortColumn.value;
+            sortResults(column, sortAscending);
+        }
+    });
+
+    sortOrderBtn.addEventListener('click', () => {
+        sortAscending = !sortAscending;
+        sortOrderBtn.classList.toggle('descending');
+        sortOrderBtn.querySelector('.sort-icon').textContent = sortAscending ? '↑' : '↓';
+        
+        if (sortColumn.value) {
+            sortResults(sortColumn.value, sortAscending);
+        }
+    });
+
+    // Enhanced number extraction function for sorting
+    function extractSortableValue(value, unit) {
+        if (!value) return 0;
+        value = value.toString().toLowerCase();
+        
+        // Multipliers for different units
+        const multipliers = {
+            'p': 1e-12,  // pico
+            'n': 1e-9,   // nano
+            'u': 1e-6,   // micro
+            'µ': 1e-6,   // micro (alternative)
+            'm': 1e-3,   // milli
+            'k': 1e3,    // kilo
+            'meg': 1e6,  // mega
+            'M': 1e6     // mega
+        };
+
+        // Extract number and unit prefix
+        const match = value.match(/(-?\d+\.?\d*)\s*([pnuµmkM])?/);
+        if (!match) return 0;
+
+        let [, num, prefix] = match;
+        num = parseFloat(num);
+
+        // Apply multiplier if prefix exists
+        if (prefix && multipliers[prefix]) {
+            num *= multipliers[prefix];
+        }
+
+        return num;
+    }
+
+    function sortResults(column, ascending) {
+        const option = sortColumn.querySelector(`option[value="${column}"]`);
+        const unit = option ? option.dataset.unit : null;
+
+        searchResults.sort((a, b) => {
+            let valA = a[column];
+            let valB = b[column];
+
+            if (unit) {
+                // Handle numeric values with units
+                valA = extractSortableValue(valA, unit);
+                valB = extractSortableValue(valB, unit);
+            } else if (column === 'order_qty') {
+                // Handle pure numeric values
+                valA = parseInt(valA) || 0;
+                valB = parseInt(valB) || 0;
+            } else {
+                // Handle string values
+                valA = (valA || '').toString().toLowerCase();
+                valB = (valB || '').toString().toLowerCase();
+            }
+
+            if (valA < valB) return ascending ? -1 : 1;
+            if (valA > valB) return ascending ? 1 : -1;
+            return 0;
+        });
+
+        displaySearchResults(searchResults);
+    }
+
+    // References to new filter elements
+    const filterColumnSelect = document.getElementById("filterColumn");
+    const filterValueSelect = document.getElementById("filterValue");
+
+    // Populate filterValueSelect whenever filterColumn changes
+    filterColumnSelect.addEventListener("change", () => {
+        populateFilterValues(filterColumnSelect.value);
+        filterResults();
+    });
+
+    // Filter results whenever filterValue changes
+    filterValueSelect.addEventListener("change", () => {
+        filterResults();
+    });
+
+    // Filter function using column/value selections + existing sorts
+    function filterResults() {
+        const col = filterColumnSelect.value;
+        const val = filterValueSelect.value;
+        let filtered = [...searchResults];
+
+        if (col && val) {
+            filtered = filtered.filter(item => (item[col] || "") === val);
+        }
+
+        // Re-apply current sort (if applicable) on filtered results
+        displaySearchResults(sortArray(filtered));
+    }
+
+    // Sort logic wrapped into a function for re-use
+    function sortArray(array) {
+        // Use currentSortColumn and sortOrderAsc from existing code
+        if (!currentSortColumn) return array;
+        return array.sort((a, b) => {
+            // ...existing numeric/string comparison...
+            // (Use the same logic from the existing sortResults function)
+            let valA = a[currentSortColumn] || "";
+            let valB = b[currentSortColumn] || "";
+            if (!isNaN(parseFloat(valA)) && !isNaN(parseFloat(valB))) {
+                valA = parseFloat(valA);
+                valB = parseFloat(valB);
+            } else {
+                valA = valA.toString().toLowerCase();
+                valB = valB.toString().toLowerCase();
+            }
+            if (valA < valB) return sortOrderAsc ? -1 : 1;
+            if (valA > valB) return sortOrderAsc ? 1 : -1;
+            return 0;
+        });
+    }
+
+    // Populate filterValueSelect with unique values for the chosen column
+    function populateFilterValues(column) {
+        filterValueSelect.innerHTML = '<option value="">Select value...</option>';
+        if (!column) return;
+
+        const uniqueValues = new Set();
+        searchResults.forEach(item => {
+            if (item[column]) uniqueValues.add(item[column]);
+        });
+
+        uniqueValues.forEach(value => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            filterValueSelect.appendChild(option);
+        });
+    }
+
+    // Update sortOrderBtn to show arrow indicator more clearly
+    // (Already present, but ensure there's an icon)
+    // ...existing code to toggle 'descending' class...
+    // Make sure .sort-icon is set to "↑" or "↓" accordingly
+
+    initializeFilterAndSort();
 });
 
 // Add event listener for the "Login" button
@@ -408,11 +642,11 @@ function displaySearchResults(results) {
     const cardView = document.getElementById("cardViewContainer");
     const resultsGrid = cardView.querySelector(".results-grid");
     const tableBody = document.getElementById("resultsTableBody");
-    
+
     // Clear previous results
     resultsGrid.innerHTML = "";
     tableBody.innerHTML = "";
-    
+
     results.forEach(component => {
         // Create table row
         const row = document.createElement("tr");
@@ -451,7 +685,7 @@ function displaySearchResults(results) {
                 </div>
             </td>
         `;
-        
+
         // Add click handler for row expansion
         row.addEventListener('click', (event) => {
             // Don't expand if clicking buttons or inputs
@@ -460,10 +694,10 @@ function displaySearchResults(results) {
                 event.target.classList.contains('delete-button')) {
                 return;
             }
-            
+
             // Toggle expanded class
             row.classList.toggle('expanded');
-            
+
             // If row is expanded, collapse any other expanded rows
             if (row.classList.contains('expanded')) {
                 const otherExpandedRows = tableBody.querySelectorAll('tr.expanded');
@@ -474,13 +708,13 @@ function displaySearchResults(results) {
                 });
             }
         });
-        
+
         tableBody.appendChild(row);
 
         // Create card element (existing card creation code)
         const card = document.createElement("div");
         card.className = "component-card";
-        
+
         // Essential info header
         card.innerHTML = `
             <div class="card-header">
@@ -516,10 +750,10 @@ function displaySearchResults(results) {
                 <button class="delete-button" data-id="${component.id}">Delete</button>
             </div>
         `;
-        
+
         resultsGrid.appendChild(card);
     });
-    
+
     // Add event listeners for show more/less
     document.querySelectorAll('.show-more').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -533,11 +767,11 @@ function displaySearchResults(results) {
             }
         });
     });
-    
+
     // Add event listeners for quantity controls and delete buttons
     addQuantityControlEventListeners();
     addDeleteButtonEventListeners();
-    
+
     // Add event listener for Add to Cart button
     document.querySelectorAll('.add-to-cart-button').forEach(button => {
         button.addEventListener('click', async (event) => {
@@ -546,7 +780,7 @@ function displaySearchResults(results) {
                 alert('Please log in first');
                 return;
             }
-            
+
             try {
                 const response = await fetch('/add_to_cart', {
                     method: 'POST',
@@ -558,7 +792,7 @@ function displaySearchResults(results) {
                         component_id: event.target.dataset.id
                     })
                 });
-                
+
                 if (response.ok) {
                     alert('Item added to cart');
                 } else {
@@ -579,7 +813,7 @@ document.querySelectorAll('.view-button').forEach(button => {
         const viewType = button.id;
         document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        
+
         document.querySelectorAll('.view-container').forEach(container => {
             container.style.display = container.id === viewType + 'Container' ? 'block' : 'none';
         });
@@ -884,4 +1118,203 @@ document.getElementById("componentType").addEventListener("change", () => {
 // Add event listener for Cart button
 document.getElementById('cartButton').addEventListener('click', () => {
     window.location.href = '/cart';
+});
+
+// Initialize filtering and sorting controls
+let activeFilters = {
+    category: null,
+    value: null
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ...existing code...
+
+    // Enhanced filter controls
+    const filterCategory = document.getElementById('filterCategory');
+    const filterValue = document.getElementById('filterValue');
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+    const sortColumn = document.getElementById('sortColumn');
+    const sortOrderBtn = document.getElementById('sortOrderBtn');
+    let sortAscending = true;
+
+    // Filter category change handler
+    filterCategory.addEventListener('change', () => {
+        const category = filterCategory.value;
+        activeFilters.category = category;
+        activeFilters.value = null;
+        
+        if (category) {
+            // Populate filter values based on unique values in the selected category
+            const uniqueValues = [...new Set(searchResults.map(item => item[category]))].filter(Boolean);
+            filterValue.innerHTML = '<option value="">Select value...</option>' +
+                uniqueValues.sort().map(value => `<option value="${value}">${value}</option>`).join('');
+            filterValue.disabled = false;
+        } else {
+            filterValue.innerHTML = '<option value="">Select value...</option>';
+            filterValue.disabled = true;
+            applyFiltersAndSort();
+        }
+    });
+
+    // Filter value change handler
+    filterValue.addEventListener('change', () => {
+        activeFilters.value = filterValue.value;
+        applyFiltersAndSort();
+    });
+
+    // Clear filter button
+    clearFilterBtn.addEventListener('click', () => {
+        filterCategory.value = '';
+        filterValue.value = '';
+        filterValue.disabled = true;
+        activeFilters = { category: null, value: null };
+        applyFiltersAndSort();
+    });
+
+    // Sort column change handler
+    sortColumn.addEventListener('change', () => {
+        applyFiltersAndSort();
+    });
+
+    // Sort order toggle
+    sortOrderBtn.addEventListener('click', () => {
+        sortAscending = !sortAscending;
+        sortOrderBtn.querySelector('.sort-icon').style.transform = 
+            sortAscending ? 'rotate(0deg)' : 'rotate(180deg)';
+        sortOrderBtn.querySelector('.sort-label').textContent = 
+            sortAscending ? 'Ascending' : 'Descending';
+        applyFiltersAndSort();
+    });
+
+    function applyFiltersAndSort() {
+        let filteredResults = [...searchResults];
+
+        // Apply category filter
+        if (activeFilters.category && activeFilters.value) {
+            filteredResults = filteredResults.filter(item => 
+                String(item[activeFilters.category]) === String(activeFilters.value)
+            );
+        }
+
+        // Apply sorting
+        if (sortColumn.value) {
+            const column = sortColumn.value;
+            const unit = sortColumn.selectedOptions[0].dataset.unit;
+
+            filteredResults.sort((a, b) => {
+                let valA = unit ? extractSortableValue(a[column], unit) : a[column];
+                let valB = unit ? extractSortableValue(b[column], unit) : b[column];
+
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                return sortAscending ? 
+                    (valA < valB ? -1 : valA > valB ? 1 : 0) :
+                    (valA > valB ? -1 : valA < valB ? 1 : 0);
+            });
+        }
+
+        displaySearchResults(filteredResults);
+    }
+});
+
+// ...existing code...
+
+function initializeFilterAndSort() {
+    const filterCategory = document.getElementById('filterCategory');
+    const filterValue = document.getElementById('filterValue');
+    const sortColumn = document.getElementById('sortColumn');
+    const sortOrderBtn = document.getElementById('sortOrderBtn');
+    let sortAscending = true;
+    let currentSortColumn = null;
+
+    // Filter category change handler
+    filterCategory.addEventListener('change', () => {
+        const category = filterCategory.value;
+        activeFilters.category = category;
+        
+        if (category) {
+            // Get unique values and handle different data types
+            const uniqueValues = [...new Set(searchResults
+                .map(item => item[category])
+                .filter(value => value !== null && value !== undefined)
+                .map(value => String(value).trim())
+                .filter(value => value !== '')
+            )].sort((a, b) => {
+                // Sort numerically if possible, otherwise alphabetically
+                const numA = parseFloat(a);
+                const numB = parseFloat(b);
+                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                return a.localeCompare(b);
+            });
+
+            filterValue.innerHTML = '<option value="">Select value...</option>' +
+                uniqueValues.map(value => `<option value="${value}">${value}</option>`).join('');
+            filterValue.disabled = false;
+        } else {
+            filterValue.innerHTML = '<option value="">Select value...</option>';
+            filterValue.disabled = true;
+            activeFilters.value = null;
+            applyFiltersAndSort();
+        }
+    });
+
+    // Sort order toggle - simplified to just arrow
+    sortOrderBtn.addEventListener('click', () => {
+        sortAscending = !sortAscending;
+        sortOrderBtn.querySelector('.sort-icon').textContent = sortAscending ? '↑' : '↓';
+        sortOrderBtn.querySelector('.sort-icon').style.transform = 
+            sortAscending ? 'rotate(0deg)' : 'rotate(180deg)';
+        applyFiltersAndSort();
+    });
+
+    function applyFiltersAndSort() {
+        let results = [...searchResults];
+
+        // Improved filtering logic
+        if (activeFilters.category && activeFilters.value) {
+            results = results.filter(item => {
+                const itemValue = item[activeFilters.category];
+                if (itemValue === null || itemValue === undefined) return false;
+                
+                // Convert both to strings and trim for comparison
+                const normalizedItemValue = String(itemValue).trim().toLowerCase();
+                const normalizedFilterValue = String(activeFilters.value).trim().toLowerCase();
+                
+                return normalizedItemValue === normalizedFilterValue;
+            });
+        }
+
+        // Apply sorting with existing logic
+        if (currentSortColumn) {
+            const unit = sortColumn.selectedOptions[0]?.dataset.unit;
+            results.sort((a, b) => {
+                let valA = unit ? extractSortableValue(a[currentSortColumn], unit) : a[currentSortColumn];
+                let valB = unit ? extractSortableValue(b[currentSortColumn], unit) : b[currentSortColumn];
+
+                // Handle null/undefined values
+                if (valA === null || valA === undefined) valA = '';
+                if (valB === null || valB === undefined) valB = '';
+
+                // Convert to comparable types
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                if (valA < valB) return sortAscending ? -1 : 1;
+                if (valA > valB) return sortAscending ? 1 : -1;
+                return 0;
+            });
+        }
+
+        displaySearchResults(results);
+    }
+
+    // Add other existing event listeners...
+}
+
+// Call this function when the document is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // ...existing code...
+    initializeFilterAndSort();
+    // ...existing code...
 });
