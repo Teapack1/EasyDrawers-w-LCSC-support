@@ -1,0 +1,203 @@
+/* Map Container Layout */
+.map-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 100px);
+}
+
+/* Side Panel Styles */
+.side-panel {
+    width: 300px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.side-panel h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+.side-panel h3 {
+    margin: 0 0 10px 0;
+    color: #666;
+}
+
+/* Search Section */
+.search-section {
+    display: flex;
+    gap: 10px;
+}
+
+.search-section input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+/* Legend Section */
+.legend-section {
+    margin-top: auto;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-color.empty {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+}
+
+.legend-color.occupied {
+    background: #b8e6ff;
+    border: 1px solid #7fd4ff;
+}
+
+.legend-color.highlighted {
+    background: #ffd700;
+    border: 1px solid #ffc700;
+}
+
+/* Map Grid Styles */
+.map-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.drawer {
+    aspect-ratio: 1;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.drawer.occupied {
+    background: #b8e6ff;
+    border-color: #7fd4ff;
+}
+
+.drawer.highlighted {
+    background: #ffd700;
+    border-color: #ffc700;
+    transform: scale(1.05);
+    z-index: 1;
+}
+
+.drawer:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.drawer-label {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Drawer Info Panel */
+.drawer-info-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.drawer-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .map-container {
+        flex-direction: column;
+    }
+
+    .side-panel {
+        width: auto;
+    }
+
+    .map-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Touch-friendly adjustments */
+@media (hover: none) {
+    .drawer {
+        padding: 20px;
+    }
+
+    .drawer:hover {
+        transform: none;
+    }
+
+    .drawer.active {
+        transform: scale(1.05);
+    }
+}

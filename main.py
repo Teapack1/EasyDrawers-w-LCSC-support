@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from io import BytesIO
 import datetime
 from typing import Optional  # Add this line
+from collections import defaultdict
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -778,6 +779,33 @@ async def clear_cart(data: CartAction):
 @app.get("/cart", response_class=HTMLResponse)
 async def serve_cart(request: Request):
     return templates.TemplateResponse("cart.html", {"request": request})
+
+@app.get("/map", response_class=HTMLResponse)
+async def serve_map(request: Request):
+    return templates.TemplateResponse("map.html", {"request": request})
+
+@app.get("/storage_data")
+async def get_storage_data():
+    conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get all components with their storage locations
+    cursor.execute("""
+        SELECT * FROM components 
+        WHERE storage_place IS NOT NULL 
+        AND storage_place != ''
+    """)
+    
+    components = cursor.fetchall()
+    conn.close()
+    
+    # Group components by storage location
+    storage_data = defaultdict(list)
+    for component in components:
+        storage_data[component['storage_place']].append(dict(component))
+    
+    return dict(storage_data)
 
 if __name__ == "__main__":
     import uvicorn
