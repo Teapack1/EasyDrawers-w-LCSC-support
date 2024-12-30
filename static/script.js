@@ -1,3 +1,31 @@
+// Hamburger menu functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById('menuButton');
+    const menuItems = document.querySelector('.menu-items');
+
+    menuButton.addEventListener('click', function() {
+        menuButton.classList.toggle('active');
+        menuItems.classList.toggle('active');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.hamburger-menu')) {
+            menuButton.classList.remove('active');
+            menuItems.classList.remove('active');
+        }
+    });
+
+    // Handle menu item clicks
+    document.getElementById('mapButton').addEventListener('click', function() {
+        window.location.href = '/map';
+    });
+
+    document.getElementById('databaseButton').addEventListener('click', function() {
+        window.location.href = '/database';
+    });
+});
+
 let currentUser = localStorage.getItem('currentUser') || 'guest';
 let componentConfig = {};
 
@@ -57,22 +85,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: formData
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                alert(result.message);
+            const contentType = response.headers.get("content-type");
+            let result;
+            
+            if (contentType && contentType.includes("application/json")) {
+                result = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text);
+            }
 
-                // Display the new components in the search results
-                searchResults = result.components;
-                displaySearchResults(searchResults);
+            if (response.ok) {
+                alert(result.message);
+                
+                // Display the uploaded components in the search results
+                if (result.components && result.components.length > 0) {
+                    searchResults = result.components;
+                    displaySearchResults(searchResults);
+                    
+                    // Show summary of changes
+                    let summary = "Uploaded components:\n\n";
+                    result.components.forEach(comp => {
+                        summary += `${comp.part_number}: ${comp.order_qty} pcs\n`;
+                    });
+                    console.log(summary);
+                }
 
                 // Clear the file input
                 fileInput.value = '';
             } else {
-                const error = await response.json();
-                alert(`Error: ${error.detail}`);
+                alert(`Error: ${result.detail || 'Failed to upload components'}`);
             }
         } catch (error) {
-            alert(`Unexpected error: ${error.message}`);
+            console.error('Upload error:', error);
+            alert(`Error: ${error.message}`);
         }
     });
 
@@ -96,16 +142,28 @@ document.addEventListener("DOMContentLoaded", () => {
         const dynamicFieldIds = Array.from(document.querySelectorAll("#dynamicFields input")).map(input => input.id);
         dynamicFieldIds.forEach((fieldId) => {
             const field = document.getElementById(fieldId);
-            if (field.required && !field.value.trim()) {
-                field.classList.add("invalid");
-                allValid = false;
-            } else {
-                field.classList.remove("invalid");
+            if (field.required) {
+                // Special validation for resistance field
+                if (fieldId === 'resistance') {
+                    const value = field.value.trim();
+                    // Check if the value contains only the Ω symbol or is empty
+                    if (!value || value === 'Ω' || !/[0-9]/.test(value)) {
+                        field.classList.add("invalid");
+                        allValid = false;
+                    } else {
+                        field.classList.remove("invalid");
+                    }
+                } else if (!field.value.trim()) {
+                    field.classList.add("invalid");
+                    allValid = false;
+                } else {
+                    field.classList.remove("invalid");
+                }
             }
         });
 
         if (!allValid) {
-            alert("Please fill in all required fields.");
+            alert("Please fill in all required fields with valid values. For resistance, please include a numeric value.");
             return;
         }
 
@@ -178,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Changelog button event listener
-    document.getElementById("changelogButton").addEventListener("click", () => {
+    document.getElementById("changelogButton").addEventListener('click', () => {
         window.location.href = "/changelog";
     });
 
@@ -443,20 +501,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sortColumn.addEventListener('change', () => {
         if (sortColumn.value) {
-            const column = sortColumn.value;
-            sortResults(column, sortAscending);
+            sortState.column = sortColumn.value;
+            applyFiltersAndSort();
         }
     });
 
     sortOrderBtn.addEventListener('click', () => {
         sortAscending = !sortAscending;
-        sortOrderBtn.classList.toggle('descending');
-        sortOrderBtn.querySelector('.sort-icon').textContent = sortAscending ? '↑' : '↓';
+        sortState.ascending = sortAscending;
+        sortOrderBtn.classList.toggle('descending', !sortAscending);
         
-        if (sortColumn.value) {
-            sortResults(sortColumn.value, sortAscending);
+        // Only sort if a column is selected
+        if (sortState.column) {
+            applyFiltersAndSort();
         }
     });
+
+    function applyFiltersAndSort() {
+        let results = [...searchResults];
+
+        // Apply filters if active
+        if (activeFilters.category && activeFilters.value) {
+            results = results.filter(item => {
+                const itemValue = item[activeFilters.category];
+                if (itemValue === null || itemValue === undefined) return false;
+                return String(itemValue).trim().toLowerCase() === String(activeFilters.value).trim().toLowerCase();
+            });
+        }
+
+        // Apply sorting if active
+        if (sortState.column) {
+            const unit = sortColumn.selectedOptions[0]?.dataset.unit;
+            results.sort((a, b) => {
+                let valA = unit ? extractSortableValue(a[sortState.column], unit) : a[sortState.column];
+                let valB = unit ? extractSortableValue(b[sortState.column], unit) : b[sortState.column];
+
+                // Handle null/undefined values
+                if (valA === null || valA === undefined) valA = '';
+                if (valB === null || valB === undefined) valB = '';
+
+                // Convert to comparable types
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                const compareResult = valA < valB ? -1 : valA > valB ? 1 : 0;
+                return sortState.ascending ? compareResult : -compareResult;
+            });
+        }
+
+        displaySearchResults(results);
+    }
 
     // Enhanced number extraction function for sorting
     function extractSortableValue(value, unit) {
@@ -488,36 +582,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return num;
-    }
-
-    function sortResults(column, ascending) {
-        const option = sortColumn.querySelector(`option[value="${column}"]`);
-        const unit = option ? option.dataset.unit : null;
-
-        searchResults.sort((a, b) => {
-            let valA = a[column];
-            let valB = b[column];
-
-            if (unit) {
-                // Handle numeric values with units
-                valA = extractSortableValue(valA, unit);
-                valB = extractSortableValue(valB, unit);
-            } else if (column === 'order_qty') {
-                // Handle pure numeric values
-                valA = parseInt(valA) || 0;
-                valB = parseInt(valB) || 0;
-            } else {
-                // Handle string values
-                valA = (valA || '').toString().toLowerCase();
-                valB = (valB || '').toString().toLowerCase();
-            }
-
-            if (valA < valB) return ascending ? -1 : 1;
-            if (valA > valB) return ascending ? 1 : -1;
-            return 0;
-        });
-
-        displaySearchResults(searchResults);
     }
 
     // References to new filter elements
@@ -987,7 +1051,7 @@ function addDeleteButtonEventListeners() {
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ id: id, user: currentUser }),
+                        body: JSON.stringify({ component_id: id, user: currentUser }),
                     });
 
                     if (response.ok) {
@@ -1125,129 +1189,37 @@ let activeFilters = {
     category: null,
     value: null
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-    // ...existing code...
-
-    // Enhanced filter controls
-    const filterCategory = document.getElementById('filterCategory');
-    const filterValue = document.getElementById('filterValue');
-    const clearFilterBtn = document.getElementById('clearFilterBtn');
-    const sortColumn = document.getElementById('sortColumn');
-    const sortOrderBtn = document.getElementById('sortOrderBtn');
-    let sortAscending = true;
-
-    // Filter category change handler
-    filterCategory.addEventListener('change', () => {
-        const category = filterCategory.value;
-        activeFilters.category = category;
-        activeFilters.value = null;
-        
-        if (category) {
-            // Populate filter values based on unique values in the selected category
-            const uniqueValues = [...new Set(searchResults.map(item => item[category]))].filter(Boolean);
-            filterValue.innerHTML = '<option value="">Select value...</option>' +
-                uniqueValues.sort().map(value => `<option value="${value}">${value}</option>`).join('');
-            filterValue.disabled = false;
-        } else {
-            filterValue.innerHTML = '<option value="">Select value...</option>';
-            filterValue.disabled = true;
-            applyFiltersAndSort();
-        }
-    });
-
-    // Filter value change handler
-    filterValue.addEventListener('change', () => {
-        activeFilters.value = filterValue.value;
-        applyFiltersAndSort();
-    });
-
-    // Clear filter button
-    clearFilterBtn.addEventListener('click', () => {
-        filterCategory.value = '';
-        filterValue.value = '';
-        filterValue.disabled = true;
-        activeFilters = { category: null, value: null };
-        applyFiltersAndSort();
-    });
-
-    // Sort column change handler
-    sortColumn.addEventListener('change', () => {
-        applyFiltersAndSort();
-    });
-
-    // Sort order toggle
-    sortOrderBtn.addEventListener('click', () => {
-        sortAscending = !sortAscending;
-        sortOrderBtn.querySelector('.sort-icon').style.transform = 
-            sortAscending ? 'rotate(0deg)' : 'rotate(180deg)';
-        sortOrderBtn.querySelector('.sort-label').textContent = 
-            sortAscending ? 'Ascending' : 'Descending';
-        applyFiltersAndSort();
-    });
-
-    function applyFiltersAndSort() {
-        let filteredResults = [...searchResults];
-
-        // Apply category filter
-        if (activeFilters.category && activeFilters.value) {
-            filteredResults = filteredResults.filter(item => 
-                String(item[activeFilters.category]) === String(activeFilters.value)
-            );
-        }
-
-        // Apply sorting
-        if (sortColumn.value) {
-            const column = sortColumn.value;
-            const unit = sortColumn.selectedOptions[0].dataset.unit;
-
-            filteredResults.sort((a, b) => {
-                let valA = unit ? extractSortableValue(a[column], unit) : a[column];
-                let valB = unit ? extractSortableValue(b[column], unit) : b[column];
-
-                if (typeof valA === 'string') valA = valA.toLowerCase();
-                if (typeof valB === 'string') valB = valB.toLowerCase();
-
-                return sortAscending ? 
-                    (valA < valB ? -1 : valA > valB ? 1 : 0) :
-                    (valA > valB ? -1 : valA < valB ? 1 : 0);
-            });
-        }
-
-        displaySearchResults(filteredResults);
-    }
-});
-
-// ...existing code...
+let sortState = {
+    column: null,
+    ascending: true
+};
 
 function initializeFilterAndSort() {
     const filterCategory = document.getElementById('filterCategory');
     const filterValue = document.getElementById('filterValue');
     const sortColumn = document.getElementById('sortColumn');
     const sortOrderBtn = document.getElementById('sortOrderBtn');
-    let sortAscending = true;
-    let currentSortColumn = null;
 
-    // Filter category change handler
+    // Filter category change handler - immediate effect
     filterCategory.addEventListener('change', () => {
         const category = filterCategory.value;
         activeFilters.category = category;
         
         if (category) {
-            // Get unique values and handle different data types
+            // Get unique values for the selected category
             const uniqueValues = [...new Set(searchResults
                 .map(item => item[category])
                 .filter(value => value !== null && value !== undefined)
                 .map(value => String(value).trim())
                 .filter(value => value !== '')
             )].sort((a, b) => {
-                // Sort numerically if possible, otherwise alphabetically
                 const numA = parseFloat(a);
                 const numB = parseFloat(b);
                 if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
                 return a.localeCompare(b);
             });
 
+            // Update filter value dropdown
             filterValue.innerHTML = '<option value="">Select value...</option>' +
                 uniqueValues.map(value => `<option value="${value}">${value}</option>`).join('');
             filterValue.disabled = false;
@@ -1255,66 +1227,106 @@ function initializeFilterAndSort() {
             filterValue.innerHTML = '<option value="">Select value...</option>';
             filterValue.disabled = true;
             activeFilters.value = null;
+            applyFiltersAndSort(); // Apply immediately when clearing category
+        }
+    });
+
+    // Filter value change handler - immediate effect
+    filterValue.addEventListener('change', () => {
+        activeFilters.value = filterValue.value;
+        applyFiltersAndSort(); // Apply immediately when value changes
+    });
+
+    // Sort column change handler - sort ascending initially
+    sortColumn.addEventListener('change', () => {
+        const column = sortColumn.value;
+        if (column) {
+            sortState.column = column;
+            sortState.ascending = true; // Always start with ascending
+            sortOrderBtn.classList.remove('descending');
+            applyFiltersAndSort();
+        } else {
+            sortState.column = null;
             applyFiltersAndSort();
         }
     });
 
-    // Sort order toggle - simplified to just arrow
+    // Sort order button - toggle between ascending/descending
     sortOrderBtn.addEventListener('click', () => {
-        sortAscending = !sortAscending;
-        sortOrderBtn.querySelector('.sort-icon').textContent = sortAscending ? '↑' : '↓';
-        sortOrderBtn.querySelector('.sort-icon').style.transform = 
-            sortAscending ? 'rotate(0deg)' : 'rotate(180deg)';
-        applyFiltersAndSort();
+        if (sortState.column) {
+            sortState.ascending = !sortState.ascending;
+            sortOrderBtn.classList.toggle('descending', !sortState.ascending);
+            applyFiltersAndSort();
+        }
     });
+}
 
-    function applyFiltersAndSort() {
-        let results = [...searchResults];
+function applyFiltersAndSort() {
+    let results = [...searchResults];
 
-        // Improved filtering logic
-        if (activeFilters.category && activeFilters.value) {
-            results = results.filter(item => {
-                const itemValue = item[activeFilters.category];
-                if (itemValue === null || itemValue === undefined) return false;
-                
-                // Convert both to strings and trim for comparison
-                const normalizedItemValue = String(itemValue).trim().toLowerCase();
-                const normalizedFilterValue = String(activeFilters.value).trim().toLowerCase();
-                
-                return normalizedItemValue === normalizedFilterValue;
-            });
-        }
-
-        // Apply sorting with existing logic
-        if (currentSortColumn) {
-            const unit = sortColumn.selectedOptions[0]?.dataset.unit;
-            results.sort((a, b) => {
-                let valA = unit ? extractSortableValue(a[currentSortColumn], unit) : a[currentSortColumn];
-                let valB = unit ? extractSortableValue(b[currentSortColumn], unit) : b[currentSortColumn];
-
-                // Handle null/undefined values
-                if (valA === null || valA === undefined) valA = '';
-                if (valB === null || valB === undefined) valB = '';
-
-                // Convert to comparable types
-                if (typeof valA === 'string') valA = valA.toLowerCase();
-                if (typeof valB === 'string') valB = valB.toLowerCase();
-
-                if (valA < valB) return sortAscending ? -1 : 1;
-                if (valA > valB) return sortAscending ? 1 : -1;
-                return 0;
-            });
-        }
-
-        displaySearchResults(results);
+    // Apply filters first
+    if (activeFilters.category && activeFilters.value) {
+        results = results.filter(item => {
+            const itemValue = item[activeFilters.category];
+            if (itemValue === null || itemValue === undefined) return false;
+            return String(itemValue).trim().toLowerCase() === String(activeFilters.value).trim().toLowerCase();
+        });
     }
 
-    // Add other existing event listeners...
+    // Then apply sorting if a sort column is selected
+    if (sortState.column) {
+        const unit = document.getElementById('sortColumn').selectedOptions[0]?.dataset.unit;
+        results.sort((a, b) => {
+            let valA = unit ? extractSortableValue(a[sortState.column], unit) : a[sortState.column];
+            let valB = unit ? extractSortableValue(b[sortState.column], unit) : b[sortState.column];
+
+            // Handle null/undefined values
+            if (valA === null || valA === undefined) valA = '';
+            if (valB === null || valB === undefined) valB = '';
+
+            // Convert to comparable types
+            if (typeof valA === 'string') valA = valA.toLowerCase();
+            if (typeof valB === 'string') valB = valB.toLowerCase();
+
+            const compareResult = valA < valB ? -1 : valA > valB ? 1 : 0;
+            return sortState.ascending ? compareResult : -compareResult;
+        });
+    }
+
+    displaySearchResults(results);
 }
 
 // Call this function when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // ...existing code...
     initializeFilterAndSort();
-    // ...existing code...
+});
+
+// Settings dropdown functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsBtn = document.getElementById('settingsButton');
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    const databaseBtn = document.getElementById('databaseButton');
+    let isOpen = false;
+
+    // Toggle settings dropdown
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isOpen = !isOpen;
+        settingsDropdown.style.display = isOpen ? 'block' : 'none';
+        settingsBtn.classList.toggle('active', isOpen);
+    });
+
+    // Handle database button click
+    databaseBtn.addEventListener('click', () => {
+        window.location.href = '/database';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
+            isOpen = false;
+            settingsDropdown.style.display = 'none';
+            settingsBtn.classList.remove('active');
+        }
+    });
 });

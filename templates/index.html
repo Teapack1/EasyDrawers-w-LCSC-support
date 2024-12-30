@@ -26,10 +26,18 @@
 
     <!-- Top Bar with Login, Changelog, and Current User Display -->
     <div class="top-bar">
-        <button id="loginButton">Login</button>
-        <button id="changelogButton">Changelog</button>
-        <button id="cartButton">Cart</button>
-        <button id="mapButton" onclick="window.location.href='/map'">Map</button>
+        <div class="hamburger-menu">
+            <button id="menuButton" class="menu-btn">
+                <span class="menu-icon"></span>
+            </button>
+            <nav class="menu-items">
+                <button id="loginButton">Login</button>
+                <button id="changelogButton">Changelog</button>
+                <button id="cartButton">Cart</button>
+                <button id="mapButton">Map</button>
+                <button id="databaseButton">Database</button>
+            </nav>
+        </div>
         <span id="currentUserDisplay">Current User: None</span>
     </div>
 
@@ -140,7 +148,7 @@
                         <option value="storage_place">Storage Place</option>
                     </select>
                     <button id="sortOrderBtn" class="icon-button fixed-width-small" title="Toggle sort order">
-                        <span class="material-icons sort-icon">↑</span>
+                        <span class="sort-icon"></span>
                     </button>
                 </div>
             </div>

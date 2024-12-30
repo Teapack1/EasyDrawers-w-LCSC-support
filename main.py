@@ -14,6 +14,7 @@ from io import BytesIO
 import datetime
 from typing import Optional  # Add this line
 from collections import defaultdict
+from fastapi.responses import StreamingResponse
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -263,7 +264,7 @@ async def update_components_from_csv(file: UploadFile = File(...)):
         'LCSC Part Number', 'Manufacturer', 'Package', 'Description',
         'Order Qty.', 'Unit Price($)', 'Component Type', 'Component Branch',
         'Capacitance', 'Resistance', 'Voltage', 'Tolerance', 'Inductance', 'Current/Power', 'Storage Place',
-        'Manufacture Part Number'  # Add this line
+        'Manufacture Part Number'
     ]
 
     # Initialize new columns with None
@@ -271,7 +272,7 @@ async def update_components_from_csv(file: UploadFile = File(...)):
         if col not in df.columns:
             df[col] = None
 
-    # Function to extract component details (same as in format.py)
+    # Function to extract component details (same as before)
     def extract_component_details(description):
         component_type = None
         component_branch = None
@@ -293,7 +294,7 @@ async def update_components_from_csv(file: UploadFile = File(...)):
                 for param in branch_data['Parameters']:
                     if param == 'Resistance':
                         res_match = re.search(
-                            r'(?<!\w)(\d+\.?\d*\s*[kKmM]?\s*(?:[ΩΩ]|Ohm))(?!\w)',
+                            r'(?<!\w)(\d+\.?\d*\s*[kKmM]?\s*(?:[ΩΩ]|Ohm))(?!\w)',
                             description, re.IGNORECASE)
                         if res_match:
                             parameters['Resistance'] = res_match.group(1).strip()
@@ -322,22 +323,16 @@ async def update_components_from_csv(file: UploadFile = File(...)):
                             r'(\d+\.?\d*\s*[mMuU]?A|\d+\.?\d*\s*[mMkKuU]?W)', description, re.IGNORECASE)
                         if curr_match:
                             parameters['Current/Power'] = curr_match.group(1).strip()
-                    # Add extraction logic for other parameters as needed
-                # Get storage place
                 storage_place = branch_data.get('Storage Place')
-                break  # Stop after finding the first matching branch
+                break
 
         return component_type, component_branch, parameters, storage_place
 
     # Apply the function to each row in the DataFrame
     for index, row in df.iterrows():
         desc = row.get('Description', '')
-
-        # Ensure the description is a string
         if isinstance(desc, str):
             component_type, component_branch, parameters, storage_place = extract_component_details(desc)
-
-            # Update DataFrame with extracted values
             df.at[index, 'Component Type'] = component_type
             df.at[index, 'Component Branch'] = component_branch
             df.at[index, 'Storage Place'] = storage_place
@@ -350,82 +345,102 @@ async def update_components_from_csv(file: UploadFile = File(...)):
     # Fill missing 'Order Qty.' with zeros if necessary
     df['Order Qty.'] = df['Order Qty.'].fillna(0).astype(int)
 
-    # Now, proceed to insert the data into the database
-    required_fields = ['LCSC Part Number', 'Order Qty.']
+    # Now, proceed to insert/update the data in the database
+    required_fields = ['LCSC Part Number']
     errors = []
-    new_components = []
+    updated_components = []
 
-    for index, row in df.iterrows():
-        missing_fields = []
-        for field in required_fields:
-            if pd.isna(row.get(field)):
-                missing_fields.append(field)
-        if missing_fields:
-            errors.append(f"Row {index + 2}: Missing required fields: {', '.join(missing_fields)}")
-            continue
-
-        component_data = {
-            'part_number': row['LCSC Part Number'],
-            'storage_place': row.get('Storage Place'),
-            'order_qty': int(row['Order Qty.']),
-            'component_type': row.get('Component Type'),
-            'component_branch': row.get('Component Branch'),
-            'unit_price': row.get('Unit Price($)'),
-            'description': row.get('Description'),
-            'package': row.get('Package'),
-            'manufacturer': row.get('Manufacturer'),
-            'capacitance': row.get('Capacitance'),
-            'resistance': row.get('Resistance'),
-            'voltage': row.get('Voltage'),
-            'tolerance': row.get('Tolerance'),
-            'inductance': row.get('Inductance'),
-            'current_power': row.get('Current/Power'),
-            'manufacture_part_number': row.get('Manufacture Part Number')  # Add this line
-        }
-        new_components.append(component_data)
-
-    if errors:
-        # Return error messages if any
-        raise HTTPException(status_code=400, detail="; ".join(errors))
-
-    # Insert new components into the database
     conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    inserted_components = []
-    for component in new_components:
-        try:
-            cursor.execute('''
-                INSERT INTO components (
-                    part_number, manufacturer, package, description, order_qty, unit_price,
-                    component_type, component_branch, capacitance, resistance, voltage,
-                    tolerance, inductance, current_power, storage_place, manufacture_part_number
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                component['part_number'], component['manufacturer'], component['package'],
-                component['description'], component['order_qty'], component['unit_price'],
-                component['component_type'], component['component_branch'], component['capacitance'],
-                component['resistance'], component['voltage'], component['tolerance'],
-                component['inductance'], component['current_power'], component['storage_place'],
-                component['manufacture_part_number']  # Add this line
-            ))
-            # Log the addition in the change_log
-            cursor.execute('''
-                INSERT INTO change_log (user, action_type, component_id, part_number, details)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (
-                "CSV Upload", "add_component", cursor.lastrowid, component['part_number'],
-                f"Added component {component['part_number']} with quantity {component['order_qty']}"
-             ))
-            inserted_components.append(component)
-        except sqlite3.IntegrityError:
-            # Handle duplicates or other integrity errors
-            pass
 
-    conn.commit()
-    conn.close()
+    try:
+        for index, row in df.iterrows():
+            missing_fields = []
+            for field in required_fields:
+                if pd.isna(row.get(field)):
+                    missing_fields.append(field)
+            if missing_fields:
+                errors.append(f"Row {index + 2}: Missing required fields: {', '.join(missing_fields)}")
+                continue
 
-    # Return the inserted components
-    return {"message": "Components uploaded successfully.", "components": inserted_components}
+            # Check if component already exists
+            cursor.execute("SELECT * FROM components WHERE part_number=?", (row['LCSC Part Number'],))
+            existing_component = cursor.fetchone()
+
+            component_data = {
+                'part_number': row['LCSC Part Number'],
+                'storage_place': row.get('Storage Place'),
+                'order_qty': int(row['Order Qty.']),
+                'component_type': row.get('Component Type'),
+                'component_branch': row.get('Component Branch'),
+                'unit_price': row.get('Unit Price($)'),
+                'description': row.get('Description'),
+                'package': row.get('Package'),
+                'manufacturer': row.get('Manufacturer'),
+                'capacitance': row.get('Capacitance'),
+                'resistance': row.get('Resistance'),
+                'voltage': row.get('Voltage'),
+                'tolerance': row.get('Tolerance'),
+                'inductance': row.get('Inductance'),
+                'current_power': row.get('Current/Power'),
+                'manufacture_part_number': row.get('Manufacture Part Number')
+            }
+
+            if existing_component:
+                # Update existing component
+                new_qty = existing_component['order_qty'] + component_data['order_qty']
+                cursor.execute("""
+                    UPDATE components 
+                    SET order_qty = ?, 
+                        unit_price = COALESCE(?, unit_price),
+                        storage_place = COALESCE(?, storage_place)
+                    WHERE part_number = ?
+                """, (new_qty, component_data['unit_price'], component_data['storage_place'], component_data['part_number']))
+                
+                # Get updated component
+                cursor.execute("SELECT * FROM components WHERE part_number=?", (component_data['part_number'],))
+                updated_component = cursor.fetchone()
+                updated_components.append(dict(updated_component))
+            else:
+                # Insert new component
+                cursor.execute('''
+                    INSERT INTO components (
+                        part_number, storage_place, order_qty, component_type, component_branch,
+                        unit_price, description, package, manufacturer, capacitance,
+                        resistance, voltage, tolerance, inductance, current_power, manufacture_part_number
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    component_data['part_number'], component_data['storage_place'],
+                    component_data['order_qty'], component_data['component_type'],
+                    component_data['component_branch'], component_data['unit_price'],
+                    component_data['description'], component_data['package'],
+                    component_data['manufacturer'], component_data['capacitance'],
+                    component_data['resistance'], component_data['voltage'],
+                    component_data['tolerance'], component_data['inductance'],
+                    component_data['current_power'], component_data['manufacture_part_number']
+                ))
+                
+                # Get the inserted component
+                cursor.execute("SELECT * FROM components WHERE part_number=?", (component_data['part_number'],))
+                new_component = cursor.fetchone()
+                updated_components.append(dict(new_component))
+
+        conn.commit()
+
+        if errors:
+            raise HTTPException(status_code=400, detail="; ".join(errors))
+
+        return {
+            "message": f"Successfully processed {len(updated_components)} components",
+            "components": updated_components
+        }
+
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
 
 @app.post("/update_order_quantity")
 async def update_order_quantity(data: dict):
@@ -806,6 +821,76 @@ async def get_storage_data():
         storage_data[component['storage_place']].append(dict(component))
     
     return dict(storage_data)
+
+@app.get("/database", response_class=HTMLResponse)
+async def serve_database(request: Request):
+    return templates.TemplateResponse("database.html", {"request": request})
+
+@app.get("/export_database")
+async def export_database():
+    try:
+        conn = sqlite3.connect('components.db')
+        # Get all components from database
+        df = pd.read_sql_query("SELECT * FROM components", conn)
+        
+        # Rename columns to match finalCart.csv format
+        column_mapping = {
+            'part_number': 'LCSC Part Number',
+            'manufacture_part_number': 'Manufacture Part Number',
+            'manufacturer': 'Manufacturer',
+            'package': 'Package',
+            'description': 'Description',
+            'order_qty': 'Order Qty.',
+            'unit_price': 'Unit Price($)',
+            'component_type': 'Component Type',
+            'component_branch': 'Component Branch',
+            'storage_place': 'Storage Place',
+            'capacitance': 'Capacitance',
+            'resistance': 'Resistance',
+            'voltage': 'Voltage',
+            'tolerance': 'Tolerance',
+            'inductance': 'Inductance',
+            'current_power': 'Current/Power'
+        }
+        
+        # Rename columns and select only the ones we want
+        df = df.rename(columns=column_mapping)[list(column_mapping.values())]
+        
+        # Convert DataFrame to CSV
+        csv_buffer = BytesIO()
+        df.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
+        
+        # Return CSV file
+        return StreamingResponse(
+            csv_buffer,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": f"attachment; filename=component_database_{datetime.datetime.now().strftime('%Y%m%d')}.csv"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@app.post("/format_database")
+async def format_database():
+    try:
+        # Close any existing connections
+        conn = sqlite3.connect('components.db')
+        conn.close()
+        
+        # Delete the existing database file
+        if os.path.exists('components.db'):
+            os.remove('components.db')
+        
+        # Create a new database
+        create_database()
+        
+        return {"message": "Database formatted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
