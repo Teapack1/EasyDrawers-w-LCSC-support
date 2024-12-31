@@ -126,6 +126,20 @@
     z-index: 1;
 }
 
+.drawer[data-location=""] {
+    background-color: #e9ecef;
+    cursor: default;
+}
+
+.drawer[data-location=""]:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.drawer[data-location=""] .drawer-label {
+    color: #adb5bd;
+}
+
 .drawer:hover {
     transform: scale(1.05);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);

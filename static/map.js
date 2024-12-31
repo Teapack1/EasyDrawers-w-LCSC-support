@@ -1,7 +1,7 @@
 // Map configuration
 const MAP_CONFIG = {
-    rows: 4,
-    cols: 8,
+    rows: 6,       // Adjust based on your needs
+    cols: 8,       // Adjust based on your needs
     drawerSize: 100, // size in pixels
     gap: 10, // gap between drawers in pixels
 };
@@ -44,27 +44,74 @@ async function loadStorageData() {
     }
 }
 
-function initializeMap() {
-    const mapGrid = document.querySelector('.map-grid');
+// Add new function to extract storage places from component config
+function extractStoragePlaces(config) {
+    const storagePlaces = new Set();
     
-    // Set grid template based on configuration
-    mapGrid.style.gridTemplateColumns = `repeat(${MAP_CONFIG.cols}, ${MAP_CONFIG.drawerSize}px)`;
-    mapGrid.style.gap = `${MAP_CONFIG.gap}px`;
+    Object.values(config).forEach(type => {
+        Object.values(type['Component Branch']).forEach(branch => {
+            if (branch['Storage Place']) {
+                storagePlaces.add(branch['Storage Place']);
+            }
+        });
+    });
     
-    for (let i = 0; i < MAP_CONFIG.rows; i++) {
-        for (let j = 0; j < MAP_CONFIG.cols; j++) {
+    return Array.from(storagePlaces).sort();
+}
+
+async function initializeMap() {
+    try {
+        // Load component config
+        const configResponse = await fetch('/component_config');
+        const componentConfig = await configResponse.json();
+        
+        // Extract unique storage places
+        const storagePlaces = extractStoragePlaces(componentConfig);
+        
+        const mapGrid = document.querySelector('.map-grid');
+        
+        // Set grid template based on configuration
+        mapGrid.style.gridTemplateColumns = `repeat(${MAP_CONFIG.cols}, ${MAP_CONFIG.drawerSize}px)`;
+        mapGrid.style.gap = `${MAP_CONFIG.gap}px`;
+        
+        // Calculate total cells needed
+        const totalCells = MAP_CONFIG.rows * MAP_CONFIG.cols;
+        
+        // Create drawers for each storage place
+        storagePlaces.forEach((place, index) => {
+            if (index < totalCells) {
+                const drawer = document.createElement('div');
+                drawer.className = 'drawer empty';
+                drawer.setAttribute('data-location', place);
+                
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'drawer-label';
+                labelSpan.textContent = place;
+                
+                drawer.appendChild(labelSpan);
+                mapGrid.appendChild(drawer);
+            }
+        });
+        
+        // Fill remaining cells with empty drawers if needed
+        for (let i = storagePlaces.length; i < totalCells; i++) {
             const drawer = document.createElement('div');
-            drawer.className = 'drawer empty'; // Add empty class by default
-            const label = `${String.fromCharCode(65 + i)}${j + 1}`;
-            drawer.setAttribute('data-location', label);
+            drawer.className = 'drawer empty';
+            drawer.setAttribute('data-location', '');
             
             const labelSpan = document.createElement('span');
             labelSpan.className = 'drawer-label';
-            labelSpan.textContent = label;
+            labelSpan.textContent = 'Empty';
             
             drawer.appendChild(labelSpan);
             mapGrid.appendChild(drawer);
         }
+        
+        // Load and update storage data
+        await loadStorageData();
+        
+    } catch (error) {
+        console.error('Error initializing map:', error);
     }
 }
 
@@ -106,13 +153,16 @@ function updateBranchFilter() {
     }
 }
 
+// Modify updateMapOccupancy to handle the new structure
 function updateMapOccupancy() {
     const drawers = document.querySelectorAll('.drawer');
     drawers.forEach(drawer => {
         const location = drawer.getAttribute('data-location');
-        const isOccupied = storageData[location] && storageData[location].length > 0;
-        drawer.classList.remove('empty', 'occupied');
-        drawer.classList.add(isOccupied ? 'occupied' : 'empty');
+        if (location) {
+            const isOccupied = storageData[location] && storageData[location].length > 0;
+            drawer.classList.remove('empty', 'occupied');
+            drawer.classList.add(isOccupied ? 'occupied' : 'empty');
+        }
     });
 }
 

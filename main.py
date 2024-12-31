@@ -74,6 +74,19 @@ def create_database():
         )
     ''')
 
+    # Add change_log table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS change_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            user TEXT,
+            action_type TEXT,
+            component_id INTEGER,
+            part_number TEXT,
+            details TEXT
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -422,36 +435,55 @@ async def update_order_quantity(data: dict):
     change = data.get('change')
     user = data.get('user')
 
-    if not id or not change or not user:
+    if not id or not isinstance(change, (int, float)) or not user:
         raise HTTPException(status_code=400, detail="ID, change, and user are required")
 
     conn = sqlite3.connect('components.db')
-    conn.row_factory = sqlite3.Row  # Add this line to get results as dictionaries
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT order_qty, part_number FROM components WHERE id = ?", (id,))
-    result = cursor.fetchone()
-    if result:
-        new_qty = result['order_qty'] + change
-        if new_qty < 0:
-            new_qty = 0
-        cursor.execute("UPDATE components SET order_qty = ? WHERE id = ?", (new_qty, id))
-        conn.commit()
-
-        # Log the change with part_number
+    
+    try:
+        # Start transaction
+        cursor.execute("BEGIN TRANSACTION")
+        
+        # Get current component info
+        cursor.execute("SELECT order_qty, part_number FROM components WHERE id = ?", (id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Component not found")
+        
+        # Calculate new quantity
+        new_qty = max(0, result['order_qty'] + change)
+        
+        # Update component quantity
+        cursor.execute("""
+            UPDATE components 
+            SET order_qty = ? 
+            WHERE id = ?
+        """, (new_qty, id))
+        
+        # Log the change
         cursor.execute('''
             INSERT INTO change_log (user, action_type, component_id, part_number, details)
             VALUES (?, ?, ?, ?, ?)
         ''', (user, 'update_quantity', id, result['part_number'],
               f'Quantity changed by {change} to {new_qty}'))
-        conn.commit()
-
+        
+        # Get updated component
         cursor.execute("SELECT * FROM components WHERE id = ?", (id,))
         updated_component = cursor.fetchone()
-        conn.close()
+        
+        # Commit transaction
+        cursor.execute("COMMIT")
+        
         return dict(updated_component)
-    else:
+        
+    except Exception as e:
+        cursor.execute("ROLLBACK")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
         conn.close()
-        raise HTTPException(status_code=404, detail="Component not found")
 
 @app.post("/update_storage_place")
 async def update_storage_place(request: Request):
