@@ -859,6 +859,7 @@ function displaySearchResults(results) {
 
                 if (response.ok) {
                     alert('Item added to cart');
+                    updateCartState(); // Update cart state after adding item
                 } else {
                     const error = await response.json();
                     alert(error.detail);
@@ -1330,3 +1331,159 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Remove all previous BOM upload event listeners
+const oldButton = document.getElementById('uploadBomButton');
+const newButton = oldButton.cloneNode(true);
+oldButton.parentNode.replaceChild(newButton, oldButton);
+
+// Add single BOM upload handler
+document.getElementById('uploadBomButton').addEventListener('click', async () => {
+    const fileInput = document.getElementById('bomFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a BOM file first.');
+        return;
+    }
+
+    if (!currentUser) {
+        alert('Please select a user first.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch(`/upload_bom?user=${currentUser}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        const result = await response.json();
+        updateCartState(); // Update cart state after successful BOM upload
+        
+        // Create a modal for displaying results
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'block';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        // Add header
+        const header = document.createElement('h2');
+        header.textContent = 'BOM Upload Results';
+        modalContent.appendChild(header);
+        
+        // Add found components section
+        if (result.found_components && result.found_components.length > 0) {
+            const foundHeader = document.createElement('h3');
+            foundHeader.textContent = 'Found Components:';
+            foundHeader.style.color = '#28a745';
+            modalContent.appendChild(foundHeader);
+            
+            const foundList = document.createElement('ul');
+            result.found_components.forEach(comp => {
+                const item = document.createElement('li');
+                item.textContent = `${comp.part_number} (${comp.designator}): ${comp.quantity} pcs`;
+                foundList.appendChild(item);
+            });
+            modalContent.appendChild(foundList);
+        }
+        
+        // Add not found components section
+        if (result.not_found_components && result.not_found_components.length > 0) {
+            const notFoundHeader = document.createElement('h3');
+            notFoundHeader.textContent = 'Not Found Components:';
+            notFoundHeader.style.color = '#dc3545';
+            modalContent.appendChild(notFoundHeader);
+            
+            const notFoundList = document.createElement('ul');
+            result.not_found_components.forEach(comp => {
+                const item = document.createElement('li');
+                item.textContent = `${comp.supplier_part} (${comp.designator}): ${comp.quantity} pcs`;
+                notFoundList.appendChild(item);
+            });
+            modalContent.appendChild(notFoundList);
+        }
+        
+        // Add buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.marginTop = '20px';
+        buttonContainer.style.textAlign = 'center';
+        
+        const viewCartButton = document.createElement('button');
+        viewCartButton.textContent = 'View Cart';
+        viewCartButton.onclick = () => {
+            window.location.href = '/cart';
+        };
+        viewCartButton.style.marginRight = '10px';
+        
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.onclick = () => {
+            document.body.removeChild(modal);
+        };
+        
+        buttonContainer.appendChild(viewCartButton);
+        buttonContainer.appendChild(closeButton);
+        modalContent.appendChild(buttonContainer);
+        
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        // Clear the file input
+        fileInput.value = '';
+        
+    } catch (error) {
+        console.error('Error:', error);
+        // Only show error message if it's not the formData undefined error
+        if (!error.message.includes('formData is not defined')) {
+            alert('Failed to upload BOM: ' + error.message);
+        }
+    }
+});
+
+// Add cart state update to document ready
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing initialization code ...
+    
+    // Initialize cart state
+    updateCartState();
+    
+    // Update cart state when user changes
+    document.querySelectorAll('.user-button').forEach(button => {
+        button.addEventListener('click', () => {
+            setTimeout(updateCartState, 100); // Small delay to ensure user is updated
+        });
+    });
+});
+
+// Add this function to check cart state
+async function updateCartState() {
+    try {
+        const currentUser = localStorage.getItem('currentUser') || 'guest';
+        const response = await fetch(`/get_cart?user=${currentUser}`);
+        if (response.ok) {
+            const cartData = await response.json();
+            const cartButton = document.getElementById('cartButton');
+            
+            if (cartData && cartData.length > 0) {
+                cartButton.classList.add('has-items');
+                cartButton.classList.remove('empty');
+            } else {
+                cartButton.classList.remove('has-items');
+                cartButton.classList.add('empty');
+            }
+        }
+    } catch (error) {
+        console.error('Error updating cart state:', error);
+    }
+}

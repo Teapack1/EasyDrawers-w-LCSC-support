@@ -16,29 +16,36 @@
     <div id="userSelectionModal" class="modal">
         <div class="modal-content">
             <h2>Select User</h2>
-            <button class="user-button" data-user="guest">Guest</button>
-            <button class="user-button" data-user="Ondrej">Ondrej</button>
-            <button class="user-button" data-user="Pavel">Pavel</button>
-            <button class="user-button" data-user="Lukas">Lukas</button>
+            <div class="user-buttons">
+                <button class="user-button" data-user="guest">Guest</button>
+                <button class="user-button" data-user="ondra">Ondra</button>
+                <button class="user-button" data-user="lukas">Lukas</button>
+                <button class="user-button" data-user="pavel">Pavel</button>
+            </div>
         </div>
     </div>
 
 
-    <!-- Top Bar with Login, Changelog, and Current User Display -->
+    <!-- Top Bar -->
     <div class="top-bar">
         <div class="hamburger-menu">
-            <button id="menuButton" class="menu-btn">
+            <button id="menuButton" class="menu-button">
                 <span class="menu-icon"></span>
             </button>
-            <nav class="menu-items">
-                <button id="loginButton">Login</button>
-                <button id="changelogButton">Changelog</button>
-                <button id="cartButton">Cart</button>
-                <button id="mapButton">Map</button>
+            <div class="menu-items">
+                <button id="mapButton">Storage Map</button>
                 <button id="databaseButton">Database</button>
-            </nav>
+                <button id="changelogButton">Changelog</button>
+            </div>
         </div>
-        <span id="currentUserDisplay">Current User: None</span>
+        <div class="user-section">
+            <button id="loginButton">Login</button>
+            <span id="currentUserDisplay">Current User: guest</span>
+            <button id="cartButton" class="cart-button empty" title="View Cart">
+                🛒
+                <span class="cart-indicator" style="display: none">0</span>
+            </button>
+        </div>
     </div>
 
     <h1>Electronics Stock Search</h1>
@@ -69,10 +76,16 @@
                     In Stock
                 </label>
             </div>
-            <!-- Search Bar -->
+            <!-- Search Bar and BOM Upload -->
             <div class="search-container">
-                <input type="text" id="searchQuery" placeholder="Search Component">
-                <button id="searchButton">Search</button>
+                <div class="search-input-group">
+                    <input type="text" id="searchQuery" placeholder="Search Component">
+                    <button id="searchButton">Search</button>
+                </div>
+                <div class="bom-upload-group">
+                    <input type="file" id="bomFile" accept=".csv">
+                    <button id="uploadBomButton">Upload BOM to Cart</button>
+                </div>
             </div>
         </div>
 

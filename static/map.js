@@ -1,3 +1,11 @@
+// Map configuration
+const MAP_CONFIG = {
+    rows: 4,
+    cols: 8,
+    drawerSize: 100, // size in pixels
+    gap: 10, // gap between drawers in pixels
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the storage map
     initializeMap();
@@ -38,13 +46,15 @@ async function loadStorageData() {
 
 function initializeMap() {
     const mapGrid = document.querySelector('.map-grid');
-    const rows = 4;
-    const cols = 8;
     
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
+    // Set grid template based on configuration
+    mapGrid.style.gridTemplateColumns = `repeat(${MAP_CONFIG.cols}, ${MAP_CONFIG.drawerSize}px)`;
+    mapGrid.style.gap = `${MAP_CONFIG.gap}px`;
+    
+    for (let i = 0; i < MAP_CONFIG.rows; i++) {
+        for (let j = 0; j < MAP_CONFIG.cols; j++) {
             const drawer = document.createElement('div');
-            drawer.className = 'drawer';
+            drawer.className = 'drawer empty'; // Add empty class by default
             const label = `${String.fromCharCode(65 + i)}${j + 1}`;
             drawer.setAttribute('data-location', label);
             
@@ -101,7 +111,8 @@ function updateMapOccupancy() {
     drawers.forEach(drawer => {
         const location = drawer.getAttribute('data-location');
         const isOccupied = storageData[location] && storageData[location].length > 0;
-        drawer.classList.toggle('occupied', isOccupied);
+        drawer.classList.remove('empty', 'occupied');
+        drawer.classList.add(isOccupied ? 'occupied' : 'empty');
     });
 }
 

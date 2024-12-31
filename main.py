@@ -15,6 +15,7 @@ import datetime
 from typing import Optional  # Add this line
 from collections import defaultdict
 from fastapi.responses import StreamingResponse
+import csv
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -39,64 +40,37 @@ def create_database():
     conn = sqlite3.connect('components.db')
     cursor = conn.cursor()
     
-    # Create or verify the 'components' table
+    # Create components table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS components (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             part_number TEXT UNIQUE,
+            manufacture_part_number TEXT,
             manufacturer TEXT,
-            package TEXT,
             description TEXT,
-            order_qty INTEGER,
+            package TEXT,
+            storage_place TEXT,
+            order_qty INTEGER DEFAULT 0,
             unit_price REAL,
             component_type TEXT,
             component_branch TEXT,
-            capacitance TEXT,
             resistance TEXT,
+            capacitance TEXT,
             voltage TEXT,
             tolerance TEXT,
             inductance TEXT,
-            current_power TEXT,
-            storage_place TEXT,  -- Added new column
-            manufacture_part_number TEXT  -- Added new column
+            current_power TEXT
         )
     ''')
 
-    # Check if 'storage_place' column exists in 'components' table
-    cursor.execute("PRAGMA table_info(components)")
-    columns = [column[1] for column in cursor.fetchall()]
-    if 'storage_place' not in columns:
-        cursor.execute("ALTER TABLE components ADD COLUMN storage_place TEXT")
-    if 'manufacture_part_number' not in columns:
-        cursor.execute("ALTER TABLE components ADD COLUMN manufacture_part_number TEXT")
-
-    # Create or verify the 'change_log' table without 'part_number' column initially
+    # Create cart table
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS change_log (
+        CREATE TABLE IF NOT EXISTS cart (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             user TEXT,
-            action_type TEXT,
             component_id INTEGER,
-            details TEXT
-        )
-    ''')
-
-    # Check if 'part_number' column exists in 'change_log' table
-    cursor.execute("PRAGMA table_info(change_log)")
-    changelog_columns = [column[1] for column in cursor.fetchall()]
-    if 'part_number' not in changelog_columns:
-        cursor.execute("ALTER TABLE change_log ADD COLUMN part_number TEXT")
-
-    # Create cart_items table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS cart_items (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user TEXT NOT NULL,
-            component_id INTEGER NOT NULL,
-            quantity INTEGER DEFAULT 1,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (component_id) REFERENCES components(id)
+            quantity INTEGER,
+            FOREIGN KEY (component_id) REFERENCES components (id)
         )
     ''')
 
@@ -646,7 +620,7 @@ async def add_to_cart(data: dict):
     try:
         # Check if item already exists in cart
         cursor.execute("""
-            SELECT id FROM cart_items 
+            SELECT id FROM cart 
             WHERE user = ? AND component_id = ?
         """, (user, component_id))
         
@@ -654,8 +628,8 @@ async def add_to_cart(data: dict):
             raise HTTPException(status_code=400, detail="Item already in cart")
         
         cursor.execute("""
-            INSERT INTO cart_items (user, component_id)
-            VALUES (?, ?)
+            INSERT INTO cart (user, component_id, quantity)
+            VALUES (?, ?, 1)
         """, (user, component_id))
         
         conn.commit()
@@ -672,7 +646,7 @@ async def get_cart(user: str):
     cursor.execute("""
         SELECT c.*, ci.quantity as cart_quantity, ci.id as cart_item_id
         FROM components c
-        JOIN cart_items ci ON c.id = ci.component_id
+        JOIN cart ci ON c.id = ci.component_id
         WHERE ci.user = ?
     """, (user,))
     
@@ -691,7 +665,7 @@ async def update_cart_quantity(data: dict):
     cursor = conn.cursor()
     
     cursor.execute("""
-        UPDATE cart_items
+        UPDATE cart
         SET quantity = ?
         WHERE id = ? AND user = ?
     """, (quantity, cart_item_id, user))
@@ -707,7 +681,7 @@ async def remove_from_cart(cart_item_id: int, user: str):
     cursor = conn.cursor()
     
     cursor.execute("""
-        DELETE FROM cart_items
+        DELETE FROM cart
         WHERE id = ? AND user = ?
     """, (cart_item_id, user))
     
@@ -732,7 +706,7 @@ async def process_cart(data: CartAction):
         cursor.execute("""
             SELECT c.*, ci.quantity as cart_quantity
             FROM components c
-            JOIN cart_items ci ON c.id = ci.component_id
+            JOIN cart ci ON c.id = ci.component_id
             WHERE ci.user = ?
         """, (user,))
         
@@ -764,7 +738,7 @@ async def process_cart(data: CartAction):
                  f"Removed {item['cart_quantity'] or 1} units from stock"))
         
         # Clear the user's cart
-        cursor.execute("DELETE FROM cart_items WHERE user = ?", (user,))
+        cursor.execute("DELETE FROM cart WHERE user = ?", (user,))
         
         conn.commit()
         return {"message": "Cart processed successfully", "items": [dict(item) for item in cart_items]}
@@ -781,7 +755,7 @@ async def clear_cart(data: CartAction):
     cursor = conn.cursor()
     
     try:
-        cursor.execute("DELETE FROM cart_items WHERE user = ?", (data.user,))
+        cursor.execute("DELETE FROM cart WHERE user = ?", (data.user,))
         conn.commit()
         return {"message": "Cart cleared"}
     except Exception as e:
@@ -891,6 +865,179 @@ async def format_database():
         return {"message": "Database formatted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Database connection function
+def get_db_connection():
+    conn = sqlite3.connect('components.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Add new endpoint for BOM upload
+@app.post("/upload_bom")
+async def upload_bom(file: UploadFile = File(...), user: str = Query(...)):
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Please upload a CSV file.")
+
+    # Ensure database and tables exist
+    create_database()
+
+    # Read the uploaded file
+    content = await file.read()
+    
+    # Try different encodings
+    encodings = ['utf-8-sig', 'utf-16', 'utf-16le', 'cp1252', 'iso-8859-1', 'latin1']
+    df = None
+    last_error = None
+    
+    for encoding in encodings:
+        try:
+            # Try tab delimiter first
+            df = pd.read_csv(BytesIO(content), delimiter='\t', encoding=encoding)
+            if not df.empty and len(df.columns) > 1:
+                break
+                
+            # If that didn't work well, try comma delimiter
+            df = pd.read_csv(BytesIO(content), delimiter=',', encoding=encoding)
+            if not df.empty and len(df.columns) > 1:
+                break
+                
+        except Exception as e:
+            last_error = str(e)
+            continue
+            
+    if df is None or df.empty or len(df.columns) <= 1:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Could not read the CSV file. Please check the file format. Last error: {last_error}"
+        )
+
+    # Initialize response data
+    found_components = []
+    not_found_components = []
+
+    # Get database connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Find the required columns
+        supplier_part_col = None
+        quantity_col = None
+        designator_col = None
+        
+        # Find supplier part column
+        for col in df.columns:
+            if any(term in col.lower() for term in ['supplier part', 'part number', 'supplier_part', 'partnumber']):
+                supplier_part_col = col
+                break
+                
+        # If not found, try manufacturer part
+        if not supplier_part_col:
+            for col in df.columns:
+                if any(term in col.lower() for term in ['manufacturer part', 'manufacturer_part', 'mfr part']):
+                    supplier_part_col = col
+                    break
+
+        # Find quantity column
+        for col in df.columns:
+            if any(term in col.lower() for term in ['quantity', 'qty', 'amount']):
+                quantity_col = col
+                break
+
+        # Find designator column
+        for col in df.columns:
+            if any(term in col.lower() for term in ['designator', 'reference', 'refdes']):
+                designator_col = col
+                break
+
+        if not supplier_part_col or not quantity_col:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Required columns not found. Available columns: {', '.join(df.columns)}"
+            )
+
+        # Process each component in the BOM
+        for index, row in df.iterrows():
+            try:
+                supplier_part = str(row[supplier_part_col]).strip()
+                designator = str(row[designator_col]).strip() if designator_col else "N/A"
+                
+                # Skip empty rows
+                if pd.isna(supplier_part) or supplier_part == '' or supplier_part.lower() == 'nan':
+                    continue
+                    
+                try:
+                    quantity = int(float(row[quantity_col]))
+                    if quantity <= 0:
+                        continue
+                except (ValueError, TypeError):
+                    continue
+
+                # Search for the component in the database
+                cursor.execute("""
+                    SELECT id, part_number, order_qty 
+                    FROM components 
+                    WHERE part_number = ? OR manufacture_part_number = ?
+                """, (supplier_part, supplier_part))
+                
+                result = cursor.fetchone()
+                
+                if result:
+                    component_id = result[0]
+                    part_number = result[1]
+                    
+                    # Check if component is already in cart
+                    cursor.execute("""
+                        SELECT quantity FROM cart 
+                        WHERE user = ? AND component_id = ?
+                    """, (user, component_id))
+                    
+                    cart_item = cursor.fetchone()
+                    
+                    if cart_item:
+                        # Update existing cart item
+                        new_quantity = cart_item[0] + quantity
+                        cursor.execute("""
+                            UPDATE cart 
+                            SET quantity = ? 
+                            WHERE user = ? AND component_id = ?
+                        """, (new_quantity, user, component_id))
+                    else:
+                        # Add new cart item
+                        cursor.execute("""
+                            INSERT INTO cart (user, component_id, quantity) 
+                            VALUES (?, ?, ?)
+                        """, (user, component_id, quantity))
+                    
+                    found_components.append({
+                        "part_number": part_number,
+                        "quantity": quantity,
+                        "designator": designator
+                    })
+                else:
+                    not_found_components.append({
+                        "supplier_part": supplier_part,
+                        "quantity": quantity,
+                        "designator": designator
+                    })
+            except Exception as row_error:
+                print(f"Error processing row {index + 1}: {row_error}")
+                continue
+
+        conn.commit()
+        
+        return {
+            "message": "BOM Upload Results",
+            "found_components": found_components,
+            "not_found_components": not_found_components
+        }
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Error processing BOM: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     import uvicorn
