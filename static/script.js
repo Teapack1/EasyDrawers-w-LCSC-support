@@ -70,6 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         const fileInput = document.getElementById("csvFile");
         const file = fileInput.files[0];
+        const currentUser = localStorage.getItem('currentUser');
+
+        if (!currentUser) {
+            alert("Please log in first");
+            return;
+        }
 
         if (!file) {
             alert("Please select a CSV file to upload.");
@@ -80,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("file", file);
 
         try {
-            const response = await fetch('/update_components_from_csv', {
+            const response = await fetch(`/update_components_from_csv?user=${encodeURIComponent(currentUser)}`, {
                 method: 'POST',
                 body: formData
             });
@@ -106,7 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Show summary of changes
                     let summary = "Uploaded components:\n\n";
                     result.components.forEach(comp => {
-                        summary += `${comp.part_number}: ${comp.order_qty} pcs\n`;
+                        if (comp.action === 'update') {
+                            summary += `${comp.part_number}: Updated quantity from ${comp.old_qty} to ${comp.new_qty}\n`;
+                        } else {
+                            summary += `${comp.part_number}: Added with quantity ${comp.new_qty}\n`;
+                        }
                     });
                     console.log(summary);
                 }

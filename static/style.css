@@ -12,35 +12,48 @@ h1 {
 /* Container for the three panels */
 .container {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    gap: 20px;
     justify-content: space-between;
-    align-items: flex-start; /* Align items at the top */
+    align-items: flex-start;
     margin: 20px auto;
-    max-width: 1200px; /* Center the container */
-    margin-top: 10px;
+    max-width: 1200px;
+    padding: 0 15px;
 }
 
 /* Left Panel */
 .left-panel {
-    width: 24%;
-    padding: 10px;
-    box-sizing: border-box;
+    flex: 1;
+    min-width: 250px;
+    max-width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 /* Middle Panel */
 .middle-panel {
-    width: 48%;
-    padding: 20px;
-    box-sizing: border-box;
-    max-width: 800px;
-    margin: 0 auto;
+    flex: 2;
+    min-width: 300px;
+    max-width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 /* Right Panel */
 .right-panel {
-    width: 24%;
-    padding: 10px;
-    box-sizing: border-box;
+    flex: 1;
+    min-width: 250px;
+    max-width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 /* Panel Styles */
@@ -405,7 +418,55 @@ form button:hover {
 }
 
 .form-section {
-    width: 18.75%; /* Reduced from 25% */
+    width: 100%;
+    padding: 15px;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-fields label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.form-fields input,
+.form-fields select {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    height: 32px;
+}
+
+#optionalFields,
+#dynamicFields {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+
+.form-fields button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.form-fields button[type="submit"]:hover {
+    background-color: #0056b3;
 }
 
 /* Style the search field */
@@ -533,21 +594,14 @@ form button:hover {
 /* Filters */
 .filter-container {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
     flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
 .filter-container select {
     flex: 1;
-    min-width: 180px;
-    max-width: 250px;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    background-color: white;
+    min-width: 150px;
 }
 
 .filter-container label {
@@ -561,8 +615,8 @@ form button:hover {
 .search-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 15px;
+    width: 100%;
 }
 
 .search-input-group {
@@ -571,22 +625,15 @@ form button:hover {
     width: 100%;
 }
 
-.search-input-group input[type="text"] {
+.search-input-group input {
     flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
+    min-width: 0;
 }
 
 .bom-upload-group {
     display: flex;
     gap: 10px;
-    align-items: center;
-    background-color: #f8f9fa;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px dashed #ddd;
+    width: 100%;
 }
 
 .bom-upload-group input[type="file"] {
@@ -615,43 +662,86 @@ form button:hover {
 
 /* Responsive adjustments */
 @media screen and (max-width: 1024px) {
-    .middle-panel {
-        width: 60%;
+    .container {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .middle-panel,
+    .right-panel {
+        width: 100%;
+        max-width: none;
+    }
+
+    .right-panel {
+        max-height: 400px;
     }
 }
 
 @media screen and (max-width: 768px) {
-    .middle-panel {
-        width: 100%;
-        padding: 15px;
+    body {
+        padding: 10px;
     }
 
+    .container {
+        margin: 10px 0;
+        padding: 0 10px;
+    }
+
+    .left-panel,
+    .middle-panel,
+    .right-panel {
+        padding: 10px;
+    }
+
+    .form-section {
+        padding: 10px;
+    }
+
+    .form-fields {
+        gap: 8px;
+    }
+
+    .form-fields input,
+    .form-fields select {
+        font-size: 16px; /* Better for mobile touch */
+        height: 36px;
+    }
+
+    .right-panel {
+        max-height: 350px;
+    }
+
+    /* Improve mobile search experience */
+    .search-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-input-group {
+        width: 100%;
+    }
+
+    .search-input-group input {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .bom-upload-group {
+        width: 100%;
+    }
+
+    /* Adjust filter container for mobile */
     .filter-container {
         flex-direction: column;
-        align-items: stretch;
+        gap: 8px;
     }
 
     .filter-container select {
-        max-width: none;
         width: 100%;
-    }
-
-    .filter-container label {
-        margin-left: 0;
-        margin-top: 10px;
-    }
-
-    .search-container {
-        flex-direction: column;
-    }
-
-    .search-container input,
-    .search-container button {
-        width: 100%;
+        margin-bottom: 8px;
     }
 }
-
-/* ...existing code... */
 
 /* Top Buttons */
 .top-buttons {
@@ -1902,3 +1992,4 @@ table td:last-child {
     padding: 5px 0;
     border-bottom: 1px solid #eee;
 }
+

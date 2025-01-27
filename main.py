@@ -178,35 +178,65 @@ async def search_component(
     sql_query = "SELECT * FROM components WHERE 1=1"
     params = []
 
-    # Prepare search pattern (case-insensitive, space-insensitive)
-    search_terms = query.strip().split()
-    search_patterns = [f"%{term.lower()}%" for term in search_terms]
+    # Check if the query matches a resistance value pattern (e.g., "100ohm", "100Ω")
+    resistance_pattern = re.match(r'^(\d+\.?\d*)\s*(ohm|Ω|ohms)$', query.strip(), re.IGNORECASE)
+    
+    if resistance_pattern:
+        # Extract the numeric value
+        value = resistance_pattern.group(1)
+        # Create both versions of the resistance value
+        resistance_exact = f"{value}Ω"
+        resistance_exact_ohm = f"{value}ohm"
+        
+        # Add specific resistance search condition
+        sql_query += """ AND (
+            resistance LIKE ? OR 
+            resistance LIKE ? OR
+            resistance = ? OR 
+            resistance = ?
+        )"""
+        params.extend([f"{value}Ω%", f"{value}ohm%", resistance_exact, resistance_exact_ohm])
+    else:
+        # Regular search for other queries
+        # Replace "ohm" with "Ω" in the search query
+        query = re.sub(r'(?i)ohm', 'Ω', query)
+        search_terms = query.strip().split()
+        
+        # For each term that contains Ω, create an alternative with "ohm"
+        expanded_terms = []
+        for term in search_terms:
+            expanded_terms.append(term.lower())
+            if 'Ω' in term:
+                # Add version with "ohm"
+                expanded_terms.append(term.replace('Ω', 'ohm'))
+        
+        search_patterns = [f"%{term}%" for term in expanded_terms]
 
-    # Add search conditions
-    if search_patterns:
-        sql_query += " AND ("
-        search_columns = [
-            "LOWER(part_number)",
-            "LOWER(manufacturer)",
-            "LOWER(description)",
-            "LOWER(component_type)",
-            "LOWER(component_branch)",
-            "LOWER(capacitance)",
-            "LOWER(resistance)",
-            "LOWER(voltage)",
-            "LOWER(tolerance)",
-            "LOWER(inductance)",
-            "LOWER(current_power)",
-            "LOWER(package)",
-            "LOWER(manufacture_part_number)"  # Add this line
-        ]
-        conditions = []
-        for pattern in search_patterns:
-            cols_conditions = [f"{col} LIKE ?" for col in search_columns]
-            conditions.append("(" + " OR ".join(cols_conditions) + ")")
-            params.extend([pattern] * len(search_columns))
-        sql_query += " AND ".join(conditions)
-        sql_query += ")"
+        # Add search conditions
+        if search_patterns:
+            sql_query += " AND ("
+            search_columns = [
+                "LOWER(part_number)",
+                "LOWER(manufacturer)",
+                "LOWER(description)",
+                "LOWER(component_type)",
+                "LOWER(component_branch)",
+                "LOWER(capacitance)",
+                "LOWER(resistance)",
+                "LOWER(voltage)",
+                "LOWER(tolerance)",
+                "LOWER(inductance)",
+                "LOWER(current_power)",
+                "LOWER(package)",
+                "LOWER(manufacture_part_number)"
+            ]
+            conditions = []
+            for pattern in search_patterns:
+                cols_conditions = [f"{col} LIKE ?" for col in search_columns]
+                conditions.append("(" + " OR ".join(cols_conditions) + ")")
+                params.extend([pattern] * len(search_columns))
+            sql_query += " OR ".join(conditions)
+            sql_query += ")"
 
     # Apply filters
     if component_type:
@@ -234,7 +264,7 @@ async def serve_ui(request: Request):
 
 # Endpoint to upload and update components from CSV
 @app.post("/update_components_from_csv")
-async def update_components_from_csv(file: UploadFile = File(...)):
+async def update_components_from_csv(file: UploadFile = File(...), user: str = Query(...)):
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="Please upload a CSV file.")
 
@@ -336,12 +366,16 @@ async def update_components_from_csv(file: UploadFile = File(...)):
     required_fields = ['LCSC Part Number']
     errors = []
     updated_components = []
+    changes_summary = []
+    changes_details = []
 
     conn = sqlite3.connect('components.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     try:
+        cursor.execute("BEGIN TRANSACTION")
+
         for index, row in df.iterrows():
             missing_fields = []
             for field in required_fields:
@@ -376,7 +410,8 @@ async def update_components_from_csv(file: UploadFile = File(...)):
 
             if existing_component:
                 # Update existing component
-                new_qty = existing_component['order_qty'] + component_data['order_qty']
+                old_qty = existing_component['order_qty']
+                new_qty = old_qty + component_data['order_qty']
                 cursor.execute("""
                     UPDATE components 
                     SET order_qty = ?, 
@@ -384,6 +419,14 @@ async def update_components_from_csv(file: UploadFile = File(...)):
                         storage_place = COALESCE(?, storage_place)
                     WHERE part_number = ?
                 """, (new_qty, component_data['unit_price'], component_data['storage_place'], component_data['part_number']))
+                
+                changes_summary.append(f"Updated {component_data['part_number']}: +{component_data['order_qty']} to {new_qty}")
+                changes_details.append({
+                    'part_number': component_data['part_number'],
+                    'old_qty': old_qty,
+                    'new_qty': new_qty,
+                    'action': 'update'
+                })
                 
                 # Get updated component
                 cursor.execute("SELECT * FROM components WHERE part_number=?", (component_data['part_number'],))
@@ -408,10 +451,31 @@ async def update_components_from_csv(file: UploadFile = File(...)):
                     component_data['current_power'], component_data['manufacture_part_number']
                 ))
                 
+                changes_summary.append(f"Added {component_data['part_number']}: {component_data['order_qty']} units")
+                changes_details.append({
+                    'part_number': component_data['part_number'],
+                    'old_qty': 0,
+                    'new_qty': component_data['order_qty'],
+                    'action': 'add'
+                })
+                
                 # Get the inserted component
                 cursor.execute("SELECT * FROM components WHERE part_number=?", (component_data['part_number'],))
                 new_component = cursor.fetchone()
                 updated_components.append(dict(new_component))
+
+        # Create a single changelog entry for the entire operation
+        new_items = len([c for c in changes_summary if c.startswith("Added")])
+        updated_items = len([c for c in changes_summary if c.startswith("Updated")])
+        summary = {
+            'summary': f"CSV Import: {new_items} new items, {updated_items} updated items",
+            'changes': changes_details
+        }
+        
+        cursor.execute('''
+            INSERT INTO change_log (user, action_type, details)
+            VALUES (?, ?, ?)
+        ''', (user, 'csv_import_batch', json.dumps(summary)))
 
         conn.commit()
 
@@ -577,56 +641,87 @@ async def get_component_config():
 async def revert_change(data: dict):
     log_id = data.get('log_id')
     if not log_id:
-        raise HTTPException(status_code=400, detail="Log ID is required.")
+        raise HTTPException(status_code=400, detail="Log ID is required")
 
     conn = sqlite3.connect('components.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     try:
-        # Retrieve the log entry
+        # Start transaction
+        cursor.execute("BEGIN TRANSACTION")
+
+        # Get the change log entry
         cursor.execute("SELECT * FROM change_log WHERE id = ?", (log_id,))
         log_entry = cursor.fetchone()
 
         if not log_entry:
-            raise HTTPException(status_code=404, detail="Log entry not found.")
+            raise HTTPException(status_code=404, detail="Change log entry not found")
 
         action_type = log_entry['action_type']
-        component_id = log_entry['component_id']
-        part_number = log_entry['part_number']
-        details = log_entry['details']
 
-        if action_type == 'add_component':
-            cursor.execute("DELETE FROM components WHERE id = ?", (component_id,))
-            revert_details = f"Reverted addition of component {part_number}"
-
-        elif action_type == 'update_quantity':
-            match = re.search(r'Quantity changed by (-?\d+) to (\d+)', details)
-            if match:
-                change = int(match.group(1))
-                cursor.execute("""
-                    UPDATE components 
-                    SET order_qty = order_qty - ? 
-                    WHERE id = ?
-                """, (change, component_id))
-                revert_details = f"Reverted quantity change of {change} for component {part_number}"
-            else:
-                raise HTTPException(status_code=400, detail="Cannot parse quantity change")
+        if action_type == 'update_quantity':
+            # Extract the quantity change from details
+            match = re.search(r'changed by ([-\d]+)', log_entry['details'])
+            if not match:
+                raise HTTPException(status_code=400, detail="Invalid change log details")
+            
+            quantity_change = -int(match.group(1))  # Reverse the change
+            
+            cursor.execute("""
+                UPDATE components 
+                SET order_qty = order_qty + ? 
+                WHERE id = ?
+            """, (quantity_change, log_entry['component_id']))
 
         elif action_type == 'delete':
-            # Reinsert the component using backup data
-            # Assume you have a backup mechanism or prevent deletion in the first place
-            revert_details = f"Reverted deletion of component {part_number}"
-            raise HTTPException(status_code=400, detail="Reverting deletion is not supported.")
+            # Get the component details from the log
+            component_details = json.loads(log_entry['details'])
+            cursor.execute('''
+                INSERT INTO components (
+                    part_number, storage_place, order_qty, component_type, component_branch,
+                    unit_price, description, package, manufacturer
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                component_details['part_number'], component_details['storage_place'],
+                component_details['order_qty'], component_details['component_type'],
+                component_details['component_branch'], component_details['unit_price'],
+                component_details['description'], component_details['package'],
+                component_details['manufacturer']
+            ))
+
+        elif action_type == 'csv_import_batch':
+            # Parse the details to get the changes
+            changes = json.loads(log_entry['details'])
+            
+            for change in changes['changes']:
+                part_number = change['part_number']
+                old_qty = change.get('old_qty', 0)
+                new_qty = change.get('new_qty', 0)
+                
+                # Calculate the quantity difference to revert
+                qty_diff = old_qty - new_qty
+                
+                cursor.execute("""
+                    UPDATE components 
+                    SET order_qty = ? 
+                    WHERE part_number = ?
+                """, (old_qty, part_number))
 
         else:
-            raise HTTPException(status_code=400, detail="Unsupported action type for revert.")
+            raise HTTPException(status_code=400, detail="Unsupported action type for revert")
 
-        # Log the revert action with part_number
+        # Mark the change as reverted
         cursor.execute("""
             INSERT INTO change_log (user, action_type, component_id, part_number, details)
             VALUES (?, ?, ?, ?, ?)
-        """, ("System", f"revert_{action_type}", component_id, part_number, revert_details))
+        """, (
+            log_entry['user'],
+            f"revert_{action_type}",
+            log_entry['component_id'],
+            log_entry['part_number'],
+            f"Reverted change: {log_entry['details']}"
+        ))
 
         conn.commit()
         return {"message": "Change reverted successfully"}
