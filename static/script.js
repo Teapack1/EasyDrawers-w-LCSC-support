@@ -1,5 +1,47 @@
 // Hamburger menu functionality
 document.addEventListener('DOMContentLoaded', function () {
+    // Tab Functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked button and corresponding content
+            button.classList.add('active');
+            const tabId = button.getAttribute('data-tab') + '-tab';
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Accordion Functionality
+    const accordions = document.querySelectorAll('.accordion');
+
+    accordions.forEach(accordion => {
+        const header = accordion.querySelector('.accordion-header');
+
+        header.addEventListener('click', () => {
+            accordion.classList.toggle('active');
+        });
+    });
+
+    // File Upload Display
+    const fileInput = document.getElementById('csvFile');
+    const fileNameDisplay = document.getElementById('selected-file-name');
+
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener('change', (event) => {
+            if (event.target.files.length > 0) {
+                fileNameDisplay.textContent = event.target.files[0].name;
+            } else {
+                fileNameDisplay.textContent = 'No file selected';
+            }
+        });
+    }
+
     const menuButton = document.getElementById('menuButton');
     const menuItems = document.querySelector('.menu-items');
 
@@ -23,22 +65,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('databaseButton').addEventListener('click', function () {
         window.location.href = '/database';
-    });
-
-    document.getElementById('changelogButton').addEventListener('click', function () {
-        window.location.href = '/changelog';
-    });
-
-    // Add event listener for search button
-    document.getElementById('searchButton').addEventListener('click', function () {
-        searchComponent();
-    });
-
-    // Add event listener for enter key in search box
-    document.getElementById('searchQuery').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            searchComponent();
-        }
     });
 });
 
@@ -139,11 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Clear the file input
                 fileInput.value = '';
-                document.getElementById('selectedFileName').textContent = 'No file selected';
-
-                // Close the modal
-                document.getElementById('importComponentsModal').style.display = 'none';
-                document.body.style.overflow = '';
             } else {
                 alert(`Error: ${result.detail || 'Failed to upload components'}`);
             }
@@ -219,33 +240,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         try {
-            const response = await fetch('/add_component', {
-                method: 'POST',
+            const response = await fetch("/add_component", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
 
-            const result = await response.json();
-
             if (response.ok) {
-                alert("Component added successfully!");
+                alert("Component added successfully.");
                 document.getElementById("addComponentForm").reset();
-
-                // Close the modal
-                document.getElementById('addComponentModal').style.display = 'none';
-                document.body.style.overflow = '';
-
-                // Optionally, perform a search to show the newly added component
                 document.getElementById("searchQuery").value = formData.part_number;
                 searchComponent();
             } else {
-                alert(`Error: ${result.detail}`);
+                const error = await response.json();
+                alert(`Error: ${error.detail}`);
             }
         } catch (error) {
-            console.error('Add component error:', error);
-            alert(`Error: ${error.message}`);
+            alert(`Unexpected error: ${error.message}`);
         }
     });
 
@@ -272,6 +285,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const column = header.getAttribute("data-column");
             sortResults(column);
         });
+    });
+
+    // Changelog button event listener
+    document.getElementById("changelogButton").addEventListener('click', () => {
+        window.location.href = "/changelog";
     });
 
     // Event listener for component type change
@@ -707,46 +725,30 @@ let currentSortColumn = null;
 let sortOrderAsc = true; // Sort order flag
 
 async function searchComponent() {
-    const query = document.getElementById("searchQuery").value.trim();
+    const query = document.getElementById("searchQuery").value;
     const componentType = document.getElementById("filterComponentType").value;
     const componentBranch = document.getElementById("filterComponentBranch").value;
-    const inStock = document.getElementById("inStockCheckbox").checked;
+    const inStockOnly = document.getElementById("inStockCheckbox").checked;
 
-    if (!query && !componentType && !componentBranch && !inStock) {
-        alert("Please enter a search query or select a filter.");
-        return;
+    let url = `/search_component?query=${encodeURIComponent(query)}`;
+
+    if (componentType) {
+        url += `&component_type=${encodeURIComponent(componentType)}`;
+    }
+    if (componentBranch) {
+        url += `&component_branch=${encodeURIComponent(componentBranch)}`;
+    }
+    if (inStockOnly) {
+        url += `&in_stock=true`;
     }
 
-    try {
-        let url = `/search_component?query=${encodeURIComponent(query)}`;
-        if (componentType) {
-            url += `&component_type=${encodeURIComponent(componentType)}`;
-        }
-        if (componentBranch) {
-            url += `&component_branch=${encodeURIComponent(componentBranch)}`;
-        }
-        if (inStock) {
-            url += `&in_stock=true`;
-        }
-
-        const response = await fetch(url);
-        const result = await response.json();
-
-        if (response.ok) {
-            searchResults = result;
-            displaySearchResults(result);
-
-            // Show the search results section
-            document.getElementById('searchResults').style.display = 'block';
-
-            // Scroll to search results
-            document.getElementById('searchResults').scrollIntoView({ behavior: 'smooth' });
-        } else {
-            alert(`Error: ${result.detail}`);
-        }
-    } catch (error) {
-        console.error('Search error:', error);
-        alert(`Error: ${error.message}`);
+    const response = await fetch(url);
+    if (response.ok) {
+        searchResults = await response.json(); // Save results for sorting
+        displaySearchResults(searchResults);
+    } else {
+        const error = await response.json();
+        alert(`Error: ${error.detail}`);
     }
 }
 
@@ -1537,214 +1539,3 @@ async function updateCartState() {
         console.error('Error updating cart state:', error);
     }
 }
-
-// Modal functionality
-document.addEventListener('DOMContentLoaded', function () {
-    // Modal open/close functionality
-    const addComponentBtn = document.getElementById('addComponentBtn');
-    const importComponentsBtn = document.getElementById('importComponentsBtn');
-    const importBomBtn = document.getElementById('importBomBtn');
-
-    const addComponentModal = document.getElementById('addComponentModal');
-    const importComponentsModal = document.getElementById('importComponentsModal');
-    const importBomModal = document.getElementById('importBomModal');
-
-    const closeModalBtns = document.querySelectorAll('.close-modal-btn, .modal-cancel-btn');
-
-    // Open modals
-    addComponentBtn.addEventListener('click', () => {
-        addComponentModal.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Prevent scrolling of background
-    });
-
-    importComponentsBtn.addEventListener('click', () => {
-        importComponentsModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    });
-
-    importBomBtn.addEventListener('click', () => {
-        importBomModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    });
-
-    // Close modals
-    closeModalBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            addComponentModal.style.display = 'none';
-            importComponentsModal.style.display = 'none';
-            importBomModal.style.display = 'none';
-            document.body.style.overflow = ''; // Restore scrolling
-        });
-    });
-
-    // Close modal when clicking outside the modal content
-    window.addEventListener('click', (event) => {
-        if (event.target === addComponentModal) {
-            addComponentModal.style.display = 'none';
-            document.body.style.overflow = '';
-        } else if (event.target === importComponentsModal) {
-            importComponentsModal.style.display = 'none';
-            document.body.style.overflow = '';
-        } else if (event.target === importBomModal) {
-            importBomModal.style.display = 'none';
-            document.body.style.overflow = '';
-        }
-    });
-
-    // File upload name display
-    const csvFileInput = document.getElementById('csvFile');
-    const selectedFileName = document.getElementById('selectedFileName');
-
-    csvFileInput.addEventListener('change', () => {
-        if (csvFileInput.files.length > 0) {
-            selectedFileName.textContent = csvFileInput.files[0].name;
-        } else {
-            selectedFileName.textContent = 'No file selected';
-        }
-    });
-
-    const bomFileInput = document.getElementById('bomFile');
-    const selectedBomFileName = document.getElementById('selectedBomFileName');
-
-    bomFileInput.addEventListener('change', () => {
-        if (bomFileInput.files.length > 0) {
-            selectedBomFileName.textContent = bomFileInput.files[0].name;
-        } else {
-            selectedBomFileName.textContent = 'No file selected';
-        }
-    });
-
-    // Multi-step form functionality
-    const nextBtns = document.querySelectorAll('.modal-next-btn');
-    const prevBtns = document.querySelectorAll('.modal-prev-btn');
-    const formSteps = document.querySelectorAll('.form-step');
-    const stepIndicators = document.querySelectorAll('.step');
-
-    let currentStep = 0;
-
-    nextBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Validate current step
-            const currentFormStep = formSteps[currentStep];
-            const requiredFields = currentFormStep.querySelectorAll('input[required], select[required]');
-            let valid = true;
-
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('invalid');
-                    valid = false;
-                } else {
-                    field.classList.remove('invalid');
-                }
-            });
-
-            if (!valid) {
-                alert('Please fill in all required fields before proceeding.');
-                return;
-            }
-
-            // Move to next step
-            formSteps[currentStep].classList.remove('active');
-            currentStep++;
-            formSteps[currentStep].classList.add('active');
-
-            // Update step indicators
-            updateStepIndicators();
-        });
-    });
-
-    prevBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            formSteps[currentStep].classList.remove('active');
-            currentStep--;
-            formSteps[currentStep].classList.add('active');
-
-            // Update step indicators
-            updateStepIndicators();
-        });
-    });
-
-    function updateStepIndicators() {
-        stepIndicators.forEach((step, index) => {
-            if (index <= currentStep) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
-            }
-        });
-    }
-
-    // Reset form and steps when opening modal
-    addComponentBtn.addEventListener('click', () => {
-        currentStep = 0;
-        formSteps.forEach((step, index) => {
-            if (index === 0) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
-            }
-        });
-        updateStepIndicators();
-        document.getElementById('addComponentForm').reset();
-    });
-
-    // Update the existing form submit handlers
-    document.getElementById('uploadCsvForm').addEventListener('submit', async (event) => {
-        // Keep existing form submission logic, just close the modal on success
-        importComponentsModal.style.display = 'none';
-        document.body.style.overflow = '';
-    });
-
-    // Create form handler for BOM upload
-    document.getElementById('uploadBomForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const fileInput = document.getElementById('bomFile');
-        const file = fileInput.files[0];
-        const currentUser = localStorage.getItem('currentUser');
-
-        if (!currentUser) {
-            alert('Please log in first');
-            return;
-        }
-
-        if (!file) {
-            alert('Please select a BOM file to upload.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('user', currentUser);
-
-        try {
-            const response = await fetch(`/upload_bom?user=${encodeURIComponent(currentUser)}`, {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('BOM successfully imported to cart!');
-                importBomModal.style.display = 'none';
-                document.body.style.overflow = '';
-                updateCartState(); // Update cart indicator
-            } else {
-                alert(`Error: ${result.detail || 'Failed to import BOM'}`);
-            }
-        } catch (error) {
-            console.error('BOM upload error:', error);
-            alert(`Error: ${error.message}`);
-        }
-    });
-
-    // Connect the new login button to the user modal
-    document.getElementById('loginButton').addEventListener('click', function () {
-        document.getElementById('userSelectionModal').style.display = 'block';
-    });
-
-    // Add the changelog button click handler
-    document.getElementById('changelogButton').addEventListener('click', function () {
-        window.location.href = '/changelog';
-    });
-});

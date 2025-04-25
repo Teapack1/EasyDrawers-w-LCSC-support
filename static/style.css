@@ -9,6 +9,259 @@ h1 {
     text-align: center;
 }
 
+/* Tab Container and Tabs */
+.tab-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.tabs {
+    display: flex;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button:hover {
+    background-color: #f1f1f1;
+    color: #007BFF;
+}
+
+.tab-button.active {
+    background-color: #fff;
+    color: #007BFF;
+    border-bottom: 3px solid #007BFF;
+}
+
+.tab-content-container {
+    background-color: #fff;
+}
+
+.tab-content {
+    display: none;
+    padding: 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.content-panel {
+    padding: 20px;
+}
+
+/* Form Layout Improvements */
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+    margin-bottom: 15px;
+}
+
+.form-field {
+    flex: 1;
+    min-width: 250px;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Accordion Style */
+.accordion {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.accordion-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.accordion-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.accordion.active .accordion-icon {
+    transform: rotate(45deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background-color: #fff;
+    padding: 0 20px;
+}
+
+.accordion.active .accordion-content {
+    max-height: 1000px;
+    padding: 20px;
+}
+
+/* File Upload Styling */
+.import-container {
+    margin: 20px 0;
+}
+
+.file-upload-container {
+    margin-bottom: 20px;
+}
+
+.file-upload-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #e9e9e9;
+}
+
+.file-upload-icon {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+#selected-file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.import-actions {
+    margin-top: 20px;
+}
+
+.import-help {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.import-help h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+
+.import-help ol {
+    margin: 10px 0 0;
+    padding-left: 20px;
+}
+
+.import-help li {
+    margin-bottom: 8px;
+}
+
+/* Button Styles */
+.primary-button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+    background-color: #0056b3;
+}
+
+.secondary-button {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+    background-color: #ddd;
+}
+
+/* Responsive Adaptations */
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .form-field {
+        flex: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
 /* Container for the three panels */
 .container {
     display: flex;
@@ -90,60 +343,13 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Search Results Section */
 #searchResults {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
+    margin-top: 20px;
     background-color: #fff;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: none;
-    /* Initially hidden until search is performed */
-}
-
-#searchResults .results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-#searchResults h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
-}
-
-.view-toggle {
-    display: flex;
-    justify-content: center;
-    margin: 10px 0;
-}
-
-.view-button {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    padding: 8px 15px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.view-button:first-child {
-    border-radius: 4px 0 0 4px;
-}
-
-.view-button:last-child {
-    border-radius: 0 4px 4px 0;
-}
-
-.view-button.active {
-    background-color: #3498db;
-    color: white;
-    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 table {
@@ -2092,366 +2298,4 @@ table td:last-child {
 .content-section li {
     padding: 5px 0;
     border-bottom: 1px solid #eee;
-}
-
-/* Add new styles for the modal-based approach */
-
-/* Main container styles */
-.main-container {
-    max-width: 1200px;
-    margin: 0 auto 20px;
-    padding: 0 20px;
-}
-
-/* Action buttons */
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.primary-action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.primary-action-btn:hover {
-    background-color: #2980b9;
-}
-
-.btn-icon {
-    margin-right: 8px;
-    font-size: 18px;
-}
-
-/* Search panel styles */
-.search-panel {
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Full screen modal styles */
-.full-screen-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    overflow-y: auto;
-}
-
-.full-screen-modal .modal-content {
-    background-color: #fff;
-    margin: 30px auto;
-    width: 90%;
-    max-width: 800px;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    position: relative;
-    animation: modalFadeIn 0.3s;
-    max-height: calc(100vh - 60px);
-    display: flex;
-    flex-direction: column;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.modal-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-size: 20px;
-    color: #333;
-}
-
-.close-modal-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #777;
-    position: absolute;
-    right: 15px;
-    top: 15px;
-}
-
-.modal-body {
-    padding: 20px;
-    overflow-y: auto;
-    flex-grow: 1;
-}
-
-.modal-footer {
-    padding: 15px 20px;
-    border-top: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* File upload styling */
-.file-upload-container {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.file-upload-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #f5f5f5;
-    border: 2px dashed #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
-    max-width: 400px;
-}
-
-.file-upload-label:hover {
-    background-color: #eaeaea;
-}
-
-.file-upload-icon {
-    font-size: 40px;
-    margin-bottom: 10px;
-    color: #3498db;
-}
-
-.file-upload-text {
-    font-size: 16px;
-    color: #555;
-}
-
-.file-upload-input {
-    display: none;
-}
-
-.selected-file-name {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #555;
-}
-
-/* Modal buttons */
-.modal-action-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.modal-action-btn:hover {
-    background-color: #2980b9;
-}
-
-.modal-cancel-btn {
-    background-color: #f5f5f5;
-    color: #555;
-    border: 1px solid #ddd;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-right: 10px;
-}
-
-.modal-cancel-btn:hover {
-    background-color: #eaeaea;
-}
-
-/* Step indicators */
-.step-indicator {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-top: 15px;
-    margin-bottom: 5px;
-}
-
-.step {
-    flex: 1;
-    text-align: center;
-    padding: 8px 0;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    position: relative;
-    font-size: 14px;
-    font-weight: 600;
-    color: #777;
-    max-width: 150px;
-}
-
-.step:first-child {
-    border-radius: 4px 0 0 4px;
-}
-
-.step:last-child {
-    border-radius: 0 4px 4px 0;
-}
-
-.step.active {
-    background-color: #3498db;
-    color: white;
-    border-color: #3498db;
-}
-
-.step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -10px;
-    width: 20px;
-    height: 20px;
-    background-color: inherit;
-    border-right: 1px solid #ddd;
-    border-top: 1px solid #ddd;
-    transform: translateY(-50%) rotate(45deg);
-    z-index: 1;
-}
-
-.step.active:not(:last-child)::after {
-    border-color: #3498db;
-}
-
-/* Multi-step form */
-.form-step {
-    display: none;
-}
-
-.form-step.active {
-    display: block;
-    animation: fadeIn 0.5s;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-.step-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.modal-next-btn,
-.modal-prev-btn {
-    background-color: #f5f5f5;
-    color: #555;
-    border: 1px solid #ddd;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.modal-next-btn:hover,
-.modal-prev-btn:hover {
-    background-color: #eaeaea;
-}
-
-.modal-next-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-}
-
-.modal-next-btn:hover {
-    background-color: #2980b9;
-}
-
-/* Make sure form fields are responsive */
-.form-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.form-fields label {
-    font-weight: 600;
-    color: #555;
-}
-
-.form-fields input[type="text"],
-.form-fields input[type="number"],
-.form-fields select {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .action-buttons {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .primary-action-btn {
-        width: 100%;
-    }
-
-    .full-screen-modal .modal-content {
-        width: 95%;
-        margin: 10px auto;
-    }
-
-    .step-indicator {
-        flex-direction: row;
-    }
-
-    .step {
-        font-size: 12px;
-        padding: 6px 0;
-    }
 }
