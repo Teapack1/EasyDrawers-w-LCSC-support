@@ -27,7 +27,6 @@
         </div>
     </div>
 
-
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="hamburger-menu">
@@ -50,19 +49,25 @@
         </div>
     </div>
 
-    <h1>Electronics Stock Search</h1>
+    <h1>Electronics Stock Management</h1>
 
-    <!-- Segmented Control for Main Actions -->
-    <div class="segmented-control">
-        <button class="segment-button active" data-target="search-content">Search Components</button>
-        <button class="segment-button" data-target="import-content">Import Components</button>
-        <button class="segment-button" data-target="add-content">Add New Component</button>
-    </div>
+    <!-- Main Search-focused Container -->
+    <div class="main-container">
+        <div class="action-buttons">
+            <button id="addComponentBtn" class="primary-action-btn">
+                <span class="btn-icon">+</span> Add New Component
+            </button>
+            <button id="importComponentsBtn" class="primary-action-btn">
+                <span class="btn-icon">↑</span> Import Components
+            </button>
+            <button id="importBomBtn" class="primary-action-btn">
+                <span class="btn-icon">📄</span> Import BOM to Cart
+            </button>
+        </div>
 
-    <!-- Content sections for segmented control -->
-    <div class="tab-content-container">
-        <!-- Search Components Content (Visible by default) -->
-        <div id="search-content" class="tab-content active">
+        <!-- Search Components Panel -->
+        <div class="search-panel">
+            <h2>Search Components</h2>
             <!-- Filters -->
             <div class="filter-container">
                 <select id="filterComponentType">
@@ -78,82 +83,18 @@
                     Show Only In Stock
                 </label>
             </div>
-            <!-- Search Bar and BOM Upload -->
+            <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-input-group">
                     <input type="text" id="searchQuery"
                         placeholder="Search by part number, description, or specifications">
                     <button id="searchButton">Search</button>
                 </div>
-                <div class="bom-upload-group">
-                    <input type="file" id="bomFile" accept=".csv">
-                    <button id="uploadBomButton">Import BOM to Cart</button>
-                </div>
             </div>
-        </div>
-
-        <!-- Import Components Content (Hidden by default) -->
-        <div id="import-content" class="tab-content">
-            <form id="uploadCsvForm">
-                <p>Import components from LCSC CSV export file</p>
-                <input type="file" id="csvFile" accept=".csv">
-                <button type="submit">Import LCSC Components</button>
-            </form>
-        </div>
-
-        <!-- Add New Component Content (Hidden by default) -->
-        <div id="add-content" class="tab-content">
-            <form id="addComponentForm">
-                <p>Manually add a new component to inventory</p>
-                <div class="form-section">
-                    <div class="form-fields">
-                        <label for="partNumber">LCSC Part Number*</label>
-                        <input type="text" id="partNumber" required>
-
-                        <label for="storagePlace">Storage Location*</label>
-                        <input type="text" id="storagePlace" required>
-
-                        <label for="orderQty">Quantity*</label>
-                        <input type="number" id="orderQty" required min="0">
-
-                        <label for="componentType">Component Type*</label>
-                        <select id="componentType" required>
-                            <option value="">Select Component Type</option>
-                        </select>
-
-                        <label for="componentBranch">Component Branch*</label>
-                        <select id="componentBranch" required disabled>
-                            <option value="">Select Component Branch</option>
-                        </select>
-
-                        <div id="optionalFields">
-                            <label for="unitPrice" class="optional">Unit Price ($)</label>
-                            <input type="number" id="unitPrice" step="0.01">
-
-                            <label for="description" class="optional">Description</label>
-                            <input type="text" id="description">
-
-                            <label for="package" class="optional">Package</label>
-                            <input type="text" id="package">
-
-                            <label for="manufacturer" class="optional">Manufacturer</label>
-                            <input type="text" id="manufacturer">
-
-                            <label for="manufacturePartNumber" class="optional">Manufacturer Part Number</label>
-                            <input type="text" id="manufacturePartNumber">
-                        </div>
-
-                        <div id="dynamicFields">
-                            <!-- Dynamic fields will be populated based on component type -->
-                        </div>
-
-                        <button type="submit">Add Component</button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 
+    <!-- Search Results Section -->
     <div id="searchResults">
         <div class="results-header">
             <h3>Search Results</h3>
@@ -217,7 +158,7 @@
                         <th>Tolerance</th>
                         <th>Inductance</th>
                         <th>Current/Power</th>
-                        <th>Quantity</th> <!-- Renamed from Order Qty. -->
+                        <th>Quantity</th>
                         <th>Storage Place</th>
                         <th>Actions</th>
                     </tr>
@@ -234,6 +175,148 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal for Import Components -->
+    <div id="importComponentsModal" class="modal full-screen-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import Components</h2>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadCsvForm">
+                    <p>Import components from LCSC CSV export file</p>
+                    <div class="file-upload-container">
+                        <label for="csvFile" class="file-upload-label">
+                            <span class="file-upload-icon">📁</span>
+                            <span class="file-upload-text">Choose CSV File</span>
+                        </label>
+                        <input type="file" id="csvFile" accept=".csv" class="file-upload-input">
+                        <span id="selectedFileName" class="selected-file-name">No file selected</span>
+                    </div>
+                    <button type="submit" class="modal-action-btn">Import LCSC Components</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Import BOM -->
+    <div id="importBomModal" class="modal full-screen-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Import BOM to Cart</h2>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadBomForm">
+                    <p>Import components from a BOM CSV file directly to your cart</p>
+                    <div class="file-upload-container">
+                        <label for="bomFile" class="file-upload-label">
+                            <span class="file-upload-icon">📁</span>
+                            <span class="file-upload-text">Choose BOM File</span>
+                        </label>
+                        <input type="file" id="bomFile" accept=".csv" class="file-upload-input">
+                        <span id="selectedBomFileName" class="selected-file-name">No file selected</span>
+                    </div>
+                    <button id="uploadBomButton" type="submit" class="modal-action-btn">Import BOM to Cart</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-step Modal for Add New Component -->
+    <div id="addComponentModal" class="modal full-screen-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Component</h2>
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">Basic Info</div>
+                    <div class="step" data-step="2">Specifications</div>
+                    <div class="step" data-step="3">Storage</div>
+                </div>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addComponentForm">
+                    <!-- Step 1: Basic Component Information -->
+                    <div class="form-step active" id="step1">
+                        <h3>Basic Component Information</h3>
+                        <div class="form-fields">
+                            <label for="partNumber">LCSC Part Number*</label>
+                            <input type="text" id="partNumber" required>
+
+                            <label for="componentType">Component Type*</label>
+                            <select id="componentType" required>
+                                <option value="">Select Component Type</option>
+                                <!-- Populated dynamically -->
+                            </select>
+
+                            <label for="componentBranch">Component Branch*</label>
+                            <select id="componentBranch" required disabled>
+                                <option value="">Select Component Branch</option>
+                                <!-- Populated dynamically -->
+                            </select>
+
+                            <label for="manufacturePartNumber">Manufacturer Part Number</label>
+                            <input type="text" id="manufacturePartNumber">
+
+                            <label for="manufacturer">Manufacturer</label>
+                            <input type="text" id="manufacturer">
+
+                            <label for="description">Description</label>
+                            <input type="text" id="description">
+
+                            <label for="package">Package</label>
+                            <input type="text" id="package">
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="modal-next-btn">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Component Specifications -->
+                    <div class="form-step" id="step2">
+                        <h3>Component Specifications</h3>
+                        <div class="form-fields">
+                            <div id="dynamicFields">
+                                <!-- Dynamic fields will be populated based on component type -->
+                            </div>
+
+                            <label for="unitPrice">Unit Price ($)</label>
+                            <input type="number" id="unitPrice" step="0.01">
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="modal-prev-btn">Previous</button>
+                            <button type="button" class="modal-next-btn">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Storage Information -->
+                    <div class="form-step" id="step3">
+                        <h3>Storage Information</h3>
+                        <div class="form-fields">
+                            <label for="storagePlace">Storage Location*</label>
+                            <input type="text" id="storagePlace" required>
+
+                            <label for="orderQty">Quantity*</label>
+                            <input type="number" id="orderQty" required min="0">
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="modal-prev-btn">Previous</button>
+                            <button type="submit" class="modal-action-btn">Add Component</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/script.js"></script>
 </body>
 

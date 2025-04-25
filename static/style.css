@@ -90,13 +90,60 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* Search Results Section */
 #searchResults {
-    margin-top: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
     background-color: #fff;
-    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
+    /* Initially hidden until search is performed */
+}
+
+#searchResults .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#searchResults h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.view-toggle {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.view-button {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.view-button:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.view-button:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.view-button.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
 }
 
 table {
@@ -2047,146 +2094,364 @@ table td:last-child {
     border-bottom: 1px solid #eee;
 }
 
-/* Styles for Segmented Control */
-.segmented-control {
+/* Add new styles for the modal-based approach */
+
+/* Main container styles */
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    padding: 0 20px;
+}
+
+/* Action buttons */
+.action-buttons {
     display: flex;
     justify-content: center;
-    /* Center the control */
-    margin: 20px auto;
-    border: 1px solid #007BFF;
-    border-radius: 8px;
-    overflow: hidden;
-    /* Keep rounded corners */
-    max-width: fit-content;
-    /* Size to content */
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
-.segment-button {
-    flex: 1;
-    /* Allow buttons to take equal space if needed */
-    padding: 10px 20px;
-    background-color: #f9f9f9;
-    color: #007BFF;
+.primary-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    background-color: #3498db;
+    color: white;
     border: none;
-    border-right: 1px solid #007BFF;
-    /* Separator */
-    cursor: pointer;
+    border-radius: 5px;
     font-size: 16px;
-    text-align: center;
-    transition: background-color 0.3s, color 0.3s;
-    margin-top: 0;
-    /* Override default button margin */
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.segmented-control .segment-button:last-child {
-    border-right: none;
+.primary-action-btn:hover {
+    background-color: #2980b9;
 }
 
-.segment-button:hover {
-    background-color: #e0e0e0;
+.btn-icon {
+    margin-right: 8px;
+    font-size: 18px;
 }
 
-.segment-button.active {
-    background-color: #007BFF;
-    color: #fff;
-}
-
-/* Styles for Tab Content */
-.tab-content-container {
-    background-color: #f9f9f9;
-    /* Match panel background */
-    border: 1px solid #ddd;
+/* Search panel styles */
+.search-panel {
+    background-color: #f5f5f5;
     border-radius: 8px;
     padding: 20px;
-    margin: 0 auto 20px auto;
-    /* Center below segmented control */
-    max-width: 1200px;
-    /* Match original container */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.tab-content {
+/* Full screen modal styles */
+.full-screen-modal {
     display: none;
-    /* Hide inactive tabs */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    overflow-y: auto;
 }
 
-.tab-content.active {
-    display: block;
-    /* Show active tab */
+.full-screen-modal .modal-content {
+    background-color: #fff;
+    margin: 30px auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+    animation: modalFadeIn 0.3s;
+    max-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
 }
 
-/* Remove original container/panel styles if they conflict */
-.container {
-    display: block;
-    /* Override flex display */
-    padding: 0;
-    /* Remove padding handled by tab-content-container */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Ensure the specific content areas don't have conflicting backgrounds/borders */
-#search-content,
-#import-content,
-#add-content {
-    /* Reset individual backgrounds/borders if needed, handled by container */
-    background-color: transparent;
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.close-modal-btn {
+    background: none;
     border: none;
-    padding: 0;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
 
-/* Adjust Add New Component form layout if needed (optional) */
-#add-content .form-fields {
-    max-height: none;
-    /* Remove height restriction if it exists */
-    overflow-y: visible;
-    /* Remove scrollbar if it exists */
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex-grow: 1;
 }
 
-/* Adjust heading margins within tabs */
-.tab-content h2 {
-    margin-top: 0;
-    /* Remove extra top margin for headings inside tabs */
-    text-align: center;
-    margin-bottom: 15px;
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
 }
 
-/* Style the forms inside tabs */
-#import-content form,
-#add-content form {
+/* File upload styling */
+.file-upload-container {
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Center form elements */
 }
 
-#import-content p,
-#add-content p {
-    margin-bottom: 15px;
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    max-width: 400px;
+}
+
+.file-upload-label:hover {
+    background-color: #eaeaea;
+}
+
+.file-upload-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #3498db;
+}
+
+.file-upload-text {
+    font-size: 16px;
+    color: #555;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.selected-file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Modal buttons */
+.modal-action-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-action-btn:hover {
+    background-color: #2980b9;
+}
+
+.modal-cancel-btn {
+    background-color: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+}
+
+.modal-cancel-btn:hover {
+    background-color: #eaeaea;
+}
+
+/* Step indicators */
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.step {
+    flex: 1;
     text-align: center;
+    padding: 8px 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    position: relative;
+    font-size: 14px;
+    font-weight: 600;
+    color: #777;
+    max-width: 150px;
 }
 
-/* Responsive adjustments for segmented control */
-@media screen and (max-width: 600px) {
-    .segmented-control {
+.step:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.step:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.step.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background-color: inherit;
+    border-right: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    transform: translateY(-50%) rotate(45deg);
+    z-index: 1;
+}
+
+.step.active:not(:last-child)::after {
+    border-color: #3498db;
+}
+
+/* Multi-step form */
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.step-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.modal-next-btn,
+.modal-prev-btn {
+    background-color: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-next-btn:hover,
+.modal-prev-btn:hover {
+    background-color: #eaeaea;
+}
+
+.modal-next-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+.modal-next-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Make sure form fields are responsive */
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-fields label {
+    font-weight: 600;
+    color: #555;
+}
+
+.form-fields input[type="text"],
+.form-fields input[type="number"],
+.form-fields select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .action-buttons {
         flex-direction: column;
-        max-width: 90%;
-        /* Allow more width */
-        border-radius: 8px;
+        gap: 10px;
     }
 
-    .segment-button {
-        border-right: none;
-        border-bottom: 1px solid #007BFF;
-        border-radius: 0;
-        /* Remove individual radius when stacked */
+    .primary-action-btn {
+        width: 100%;
     }
 
-    .segmented-control .segment-button:last-child {
-        border-bottom: none;
+    .full-screen-modal .modal-content {
+        width: 95%;
+        margin: 10px auto;
     }
 
-    /* Optional: Adjust form layout for small screens */
-    #add-content .form-fields {
-        /* Add specific mobile styles if needed */
+    .step-indicator {
+        flex-direction: row;
+    }
+
+    .step {
+        font-size: 12px;
+        padding: 6px 0;
     }
 }
-
-/* END of Segmented Control Styles */
