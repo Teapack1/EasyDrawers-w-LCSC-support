@@ -59,13 +59,388 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handle menu item clicks
-    document.getElementById('mapButton').addEventListener('click', function () {
+    document.getElementById('mapButtonMenu').addEventListener('click', function () {
         window.location.href = '/map';
     });
 
     document.getElementById('databaseButton').addEventListener('click', function () {
         window.location.href = '/database';
     });
+
+    document.getElementById('changelogButton').addEventListener('click', function () {
+        window.location.href = '/changelog';
+    });
+
+    // Map Modal Functionality
+    const mapModal = document.getElementById('mapModal');
+    const closeMapModalBtn = document.getElementById('closeMapModal');
+
+    // Function to open the map modal and load map data
+    function openMapModal() {
+        // First show the modal
+        mapModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling of body
+
+        // Load map data if needed
+        loadStorageMapData();
+    }
+
+    // Function to close the map modal
+    function closeMapModal() {
+        mapModal.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    }
+
+    // Add event listener for the floating map button (desktop)
+    const mapFloatingBtn = document.getElementById('mapFloatingBtn');
+    if (mapFloatingBtn) {
+        mapFloatingBtn.addEventListener('click', openMapModal);
+    }
+
+    // Add event listener for the mobile map button
+    const mobileMapBtn = document.getElementById('mobileMapBtn');
+    if (mobileMapBtn) {
+        mobileMapBtn.addEventListener('click', function () {
+            setActiveMobileTab(this);
+            openMapModal();
+        });
+    }
+
+    // Close map modal when clicking the close button
+    if (closeMapModalBtn) {
+        closeMapModalBtn.addEventListener('click', closeMapModal);
+    }
+
+    // Close map modal when pressing Escape key
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && mapModal.classList.contains('active')) {
+            closeMapModal();
+        }
+    });
+
+    // Function to load map data
+    async function loadStorageMapData() {
+        try {
+            // Get existing map grid element
+            const mapGrid = mapModal.querySelector('.map-grid');
+
+            // If it's already populated, no need to reload
+            if (mapGrid.children.length > 0) return;
+
+            // First get the component configuration to extract storage places
+            const configResponse = await fetch('/component_config');
+            const componentConfig = await configResponse.json();
+
+            // Extract storage places from config
+            const storagePlaces = extractStoragePlaces(componentConfig);
+
+            // Create grid items for storage places
+            createStorageGrid(mapGrid, storagePlaces);
+
+            // Load and update storage data
+            await loadStorageData(mapGrid);
+
+            // Set up event listeners for map search and filters
+            setupMapEventListeners();
+
+        } catch (error) {
+            console.error('Error loading map data:', error);
+        }
+    }
+
+    // Helper function to extract storage places from component config
+    function extractStoragePlaces(config) {
+        const storagePlaces = new Set();
+
+        Object.values(config).forEach(type => {
+            Object.values(type['Component Branch'] || {}).forEach(branch => {
+                if (branch['Storage Place']) {
+                    storagePlaces.add(branch['Storage Place']);
+                }
+            });
+        });
+
+        return Array.from(storagePlaces).sort();
+    }
+
+    // Function to create the storage grid
+    function createStorageGrid(mapGrid, storagePlaces) {
+        // Clear the grid first
+        mapGrid.innerHTML = '';
+
+        // Calculate number of columns based on container width
+        const containerWidth = mapGrid.clientWidth;
+        const itemSize = 80; // Size of each grid item in pixels
+        const gap = 10; // Gap between items
+        const columns = Math.floor(containerWidth / (itemSize + gap)) || 4;
+
+        // Set grid template columns
+        mapGrid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+        // Create drawers for each storage place
+        storagePlaces.forEach(place => {
+            const drawer = document.createElement('div');
+            drawer.className = 'drawer empty';
+            drawer.setAttribute('data-location', place);
+
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'drawer-label';
+            labelSpan.textContent = place;
+
+            drawer.appendChild(labelSpan);
+            mapGrid.appendChild(drawer);
+
+            // Add click event to show drawer contents
+            drawer.addEventListener('click', () => {
+                showDrawerContents(drawer);
+            });
+        });
+
+        // Fill any remaining grid cells (to maintain alignment)
+        const totalCells = columns * Math.ceil(storagePlaces.length / columns);
+        for (let i = storagePlaces.length; i < totalCells; i++) {
+            const emptyDrawer = document.createElement('div');
+            emptyDrawer.className = 'drawer';
+            emptyDrawer.setAttribute('data-location', '');
+            mapGrid.appendChild(emptyDrawer);
+        }
+    }
+
+    // Function to load storage data and update the grid
+    async function loadStorageData(mapGrid) {
+        try {
+            const response = await fetch('/storage_data');
+            const storageData = await response.json();
+
+            // Update the drawers based on storage data
+            updateDrawerOccupancy(mapGrid, storageData);
+
+            return storageData;
+        } catch (error) {
+            console.error('Error loading storage data:', error);
+            return {};
+        }
+    }
+
+    // Function to update drawer occupancy based on storage data
+    function updateDrawerOccupancy(mapGrid, storageData) {
+        const drawers = mapGrid.querySelectorAll('.drawer[data-location]');
+
+        drawers.forEach(drawer => {
+            const location = drawer.getAttribute('data-location');
+            if (location) {
+                const isOccupied = storageData[location] && storageData[location].length > 0;
+                drawer.classList.remove('empty', 'occupied');
+                drawer.classList.add(isOccupied ? 'occupied' : 'empty');
+            }
+        });
+    }
+
+    // Function to show drawer contents
+    function showDrawerContents(drawer) {
+        const location = drawer.getAttribute('data-location');
+        if (!location) return;
+
+        // Highlight the selected drawer
+        const allDrawers = document.querySelectorAll('.drawer');
+        allDrawers.forEach(d => d.classList.remove('highlighted'));
+        drawer.classList.add('highlighted');
+
+        // TODO: Show drawer contents in a popover or sidebar
+        // This would need to fetch the components stored in this location
+        alert(`Storage location: ${location}\nComponents will be displayed here.`);
+    }
+
+    // Function to set up map event listeners
+    function setupMapEventListeners() {
+        // Map search functionality
+        const searchButton = document.getElementById('searchButtonMap');
+        const searchInput = document.getElementById('partNumberSearch');
+
+        if (searchButton && searchInput) {
+            searchButton.addEventListener('click', () => {
+                const query = searchInput.value.trim();
+                if (query) {
+                    searchComponentInMap(query);
+                }
+            });
+
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query) {
+                        searchComponentInMap(query);
+                    }
+                }
+            });
+        }
+
+        // Map filter functionality
+        const typeFilter = document.getElementById('componentTypeFilter');
+        const branchFilter = document.getElementById('componentBranchFilter');
+
+        if (typeFilter) {
+            // Populate component types
+            fetch('/component_config')
+                .then(response => response.json())
+                .then(config => {
+                    typeFilter.innerHTML = '<option value="">Select Component Type</option>';
+                    Object.keys(config).forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type;
+                        option.textContent = type;
+                        typeFilter.appendChild(option);
+                    });
+                });
+
+            // Handle type filter change
+            typeFilter.addEventListener('change', () => {
+                updateBranchFilter();
+                applyMapFilters();
+            });
+        }
+
+        if (branchFilter) {
+            branchFilter.addEventListener('change', () => {
+                applyMapFilters();
+            });
+        }
+    }
+
+    // Function to update branch filter based on selected type
+    function updateBranchFilter() {
+        const typeFilter = document.getElementById('componentTypeFilter');
+        const branchFilter = document.getElementById('componentBranchFilter');
+
+        if (!typeFilter || !branchFilter) return;
+
+        const selectedType = typeFilter.value;
+        branchFilter.innerHTML = '<option value="">Select Component Branch</option>';
+        branchFilter.disabled = true;
+
+        if (selectedType) {
+            fetch('/component_config')
+                .then(response => response.json())
+                .then(config => {
+                    if (config[selectedType] && config[selectedType]['Component Branch']) {
+                        const branches = config[selectedType]['Component Branch'];
+                        Object.keys(branches).forEach(branch => {
+                            const option = document.createElement('option');
+                            option.value = branch;
+                            option.textContent = branch;
+                            branchFilter.appendChild(option);
+                        });
+                        branchFilter.disabled = false;
+                    }
+                });
+        }
+    }
+
+    // Function to search component in map
+    async function searchComponentInMap(query) {
+        try {
+            const response = await fetch(`/search_component?query=${encodeURIComponent(query)}`);
+            if (response.ok) {
+                const results = await response.json();
+                highlightStorageLocations(results);
+            } else {
+                alert('Component not found');
+            }
+        } catch (error) {
+            console.error('Error searching for component:', error);
+        }
+    }
+
+    // Function to highlight storage locations on the map
+    function highlightStorageLocations(components) {
+        const mapGrid = document.querySelector('.map-grid');
+        if (!mapGrid) return;
+
+        // Clear previous highlights
+        const allDrawers = mapGrid.querySelectorAll('.drawer');
+        allDrawers.forEach(drawer => drawer.classList.remove('highlighted'));
+
+        // Highlight drawers containing the components
+        const storageLocations = new Set();
+        components.forEach(component => {
+            if (component.storage_place) {
+                storageLocations.add(component.storage_place);
+            }
+        });
+
+        // Highlight each relevant drawer
+        storageLocations.forEach(location => {
+            const drawer = mapGrid.querySelector(`.drawer[data-location="${location}"]`);
+            if (drawer) {
+                drawer.classList.add('highlighted');
+            }
+        });
+    }
+
+    // Function to apply map filters
+    function applyMapFilters() {
+        const typeFilter = document.getElementById('componentTypeFilter');
+        const branchFilter = document.getElementById('componentBranchFilter');
+
+        if (!typeFilter) return;
+
+        const selectedType = typeFilter.value;
+        const selectedBranch = branchFilter ? branchFilter.value : '';
+
+        // Need to fetch components based on filters and highlight their locations
+        let url = '/search_component?query=';
+
+        if (selectedType) {
+            url += `&component_type=${encodeURIComponent(selectedType)}`;
+        }
+
+        if (selectedBranch) {
+            url += `&component_branch=${encodeURIComponent(selectedBranch)}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(results => {
+                highlightStorageLocations(results);
+            })
+            .catch(error => {
+                console.error('Error applying filters:', error);
+            });
+    }
+
+    // Mobile tab bar functionality
+    document.getElementById('mobileSearchBtn').addEventListener('click', function () {
+        setActiveMobileTab(this);
+        // Show search tab
+        showTabContent('search');
+    });
+
+    document.getElementById('mobileAddBtn').addEventListener('click', function () {
+        setActiveMobileTab(this);
+        // Show add component tab
+        showTabContent('add');
+    });
+
+    document.getElementById('mobileImportBtn').addEventListener('click', function () {
+        setActiveMobileTab(this);
+        // Show import tab
+        showTabContent('import');
+    });
+
+    function setActiveMobileTab(activeTab) {
+        document.querySelectorAll('.mobile-tab-btn').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        activeTab.classList.add('active');
+    }
+
+    function showTabContent(tabId) {
+        // Update desktop tabs to match
+        const tabButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
+        if (tabButton) {
+            tabButton.click();
+        }
+    }
 });
 
 let currentUser = localStorage.getItem('currentUser') || 'guest';
@@ -165,6 +540,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Clear the file input
                 fileInput.value = '';
+                if (fileNameDisplay) {
+                    fileNameDisplay.textContent = 'No file selected';
+                }
+
+                // Switch to search tab after successful import
+                const searchTabButton = document.querySelector('.tab-button[data-tab="search"]');
+                if (searchTabButton) {
+                    searchTabButton.click();
+                }
             } else {
                 alert(`Error: ${result.detail || 'Failed to upload components'}`);
             }
@@ -252,6 +636,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Component added successfully.");
                 document.getElementById("addComponentForm").reset();
                 document.getElementById("searchQuery").value = formData.part_number;
+
+                // Switch to search tab after successfully adding a component
+                const searchTabButton = document.querySelector('.tab-button[data-tab="search"]');
+                if (searchTabButton) {
+                    searchTabButton.click();
+                }
+
+                // Run the search to show the newly added component
                 searchComponent();
             } else {
                 const error = await response.json();
@@ -285,11 +677,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const column = header.getAttribute("data-column");
             sortResults(column);
         });
-    });
-
-    // Changelog button event listener
-    document.getElementById("changelogButton").addEventListener('click', () => {
-        window.location.href = "/changelog";
     });
 
     // Event listener for component type change
@@ -1386,122 +1773,124 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Remove all previous BOM upload event listeners
 const oldButton = document.getElementById('uploadBomButton');
-const newButton = oldButton.cloneNode(true);
-oldButton.parentNode.replaceChild(newButton, oldButton);
+if (oldButton) {
+    const newButton = oldButton.cloneNode(true);
+    oldButton.parentNode.replaceChild(newButton, oldButton);
 
-// Add single BOM upload handler
-document.getElementById('uploadBomButton').addEventListener('click', async () => {
-    const fileInput = document.getElementById('bomFile');
-    const file = fileInput.files[0];
+    // Add single BOM upload handler
+    document.getElementById('uploadBomButton').addEventListener('click', async () => {
+        const fileInput = document.getElementById('bomFile');
+        const file = fileInput.files[0];
 
-    if (!file) {
-        alert('Please select a BOM file first.');
-        return;
-    }
-
-    if (!currentUser) {
-        alert('Please select a user first.');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        const response = await fetch(`/upload_bom?user=${currentUser}`, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error);
+        if (!file) {
+            alert('Please select a BOM file first.');
+            return;
         }
 
-        const result = await response.json();
-        updateCartState(); // Update cart state after successful BOM upload
+        if (!currentUser) {
+            alert('Please select a user first.');
+            return;
+        }
 
-        // Create a modal for displaying results
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.style.display = 'block';
+        const formData = new FormData();
+        formData.append('file', file);
 
-        const modalContent = document.createElement('div');
-        modalContent.className = 'modal-content';
-
-        // Add header
-        const header = document.createElement('h2');
-        header.textContent = 'BOM Upload Results';
-        modalContent.appendChild(header);
-
-        // Add found components section
-        if (result.found_components && result.found_components.length > 0) {
-            const foundHeader = document.createElement('h3');
-            foundHeader.textContent = 'Found Components:';
-            foundHeader.style.color = '#28a745';
-            modalContent.appendChild(foundHeader);
-
-            const foundList = document.createElement('ul');
-            result.found_components.forEach(comp => {
-                const item = document.createElement('li');
-                item.textContent = `${comp.part_number} (${comp.designator}): ${comp.quantity} pcs`;
-                foundList.appendChild(item);
+        try {
+            const response = await fetch(`/upload_bom?user=${currentUser}`, {
+                method: 'POST',
+                body: formData
             });
-            modalContent.appendChild(foundList);
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error);
+            }
+
+            const result = await response.json();
+            updateCartState(); // Update cart state after successful BOM upload
+
+            // Create a modal for displaying results
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+
+            // Add header
+            const header = document.createElement('h2');
+            header.textContent = 'BOM Upload Results';
+            modalContent.appendChild(header);
+
+            // Add found components section
+            if (result.found_components && result.found_components.length > 0) {
+                const foundHeader = document.createElement('h3');
+                foundHeader.textContent = 'Found Components:';
+                foundHeader.style.color = '#28a745';
+                modalContent.appendChild(foundHeader);
+
+                const foundList = document.createElement('ul');
+                result.found_components.forEach(comp => {
+                    const item = document.createElement('li');
+                    item.textContent = `${comp.part_number} (${comp.designator}): ${comp.quantity} pcs`;
+                    foundList.appendChild(item);
+                });
+                modalContent.appendChild(foundList);
+            }
+
+            // Add not found components section
+            if (result.not_found_components && result.not_found_components.length > 0) {
+                const notFoundHeader = document.createElement('h3');
+                notFoundHeader.textContent = 'Not Found Components:';
+                notFoundHeader.style.color = '#dc3545';
+                modalContent.appendChild(notFoundHeader);
+
+                const notFoundList = document.createElement('ul');
+                result.not_found_components.forEach(comp => {
+                    const item = document.createElement('li');
+                    item.textContent = `${comp.supplier_part} (${comp.designator}): ${comp.quantity} pcs`;
+                    notFoundList.appendChild(item);
+                });
+                modalContent.appendChild(notFoundList);
+            }
+
+            // Add buttons
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.marginTop = '20px';
+            buttonContainer.style.textAlign = 'center';
+
+            const viewCartButton = document.createElement('button');
+            viewCartButton.textContent = 'View Cart';
+            viewCartButton.onclick = () => {
+                window.location.href = '/cart';
+            };
+            viewCartButton.style.marginRight = '10px';
+
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'Close';
+            closeButton.onclick = () => {
+                document.body.removeChild(modal);
+            };
+
+            buttonContainer.appendChild(viewCartButton);
+            buttonContainer.appendChild(closeButton);
+            modalContent.appendChild(buttonContainer);
+
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Clear the file input
+            fileInput.value = '';
+
+        } catch (error) {
+            console.error('Error:', error);
+            // Only show error message if it's not the formData undefined error
+            if (!error.message.includes('formData is not defined')) {
+                alert('Failed to upload BOM: ' + error.message);
+            }
         }
-
-        // Add not found components section
-        if (result.not_found_components && result.not_found_components.length > 0) {
-            const notFoundHeader = document.createElement('h3');
-            notFoundHeader.textContent = 'Not Found Components:';
-            notFoundHeader.style.color = '#dc3545';
-            modalContent.appendChild(notFoundHeader);
-
-            const notFoundList = document.createElement('ul');
-            result.not_found_components.forEach(comp => {
-                const item = document.createElement('li');
-                item.textContent = `${comp.supplier_part} (${comp.designator}): ${comp.quantity} pcs`;
-                notFoundList.appendChild(item);
-            });
-            modalContent.appendChild(notFoundList);
-        }
-
-        // Add buttons
-        const buttonContainer = document.createElement('div');
-        buttonContainer.style.marginTop = '20px';
-        buttonContainer.style.textAlign = 'center';
-
-        const viewCartButton = document.createElement('button');
-        viewCartButton.textContent = 'View Cart';
-        viewCartButton.onclick = () => {
-            window.location.href = '/cart';
-        };
-        viewCartButton.style.marginRight = '10px';
-
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.onclick = () => {
-            document.body.removeChild(modal);
-        };
-
-        buttonContainer.appendChild(viewCartButton);
-        buttonContainer.appendChild(closeButton);
-        modalContent.appendChild(buttonContainer);
-
-        modal.appendChild(modalContent);
-        document.body.appendChild(modal);
-
-        // Clear the file input
-        fileInput.value = '';
-
-    } catch (error) {
-        console.error('Error:', error);
-        // Only show error message if it's not the formData undefined error
-        if (!error.message.includes('formData is not defined')) {
-            alert('Failed to upload BOM: ' + error.message);
-        }
-    }
-});
+    });
+}
 
 // Add cart state update to document ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -1539,129 +1928,3 @@ async function updateCartState() {
         console.error('Error updating cart state:', error);
     }
 }
-
-// Modal Functionality for Card-Based Design
-document.addEventListener('DOMContentLoaded', function () {
-    // Modal open/close functionality
-    const importBtn = document.getElementById('importBtn');
-    const addComponentBtn = document.getElementById('addComponentBtn');
-    const importModal = document.getElementById('importModal');
-    const addComponentModal = document.getElementById('addComponentModal');
-    const closeButtons = document.querySelectorAll('.close-modal-btn');
-
-    // Mobile Tab Buttons
-    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
-    const mobileImportBtn = document.getElementById('mobileImportBtn');
-    const mobileAddBtn = document.getElementById('mobileAddBtn');
-
-    // Functions to open modals
-    function openImportModal() {
-        importModal.classList.add('active');
-        document.body.classList.add('modal-open');
-    }
-
-    function openAddComponentModal() {
-        addComponentModal.classList.add('active');
-        document.body.classList.add('modal-open');
-    }
-
-    // Function to close all modals
-    function closeAllModals() {
-        document.querySelectorAll('.feature-modal').forEach(modal => {
-            modal.classList.remove('active');
-            modal.classList.remove('active-mobile');
-        });
-        document.body.classList.remove('modal-open');
-    }
-
-    // Desktop button event listeners
-    if (importBtn) importBtn.addEventListener('click', openImportModal);
-    if (addComponentBtn) addComponentBtn.addEventListener('click', openAddComponentModal);
-
-    // Mobile tab button event listeners
-    if (mobileSearchBtn) {
-        mobileSearchBtn.addEventListener('click', function () {
-            setActiveTab(this);
-            closeAllModals();
-        });
-    }
-
-    if (mobileImportBtn) {
-        mobileImportBtn.addEventListener('click', function () {
-            setActiveTab(this);
-            importModal.classList.add('active-mobile');
-            document.body.classList.add('modal-open');
-        });
-    }
-
-    if (mobileAddBtn) {
-        mobileAddBtn.addEventListener('click', function () {
-            setActiveTab(this);
-            addComponentModal.classList.add('active-mobile');
-            document.body.classList.add('modal-open');
-        });
-    }
-
-    // Set active tab
-    function setActiveTab(activeTab) {
-        document.querySelectorAll('.mobile-tab-btn').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        activeTab.classList.add('active');
-    }
-
-    // Close button event listeners
-    closeButtons.forEach(button => {
-        button.addEventListener('click', closeAllModals);
-    });
-
-    // Close modal when clicking outside of modal content
-    window.addEventListener('click', function (event) {
-        document.querySelectorAll('.feature-modal').forEach(modal => {
-            if (event.target === modal) {
-                closeAllModals();
-            }
-        });
-    });
-
-    // Close modal with escape key
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            closeAllModals();
-        }
-    });
-
-    // Handle form submissions within modals
-    const uploadCsvForm = document.getElementById('uploadCsvForm');
-    if (uploadCsvForm) {
-        const originalSubmitHandler = uploadCsvForm.onsubmit;
-        uploadCsvForm.onsubmit = function (e) {
-            if (originalSubmitHandler) {
-                const result = originalSubmitHandler.call(this, e);
-                if (result !== false) {
-                    setTimeout(closeAllModals, 1000); // Close after successful submission
-                }
-                return result;
-            }
-        };
-    }
-
-    const addComponentForm = document.getElementById('addComponentForm');
-    if (addComponentForm) {
-        const originalSubmitHandler = addComponentForm.onsubmit;
-        addComponentForm.onsubmit = function (e) {
-            if (originalSubmitHandler) {
-                const result = originalSubmitHandler.call(this, e);
-                if (result !== false) {
-                    setTimeout(closeAllModals, 1000); // Close after successful submission
-                }
-                return result;
-            }
-        };
-    }
-
-    // Define CSS variable for primary color
-    const root = document.documentElement;
-    root.style.setProperty('--primary-color', '#0077cc');
-    root.style.setProperty('--primary-color-dark', '#005fa3');
-});
