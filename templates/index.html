@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Component Stock Monitor</title>
     <link rel="stylesheet" href="/static/style.css">
-    <!-- Add Material Icons link -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon_io/favicon-32x32.png">
@@ -28,7 +27,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Top Bar -->
     <div class="top-bar">
@@ -52,144 +50,80 @@
         </div>
     </div>
 
-    <h1>Electronics Stock Monitor</h1>
+    <h1>Electronics Stock Search</h1>
 
-    <!-- Tab Container -->
-    <div class="tab-container">
-        <div class="tabs">
-            <button class="tab-button active" data-tab="search">
-                <span class="material-icons">search</span>
-                <span class="tab-text">Search</span>
+    <!-- Main Container - Search View is the primary view -->
+    <div class="main-container">
+        <!-- Search Components Section (Main View) -->
+        <div class="search-panel">
+            <h2>Search Components</h2>
+            <!-- Filters -->
+            <div class="filter-container">
+                <select id="filterComponentType">
+                    <option value="">All Component Types</option>
+                    <!-- Options populated dynamically -->
+                </select>
+                <select id="filterComponentBranch" disabled>
+                    <option value="">All Component Branches</option>
+                    <!-- Options populated dynamically -->
+                </select>
+                <label>
+                    <input type="checkbox" id="inStockCheckbox">
+                    Show Only In Stock
+                </label>
+            </div>
+            <!-- Search Bar and BOM Upload -->
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" id="searchQuery"
+                        placeholder="Search by part number, description, or specifications">
+                    <button id="searchButton">Search</button>
+                </div>
+                <div class="bom-upload-group">
+                    <input type="file" id="bomFile" accept=".csv">
+                    <button id="uploadBomButton">Import BOM to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button id="importBtn" class="action-button">
+                <i class="material-icons">cloud_upload</i>
+                <span>Import</span>
             </button>
-            <button class="tab-button" data-tab="add">
-                <span class="material-icons">add_circle_outline</span>
-                <span class="tab-text">Add Component</span>
-            </button>
-            <button class="tab-button" data-tab="import">
-                <span class="material-icons">file_upload</span>
-                <span class="tab-text">Import</span>
+            <button id="addComponentBtn" class="action-button">
+                <i class="material-icons">add_circle</i>
+                <span>Add Component</span>
             </button>
         </div>
 
-        <div class="tab-content-container">
-            <!-- Search Tab Content -->
-            <div id="search-tab" class="tab-content active">
-                <div class="content-panel">
-                    <!-- Filters -->
-                    <div class="filter-container">
-                        <select id="filterComponentType">
-                            <option value="">All Component Types</option>
-                            <!-- Options populated dynamically -->
-                        </select>
-                        <select id="filterComponentBranch" disabled>
-                            <option value="">All Component Branches</option>
-                            <!-- Options populated dynamically -->
-                        </select>
-                        <label>
-                            <input type="checkbox" id="inStockCheckbox">
-                            Show Only In Stock
-                        </label>
-                    </div>
-                    <!-- Search Bar and BOM Upload -->
-                    <div class="search-container">
-                        <div class="search-input-group">
-                            <input type="text" id="searchQuery"
-                                placeholder="Search by part number, description, or specifications">
-                            <button id="searchButton">Search</button>
-                        </div>
-                        <div class="bom-upload-group">
-                            <input type="file" id="bomFile" accept=".csv">
-                            <button id="uploadBomButton">Import BOM to Cart</button>
-                        </div>
-                    </div>
-                    <!-- Search Results Section -->
-                    <div id="searchResults">
-                        <div class="results-header">
-                            <h3>Search Results</h3>
-                            <div class="filter-controls">
-                                <div class="filter-group">
-                                    <label for="filterCategory">Filter by:</label>
-                                    <select id="filterCategory" class="select-control">
-                                        <option value="">Select category...</option>
-                                        <option value="manufacturer">Manufacturer</option>
-                                        <option value="package">Package</option>
-                                        <option value="capacitance">Capacitance</option>
-                                        <option value="resistance">Resistance</option>
-                                        <option value="inductance">Inductance</option>
-                                        <option value="storage_place">Storage Place</option>
-                                    </select>
-                                    <select id="filterValue" class="select-control" disabled>
-                                        <option value="">Select value...</option>
-                                    </select>
-                                </div>
-                                <div class="sort-group">
-                                    <label for="sortColumn">Sort by:</label>
-                                    <select id="sortColumn" class="select-control">
-                                        <option value="">Select field...</option>
-                                        <option value="resistance" data-unit="Ω">Resistance</option>
-                                        <option value="capacitance" data-unit="F">Capacitance</option>
-                                        <option value="inductance" data-unit="H">Inductance</option>
-                                        <option value="voltage" data-unit="V">Voltage</option>
-                                        <option value="current_power" data-unit="[AW]">Current/Power</option>
-                                        <option value="order_qty">Quantity</option>
-                                        <option value="package">Package</option>
-                                        <option value="storage_place">Storage Place</option>
-                                    </select>
-                                    <button id="sortOrderBtn" class="icon-button fixed-width-small"
-                                        title="Toggle sort order">
-                                        <span class="sort-icon"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Mobile view selector -->
-                        <div class="view-toggle">
-                            <button id="tableView" class="view-button active">Table View</button>
-                            <button id="cardView" class="view-button">Card View</button>
-                        </div>
-                        <!-- Table view (original) -->
-                        <div id="tableViewContainer" class="view-container">
-                            <table id="resultsTable">
-                                <thead>
-                                    <tr>
-                                        <th>LCSC Part Number</th>
-                                        <th>MPN</th>
-                                        <th>Manufacturer</th>
-                                        <th>Package</th>
-                                        <th>Description</th>
-                                        <th>Unit Price($)</th>
-                                        <th>Component Type</th>
-                                        <th>Component Branch</th>
-                                        <th>Capacitance</th>
-                                        <th>Resistance</th>
-                                        <th>Voltage</th>
-                                        <th>Tolerance</th>
-                                        <th>Inductance</th>
-                                        <th>Current/Power</th>
-                                        <th>Quantity</th>
-                                        <th>Storage Place</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="resultsTableBody">
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- Card view (new mobile-friendly view) -->
-                        <div id="cardViewContainer" class="view-container" style="display: none">
-                            <div class="results-grid">
-                                <!-- Cards will be inserted here by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
+        <!-- Import Components Modal -->
+        <div id="importModal" class="feature-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h2>Import Components</h2>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadCsvForm">
+                        <p>Import components from LCSC CSV export file</p>
+                        <input type="file" id="csvFile" accept=".csv">
+                        <button type="submit" class="primary-button">Import LCSC Components</button>
+                    </form>
                 </div>
             </div>
+        </div>
 
-            <!-- Add Component Tab Content -->
-            <div id="add-tab" class="tab-content">
-                <div class="content-panel">
+        <!-- Add Component Modal -->
+        <div id="addComponentModal" class="feature-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h2>Add New Component</h2>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-body">
                     <form id="addComponentForm">
-                        <h2>Add New Component</h2>
                         <p>Manually add a new component to inventory</p>
                         <div class="form-section">
                             <div class="form-fields">
@@ -212,54 +146,139 @@
                                     <option value="">Select Component Branch</option>
                                 </select>
 
-                                <div id="optionalFields">
-                                    <label for="unitPrice" class="optional">Unit Price ($)</label>
-                                    <input type="number" id="unitPrice" step="0.01">
+                                <details>
+                                    <summary>Optional Fields</summary>
+                                    <div id="optionalFields" class="collapsible-content">
+                                        <label for="unitPrice" class="optional">Unit Price ($)</label>
+                                        <input type="number" id="unitPrice" step="0.01">
 
-                                    <label for="description" class="optional">Description</label>
-                                    <input type="text" id="description">
+                                        <label for="description" class="optional">Description</label>
+                                        <input type="text" id="description">
 
-                                    <label for="package" class="optional">Package</label>
-                                    <input type="text" id="package">
+                                        <label for="package" class="optional">Package</label>
+                                        <input type="text" id="package">
 
-                                    <label for="manufacturer" class="optional">Manufacturer</label>
-                                    <input type="text" id="manufacturer">
+                                        <label for="manufacturer" class="optional">Manufacturer</label>
+                                        <input type="text" id="manufacturer">
 
-                                    <label for="manufacturePartNumber" class="optional">Manufacturer Part Number</label>
-                                    <input type="text" id="manufacturePartNumber">
-                                </div>
+                                        <label for="manufacturePartNumber" class="optional">Manufacturer Part
+                                            Number</label>
+                                        <input type="text" id="manufacturePartNumber">
+                                    </div>
+                                </details>
 
-                                <div id="dynamicFields">
-                                    <!-- Dynamic fields will be populated based on component type -->
-                                </div>
+                                <details>
+                                    <summary>Component Specifications</summary>
+                                    <div id="dynamicFields" class="collapsible-content">
+                                        <!-- Dynamic fields will be populated based on component type -->
+                                    </div>
+                                </details>
 
-                                <button type="submit">Add Component</button>
+                                <button type="submit" class="primary-button">Add Component</button>
                             </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Import Tab Content -->
-            <div id="import-tab" class="tab-content">
-                <div class="content-panel">
-                    <form id="uploadCsvForm">
-                        <h2>Import LCSC Components</h2>
-                        <p>Import components from LCSC CSV export file.</p>
-                        <div class="file-upload-container">
-                            <label for="csvFile" class="file-upload-label">
-                                <span class="material-icons">attach_file</span> Select CSV File
-                            </label>
-                            <input type="file" id="csvFile" accept=".csv" class="file-upload-input">
-                            <span id="selected-file-name">No file selected</span>
-                        </div>
-                        <button type="submit" class="primary-button">Import Components</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-tab-bar">
+        <button id="mobileSearchBtn" class="mobile-tab-btn active">
+            <i class="material-icons">search</i>
+            <span>Search</span>
+        </button>
+        <button id="mobileImportBtn" class="mobile-tab-btn">
+            <i class="material-icons">cloud_upload</i>
+            <span>Import</span>
+        </button>
+        <button id="mobileAddBtn" class="mobile-tab-btn">
+            <i class="material-icons">add_circle</i>
+            <span>Add</span>
+        </button>
+    </div>
+
+    <div id="searchResults">
+        <div class="results-header">
+            <h3>Search Results</h3>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="filterCategory">Filter by:</label>
+                    <select id="filterCategory" class="select-control">
+                        <option value="">Select category...</option>
+                        <option value="manufacturer">Manufacturer</option>
+                        <option value="package">Package</option>
+                        <option value="capacitance">Capacitance</option>
+                        <option value="resistance">Resistance</option>
+                        <option value="inductance">Inductance</option>
+                        <option value="storage_place">Storage Place</option>
+                    </select>
+                    <select id="filterValue" class="select-control" disabled>
+                        <option value="">Select value...</option>
+                    </select>
+                </div>
+                <div class="sort-group">
+                    <label for="sortColumn">Sort by:</label>
+                    <select id="sortColumn" class="select-control">
+                        <option value="">Select field...</option>
+                        <option value="resistance" data-unit="Ω">Resistance</option>
+                        <option value="capacitance" data-unit="F">Capacitance</option>
+                        <option value="inductance" data-unit="H">Inductance</option>
+                        <option value="voltage" data-unit="V">Voltage</option>
+                        <option value="current_power" data-unit="[AW]">Current/Power</option>
+                        <option value="order_qty">Quantity</option>
+                        <option value="package">Package</option>
+                        <option value="storage_place">Storage Place</option>
+                    </select>
+                    <button id="sortOrderBtn" class="icon-button fixed-width-small" title="Toggle sort order">
+                        <span class="sort-icon"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile view selector -->
+        <div class="view-toggle">
+            <button id="tableView" class="view-button active">Table View</button>
+            <button id="cardView" class="view-button">Card View</button>
+        </div>
+
+        <!-- Table view (original) -->
+        <div id="tableViewContainer" class="view-container">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>LCSC Part Number</th>
+                        <th>MPN</th>
+                        <th>Manufacturer</th>
+                        <th>Package</th>
+                        <th>Description</th>
+                        <th>Unit Price($)</th>
+                        <th>Component Type</th>
+                        <th>Component Branch</th>
+                        <th>Capacitance</th>
+                        <th>Resistance</th>
+                        <th>Voltage</th>
+                        <th>Tolerance</th>
+                        <th>Inductance</th>
+                        <th>Current/Power</th>
+                        <th>Quantity</th> <!-- Renamed from Order Qty. -->
+                        <th>Storage Place</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Card view (new mobile-friendly view) -->
+        <div id="cardViewContainer" class="view-container" style="display: none">
+            <div class="results-grid">
+                <!-- Cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
     <script src="/static/script.js"></script>
 </body>
 

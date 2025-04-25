@@ -1539,3 +1539,129 @@ async function updateCartState() {
         console.error('Error updating cart state:', error);
     }
 }
+
+// Modal Functionality for Card-Based Design
+document.addEventListener('DOMContentLoaded', function () {
+    // Modal open/close functionality
+    const importBtn = document.getElementById('importBtn');
+    const addComponentBtn = document.getElementById('addComponentBtn');
+    const importModal = document.getElementById('importModal');
+    const addComponentModal = document.getElementById('addComponentModal');
+    const closeButtons = document.querySelectorAll('.close-modal-btn');
+
+    // Mobile Tab Buttons
+    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+    const mobileImportBtn = document.getElementById('mobileImportBtn');
+    const mobileAddBtn = document.getElementById('mobileAddBtn');
+
+    // Functions to open modals
+    function openImportModal() {
+        importModal.classList.add('active');
+        document.body.classList.add('modal-open');
+    }
+
+    function openAddComponentModal() {
+        addComponentModal.classList.add('active');
+        document.body.classList.add('modal-open');
+    }
+
+    // Function to close all modals
+    function closeAllModals() {
+        document.querySelectorAll('.feature-modal').forEach(modal => {
+            modal.classList.remove('active');
+            modal.classList.remove('active-mobile');
+        });
+        document.body.classList.remove('modal-open');
+    }
+
+    // Desktop button event listeners
+    if (importBtn) importBtn.addEventListener('click', openImportModal);
+    if (addComponentBtn) addComponentBtn.addEventListener('click', openAddComponentModal);
+
+    // Mobile tab button event listeners
+    if (mobileSearchBtn) {
+        mobileSearchBtn.addEventListener('click', function () {
+            setActiveTab(this);
+            closeAllModals();
+        });
+    }
+
+    if (mobileImportBtn) {
+        mobileImportBtn.addEventListener('click', function () {
+            setActiveTab(this);
+            importModal.classList.add('active-mobile');
+            document.body.classList.add('modal-open');
+        });
+    }
+
+    if (mobileAddBtn) {
+        mobileAddBtn.addEventListener('click', function () {
+            setActiveTab(this);
+            addComponentModal.classList.add('active-mobile');
+            document.body.classList.add('modal-open');
+        });
+    }
+
+    // Set active tab
+    function setActiveTab(activeTab) {
+        document.querySelectorAll('.mobile-tab-btn').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        activeTab.classList.add('active');
+    }
+
+    // Close button event listeners
+    closeButtons.forEach(button => {
+        button.addEventListener('click', closeAllModals);
+    });
+
+    // Close modal when clicking outside of modal content
+    window.addEventListener('click', function (event) {
+        document.querySelectorAll('.feature-modal').forEach(modal => {
+            if (event.target === modal) {
+                closeAllModals();
+            }
+        });
+    });
+
+    // Close modal with escape key
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeAllModals();
+        }
+    });
+
+    // Handle form submissions within modals
+    const uploadCsvForm = document.getElementById('uploadCsvForm');
+    if (uploadCsvForm) {
+        const originalSubmitHandler = uploadCsvForm.onsubmit;
+        uploadCsvForm.onsubmit = function (e) {
+            if (originalSubmitHandler) {
+                const result = originalSubmitHandler.call(this, e);
+                if (result !== false) {
+                    setTimeout(closeAllModals, 1000); // Close after successful submission
+                }
+                return result;
+            }
+        };
+    }
+
+    const addComponentForm = document.getElementById('addComponentForm');
+    if (addComponentForm) {
+        const originalSubmitHandler = addComponentForm.onsubmit;
+        addComponentForm.onsubmit = function (e) {
+            if (originalSubmitHandler) {
+                const result = originalSubmitHandler.call(this, e);
+                if (result !== false) {
+                    setTimeout(closeAllModals, 1000); // Close after successful submission
+                }
+                return result;
+            }
+        };
+    }
+
+    // Define CSS variable for primary color
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', '#0077cc');
+    root.style.setProperty('--primary-color-dark', '#005fa3');
+});
