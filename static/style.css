@@ -57,13 +57,17 @@ h1 {
 }
 
 /* Panel Styles */
-.left-panel, .middle-panel, .right-panel {
+.left-panel,
+.middle-panel,
+.right-panel {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
 }
 
-.form-section, .upload-section, .search-section {
+.form-section,
+.upload-section,
+.search-section {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
@@ -98,35 +102,49 @@ button:hover {
 table {
     width: 100%;
     border-collapse: separate;
-    table-layout: fixed; /* Added to make columns fit within the table */
-    word-wrap: break-word; /* Added to ensure long text breaks within cells */
+    table-layout: fixed;
+    /* Added to make columns fit within the table */
+    word-wrap: break-word;
+    /* Added to ensure long text breaks within cells */
 }
 
 /* Adjust the column widths */
-table th:nth-last-child(1), /* Actions column */
+table th:nth-last-child(1),
+/* Actions column */
 table td:nth-last-child(1) {
-    width: 130px; /* Increase this value as needed */
+    width: 130px;
+    /* Increase this value as needed */
 }
 
-table th:nth-last-child(2), /* Storage Place column */
+table th:nth-last-child(2),
+/* Storage Place column */
 table td:nth-last-child(2) {
-    width: 80px; /* Decrease this value as needed */
+    width: 80px;
+    /* Decrease this value as needed */
 }
 
-table th, table td {
+table th,
+table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
-    overflow: hidden; /* Prevents overflow */
-    white-space: nowrap; /* Prevents long text from wrapping */
-    text-overflow: ellipsis; /* Adds ellipsis for any overflowed text */
-    cursor: pointer; /* Changes cursor to pointer to indicate clickability */
+    overflow: hidden;
+    /* Prevents overflow */
+    white-space: nowrap;
+    /* Prevents long text from wrapping */
+    text-overflow: ellipsis;
+    /* Adds ellipsis for any overflowed text */
+    cursor: pointer;
+    /* Changes cursor to pointer to indicate clickability */
 }
 
 table tr.expanded td {
-    white-space: normal; /* Allows text to wrap within cells */
-    overflow: visible; /* Allows overflowed content to be visible */
-    text-overflow: clip; /* Removes ellipsis */
+    white-space: normal;
+    /* Allows text to wrap within cells */
+    overflow: visible;
+    /* Allows overflowed content to be visible */
+    text-overflow: clip;
+    /* Removes ellipsis */
 }
 
 table td .quantity-controls {
@@ -141,9 +159,12 @@ table td .quantity-controls button {
     padding: 5px;
     cursor: pointer;
     margin: 0 2px;
-    width: 30px;     /* Adjust width */
-    height: 30px;    /* Adjust height */
-    font-size: 16px; /* Adjust font size */
+    width: 30px;
+    /* Adjust width */
+    height: 30px;
+    /* Adjust height */
+    font-size: 16px;
+    /* Adjust font size */
 }
 
 table td .quantity-controls button:hover {
@@ -172,17 +193,23 @@ table tr:nth-child(even) {
     padding: 5px;
     cursor: pointer;
     margin: 0 2px;
-    width: 30px;     /* Adjust width */
-    height: 30px;    /* Adjust height */
-    font-size: 16px; /* Adjust font size */
+    width: 30px;
+    /* Adjust width */
+    height: 30px;
+    /* Adjust height */
+    font-size: 16px;
+    /* Adjust font size */
 }
 
 .quantity-controls input.quantity-input {
-    width: 40px;       /* Adjust width */
+    width: 40px;
+    /* Adjust width */
     text-align: center;
     margin: 0 2px;
-    height: 30px;      /* Match height to buttons */
-    font-size: 16px;   /* Adjust font size */
+    height: 30px;
+    /* Match height to buttons */
+    font-size: 16px;
+    /* Adjust font size */
 }
 
 quantity-controls button:hover {
@@ -195,16 +222,16 @@ quantity-controls button:hover {
     margin-bottom: 20px;
 }
 
-.top-panel > div {
+.top-panel>div {
     flex: 1;
     margin: 0 10px;
 }
 
-.top-panel > div:first-child {
+.top-panel>div:first-child {
     margin-left: 0;
 }
 
-.top-panel > div:last-child {
+.top-panel>div:last-child {
     margin-right: 0;
 }
 
@@ -234,13 +261,18 @@ sortable .sort-indicator {
     background-color: transparent;
     color: red;
     border: none;
-    font-size: 16px; /* Decrease font size for smaller 'X' */
+    font-size: 16px;
+    /* Decrease font size for smaller 'X' */
     cursor: pointer;
     margin-left: 5px;
-    padding: 0; /* Remove padding */
-    width: 24px; /* Fixed width */
-    height: 24px; /* Fixed height */
-    line-height: 24px; /* Center the 'X' vertically */
+    padding: 0;
+    /* Remove padding */
+    width: 24px;
+    /* Fixed width */
+    height: 24px;
+    /* Fixed height */
+    line-height: 24px;
+    /* Center the 'X' vertically */
     text-align: center;
 }
 
@@ -250,7 +282,8 @@ sortable .sort-indicator {
 
 /* Modal Styles */
 .modal {
-    display: block; /* Show the modal by default */
+    display: block;
+    /* Show the modal by default */
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -258,7 +291,8 @@ sortable .sort-indicator {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.5); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
 }
 
 .modal-content {
@@ -270,7 +304,7 @@ sortable .sort-indicator {
     max-width: 400px;
     text-align: center;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .modal-content h2 {
@@ -381,7 +415,8 @@ form label {
     font-size: 14px;
 }
 
-form input, form select {
+form input,
+form select {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -408,11 +443,13 @@ form button:hover {
 
 /* Adjust the widths of the sections */
 .upload-section {
-    width: 18.75%; /* Reduced from 25% */
+    width: 18.75%;
+    /* Reduced from 25% */
 }
 
 .search-section {
-    width: 62.5%; /* Increased from 50% */
+    width: 62.5%;
+    /* Increased from 50% */
     margin: 0 auto;
     text-align: center;
 }
@@ -490,21 +527,27 @@ form button:hover {
 
 /* Reduce font size in the form section */
 .form-section {
-    font-size: 14px; /* Reduced from default */
+    font-size: 14px;
+    /* Reduced from default */
 }
 
 /* Adjust label styles */
 .form-section label {
-    margin-bottom: 5px; /* Reduced margin */
+    margin-bottom: 5px;
+    /* Reduced margin */
 }
 
 /* Adjust input and select styles */
-.form-section input, .form-section select {
+.form-section input,
+.form-section select {
     width: 100%;
-    padding: 6px;      /* Reduced padding */
+    padding: 6px;
+    /* Reduced padding */
     margin-top: 3px;
-    margin-bottom: 8px; /* Reduced margin */
-    font-size: 14px;   /* Reduced font size */
+    margin-bottom: 8px;
+    /* Reduced margin */
+    font-size: 14px;
+    /* Reduced font size */
 }
 
 /* Adjust optional fields */
@@ -514,14 +557,17 @@ form button:hover {
 
 /* Adjust button styles */
 .form-section button {
-    padding: 8px 16px; /* Reduced padding */
-    font-size: 14px;   /* Reduced font size */
+    padding: 8px 16px;
+    /* Reduced padding */
+    font-size: 14px;
+    /* Reduced font size */
 }
 
 /* Styles for the revert button */
 .revert-button {
     padding: 5px 10px;
-    background-color: #dc3545; /* Red color */
+    background-color: #dc3545;
+    /* Red color */
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -582,7 +628,8 @@ form button:hover {
 }
 
 .app-logo {
-    width: 100px; /* Adjust size as needed */
+    width: 100px;
+    /* Adjust size as needed */
     height: auto;
 }
 
@@ -704,7 +751,8 @@ form button:hover {
 
     .form-fields input,
     .form-fields select {
-        font-size: 16px; /* Better for mobile touch */
+        font-size: 16px;
+        /* Better for mobile touch */
         height: 36px;
     }
 
@@ -922,7 +970,7 @@ form button {
     top: 100%;
     left: 0;
     background-color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     padding: 5px 0;
     z-index: 1000;
@@ -972,7 +1020,7 @@ form button {
 }
 
 /* Touch-friendly button sizes */
-button, 
+button,
 .quantity-controls button,
 .storage-place-input {
     min-height: var(--touch-target-size);
@@ -994,7 +1042,7 @@ button,
     background: white;
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -1050,11 +1098,12 @@ button,
 
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
+
     /* Hide table view on mobile */
     #tableViewContainer {
         display: none !important;
     }
-    
+
     #cardViewContainer {
         display: block !important;
     }
@@ -1108,13 +1157,13 @@ button,
     background: white;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .component-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
@@ -1358,26 +1407,27 @@ tr:not(.expanded) td {
     .modal-actions {
         display: none;
     }
-    
+
     body * {
         visibility: hidden;
     }
-    
+
     .pickup-sheet,
     .pickup-sheet * {
         visibility: visible;
     }
-    
+
     .pickup-sheet {
         position: absolute;
         left: 0;
         top: 0;
     }
 
-    #cartTable, #cartTable * {
+    #cartTable,
+    #cartTable * {
         visibility: visible;
     }
-    
+
     #cartTable {
         position: absolute;
         left: 0;
@@ -1385,14 +1435,16 @@ tr:not(.expanded) td {
         width: 100%;
     }
 
-    .cart-actions, .top-bar {
+    .cart-actions,
+    .top-bar {
         display: none !important;
     }
 }
 
 /* Actions column improvements */
 table td:last-child {
-    min-width: 220px;  /* Increased width */
+    min-width: 220px;
+    /* Increased width */
     width: 220px;
     padding: 8px;
 }
@@ -1505,7 +1557,7 @@ table td:last-child {
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .sorting-controls {
@@ -1536,7 +1588,7 @@ table td:last-child {
 
 .sorting-controls select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
     outline: none;
 }
 
@@ -1634,7 +1686,7 @@ table td:last-child {
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .filter-controls {
@@ -1645,7 +1697,8 @@ table td:last-child {
     margin-top: 15px;
 }
 
-.filter-group, .sort-group {
+.filter-group,
+.sort-group {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1723,7 +1776,8 @@ table td:last-child {
         gap: 15px;
     }
 
-    .filter-group, .sort-group {
+    .filter-group,
+    .sort-group {
         width: 100%;
         flex-wrap: wrap;
     }
@@ -1790,7 +1844,7 @@ table td:last-child {
     align-items: center;
     padding: 10px 20px;
     background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
@@ -1859,7 +1913,7 @@ table td:last-child {
     top: 100%;
     left: 0;
     background-color: #fff;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     padding: 8px 0;
     min-width: 200px;
@@ -1952,7 +2006,7 @@ table td:last-child {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     max-width: 80%;
     max-height: 80vh;
@@ -1993,3 +2047,146 @@ table td:last-child {
     border-bottom: 1px solid #eee;
 }
 
+/* Styles for Segmented Control */
+.segmented-control {
+    display: flex;
+    justify-content: center;
+    /* Center the control */
+    margin: 20px auto;
+    border: 1px solid #007BFF;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Keep rounded corners */
+    max-width: fit-content;
+    /* Size to content */
+}
+
+.segment-button {
+    flex: 1;
+    /* Allow buttons to take equal space if needed */
+    padding: 10px 20px;
+    background-color: #f9f9f9;
+    color: #007BFF;
+    border: none;
+    border-right: 1px solid #007BFF;
+    /* Separator */
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 0;
+    /* Override default button margin */
+}
+
+.segmented-control .segment-button:last-child {
+    border-right: none;
+}
+
+.segment-button:hover {
+    background-color: #e0e0e0;
+}
+
+.segment-button.active {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+/* Styles for Tab Content */
+.tab-content-container {
+    background-color: #f9f9f9;
+    /* Match panel background */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 auto 20px auto;
+    /* Center below segmented control */
+    max-width: 1200px;
+    /* Match original container */
+}
+
+.tab-content {
+    display: none;
+    /* Hide inactive tabs */
+}
+
+.tab-content.active {
+    display: block;
+    /* Show active tab */
+}
+
+/* Remove original container/panel styles if they conflict */
+.container {
+    display: block;
+    /* Override flex display */
+    padding: 0;
+    /* Remove padding handled by tab-content-container */
+}
+
+/* Ensure the specific content areas don't have conflicting backgrounds/borders */
+#search-content,
+#import-content,
+#add-content {
+    /* Reset individual backgrounds/borders if needed, handled by container */
+    background-color: transparent;
+    border: none;
+    padding: 0;
+}
+
+/* Adjust Add New Component form layout if needed (optional) */
+#add-content .form-fields {
+    max-height: none;
+    /* Remove height restriction if it exists */
+    overflow-y: visible;
+    /* Remove scrollbar if it exists */
+}
+
+/* Adjust heading margins within tabs */
+.tab-content h2 {
+    margin-top: 0;
+    /* Remove extra top margin for headings inside tabs */
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Style the forms inside tabs */
+#import-content form,
+#add-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center form elements */
+}
+
+#import-content p,
+#add-content p {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Responsive adjustments for segmented control */
+@media screen and (max-width: 600px) {
+    .segmented-control {
+        flex-direction: column;
+        max-width: 90%;
+        /* Allow more width */
+        border-radius: 8px;
+    }
+
+    .segment-button {
+        border-right: none;
+        border-bottom: 1px solid #007BFF;
+        border-radius: 0;
+        /* Remove individual radius when stacked */
+    }
+
+    .segmented-control .segment-button:last-child {
+        border-bottom: none;
+    }
+
+    /* Optional: Adjust form layout for small screens */
+    #add-content .form-fields {
+        /* Add specific mobile styles if needed */
+    }
+}
+
+/* END of Segmented Control Styles */

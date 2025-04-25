@@ -1,15 +1,15 @@
 // Hamburger menu functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const menuButton = document.getElementById('menuButton');
     const menuItems = document.querySelector('.menu-items');
 
-    menuButton.addEventListener('click', function() {
+    menuButton.addEventListener('click', function () {
         menuButton.classList.toggle('active');
         menuItems.classList.toggle('active');
     });
 
     // Close menu when clicking outside
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         if (!event.target.closest('.hamburger-menu')) {
             menuButton.classList.remove('active');
             menuItems.classList.remove('active');
@@ -17,12 +17,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle menu item clicks
-    document.getElementById('mapButton').addEventListener('click', function() {
+    document.getElementById('mapButton').addEventListener('click', function () {
         window.location.href = '/map';
     });
 
-    document.getElementById('databaseButton').addEventListener('click', function() {
+    document.getElementById('databaseButton').addEventListener('click', function () {
         window.location.href = '/database';
+    });
+
+    // Segmented Control Logic
+    const segmentButtons = document.querySelectorAll('.segmented-control .segment-button');
+    const contentSections = document.querySelectorAll('.tab-content-container .tab-content');
+
+    segmentButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons and sections
+            segmentButtons.forEach(btn => btn.classList.remove('active'));
+            contentSections.forEach(section => section.classList.remove('active'));
+
+            // Add active class to the clicked button
+            button.classList.add('active');
+
+            // Add active class to the target content section
+            const targetId = button.getAttribute('data-target');
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        });
     });
 });
 
@@ -93,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const contentType = response.headers.get("content-type");
             let result;
-            
+
             if (contentType && contentType.includes("application/json")) {
                 result = await response.json();
             } else {
@@ -103,12 +125,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 alert(result.message);
-                
+
                 // Display the uploaded components in the search results
                 if (result.components && result.components.length > 0) {
                     searchResults = result.components;
                     displaySearchResults(searchResults);
-                    
+
                     // Show summary of changes
                     let summary = "Uploaded components:\n\n";
                     result.components.forEach(comp => {
@@ -520,7 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sortAscending = !sortAscending;
         sortState.ascending = sortAscending;
         sortOrderBtn.classList.toggle('descending', !sortAscending);
-        
+
         // Only sort if a column is selected
         if (sortState.column) {
             applyFiltersAndSort();
@@ -566,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function extractSortableValue(value, unit) {
         if (!value) return 0;
         value = value.toString().toLowerCase();
-        
+
         // Multipliers for different units
         const multipliers = {
             'p': 1e-12,  // pico
@@ -763,7 +785,7 @@ function displaySearchResults(results) {
         // Add click handler for row expansion
         row.addEventListener('click', (event) => {
             // Don't expand if clicking buttons or inputs
-            if (event.target.tagName === 'BUTTON' || 
+            if (event.target.tagName === 'BUTTON' ||
                 event.target.tagName === 'INPUT' ||
                 event.target.classList.contains('delete-button')) {
                 return;
@@ -1215,7 +1237,7 @@ function initializeFilterAndSort() {
     filterCategory.addEventListener('change', () => {
         const category = filterCategory.value;
         activeFilters.category = category;
-        
+
         if (category) {
             // Get unique values for the selected category
             const uniqueValues = [...new Set(searchResults
@@ -1351,7 +1373,7 @@ oldButton.parentNode.replaceChild(newButton, oldButton);
 document.getElementById('uploadBomButton').addEventListener('click', async () => {
     const fileInput = document.getElementById('bomFile');
     const file = fileInput.files[0];
-    
+
     if (!file) {
         alert('Please select a BOM file first.');
         return;
@@ -1378,27 +1400,27 @@ document.getElementById('uploadBomButton').addEventListener('click', async () =>
 
         const result = await response.json();
         updateCartState(); // Update cart state after successful BOM upload
-        
+
         // Create a modal for displaying results
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.style.display = 'block';
-        
+
         const modalContent = document.createElement('div');
         modalContent.className = 'modal-content';
-        
+
         // Add header
         const header = document.createElement('h2');
         header.textContent = 'BOM Upload Results';
         modalContent.appendChild(header);
-        
+
         // Add found components section
         if (result.found_components && result.found_components.length > 0) {
             const foundHeader = document.createElement('h3');
             foundHeader.textContent = 'Found Components:';
             foundHeader.style.color = '#28a745';
             modalContent.appendChild(foundHeader);
-            
+
             const foundList = document.createElement('ul');
             result.found_components.forEach(comp => {
                 const item = document.createElement('li');
@@ -1407,14 +1429,14 @@ document.getElementById('uploadBomButton').addEventListener('click', async () =>
             });
             modalContent.appendChild(foundList);
         }
-        
+
         // Add not found components section
         if (result.not_found_components && result.not_found_components.length > 0) {
             const notFoundHeader = document.createElement('h3');
             notFoundHeader.textContent = 'Not Found Components:';
             notFoundHeader.style.color = '#dc3545';
             modalContent.appendChild(notFoundHeader);
-            
+
             const notFoundList = document.createElement('ul');
             result.not_found_components.forEach(comp => {
                 const item = document.createElement('li');
@@ -1423,35 +1445,35 @@ document.getElementById('uploadBomButton').addEventListener('click', async () =>
             });
             modalContent.appendChild(notFoundList);
         }
-        
+
         // Add buttons
         const buttonContainer = document.createElement('div');
         buttonContainer.style.marginTop = '20px';
         buttonContainer.style.textAlign = 'center';
-        
+
         const viewCartButton = document.createElement('button');
         viewCartButton.textContent = 'View Cart';
         viewCartButton.onclick = () => {
             window.location.href = '/cart';
         };
         viewCartButton.style.marginRight = '10px';
-        
+
         const closeButton = document.createElement('button');
         closeButton.textContent = 'Close';
         closeButton.onclick = () => {
             document.body.removeChild(modal);
         };
-        
+
         buttonContainer.appendChild(viewCartButton);
         buttonContainer.appendChild(closeButton);
         modalContent.appendChild(buttonContainer);
-        
+
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
-        
+
         // Clear the file input
         fileInput.value = '';
-        
+
     } catch (error) {
         console.error('Error:', error);
         // Only show error message if it's not the formData undefined error
@@ -1464,10 +1486,10 @@ document.getElementById('uploadBomButton').addEventListener('click', async () =>
 // Add cart state update to document ready
 document.addEventListener('DOMContentLoaded', () => {
     // ... existing initialization code ...
-    
+
     // Initialize cart state
     updateCartState();
-    
+
     // Update cart state when user changes
     document.querySelectorAll('.user-button').forEach(button => {
         button.addEventListener('click', () => {
@@ -1484,7 +1506,7 @@ async function updateCartState() {
         if (response.ok) {
             const cartData = await response.json();
             const cartButton = document.getElementById('cartButton');
-            
+
             if (cartData && cartData.length > 0) {
                 cartButton.classList.add('has-items');
                 cartButton.classList.remove('empty');
