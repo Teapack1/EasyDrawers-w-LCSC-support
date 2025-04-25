@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Component Stock Monitor</title>
     <link rel="stylesheet" href="/static/style.css">
+    <!-- Add Material Icons link -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon_io/favicon-32x32.png">
@@ -50,19 +52,29 @@
         </div>
     </div>
 
-    <h1>Electronics Stock Search</h1>
+    <h1>Electronics Stock Monitor</h1>
+
+    <!-- Tab Container -->
     <div class="tab-container">
         <div class="tabs">
-            <button class="tab-button active" data-tab="search">Search Components</button>
-            <button class="tab-button" data-tab="add">Add New Component</button>
-            <button class="tab-button" data-tab="import">Import Components</button>
+            <button class="tab-button active" data-tab="search">
+                <span class="material-icons">search</span>
+                <span class="tab-text">Search</span>
+            </button>
+            <button class="tab-button" data-tab="add">
+                <span class="material-icons">add_circle_outline</span>
+                <span class="tab-text">Add Component</span>
+            </button>
+            <button class="tab-button" data-tab="import">
+                <span class="material-icons">file_upload</span>
+                <span class="tab-text">Import</span>
+            </button>
         </div>
 
         <div class="tab-content-container">
-            <!-- Search Components Tab (Default) -->
-            <div class="tab-content active" id="search-tab">
+            <!-- Search Tab Content -->
+            <div id="search-tab" class="tab-content active">
                 <div class="content-panel">
-                    <h2>Search Components</h2>
                     <!-- Filters -->
                     <div class="filter-container">
                         <select id="filterComponentType">
@@ -90,11 +102,91 @@
                             <button id="uploadBomButton">Import BOM to Cart</button>
                         </div>
                     </div>
+                    <!-- Search Results Section -->
+                    <div id="searchResults">
+                        <div class="results-header">
+                            <h3>Search Results</h3>
+                            <div class="filter-controls">
+                                <div class="filter-group">
+                                    <label for="filterCategory">Filter by:</label>
+                                    <select id="filterCategory" class="select-control">
+                                        <option value="">Select category...</option>
+                                        <option value="manufacturer">Manufacturer</option>
+                                        <option value="package">Package</option>
+                                        <option value="capacitance">Capacitance</option>
+                                        <option value="resistance">Resistance</option>
+                                        <option value="inductance">Inductance</option>
+                                        <option value="storage_place">Storage Place</option>
+                                    </select>
+                                    <select id="filterValue" class="select-control" disabled>
+                                        <option value="">Select value...</option>
+                                    </select>
+                                </div>
+                                <div class="sort-group">
+                                    <label for="sortColumn">Sort by:</label>
+                                    <select id="sortColumn" class="select-control">
+                                        <option value="">Select field...</option>
+                                        <option value="resistance" data-unit="Ω">Resistance</option>
+                                        <option value="capacitance" data-unit="F">Capacitance</option>
+                                        <option value="inductance" data-unit="H">Inductance</option>
+                                        <option value="voltage" data-unit="V">Voltage</option>
+                                        <option value="current_power" data-unit="[AW]">Current/Power</option>
+                                        <option value="order_qty">Quantity</option>
+                                        <option value="package">Package</option>
+                                        <option value="storage_place">Storage Place</option>
+                                    </select>
+                                    <button id="sortOrderBtn" class="icon-button fixed-width-small"
+                                        title="Toggle sort order">
+                                        <span class="sort-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Mobile view selector -->
+                        <div class="view-toggle">
+                            <button id="tableView" class="view-button active">Table View</button>
+                            <button id="cardView" class="view-button">Card View</button>
+                        </div>
+                        <!-- Table view (original) -->
+                        <div id="tableViewContainer" class="view-container">
+                            <table id="resultsTable">
+                                <thead>
+                                    <tr>
+                                        <th>LCSC Part Number</th>
+                                        <th>MPN</th>
+                                        <th>Manufacturer</th>
+                                        <th>Package</th>
+                                        <th>Description</th>
+                                        <th>Unit Price($)</th>
+                                        <th>Component Type</th>
+                                        <th>Component Branch</th>
+                                        <th>Capacitance</th>
+                                        <th>Resistance</th>
+                                        <th>Voltage</th>
+                                        <th>Tolerance</th>
+                                        <th>Inductance</th>
+                                        <th>Current/Power</th>
+                                        <th>Quantity</th>
+                                        <th>Storage Place</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Card view (new mobile-friendly view) -->
+                        <div id="cardViewContainer" class="view-container" style="display: none">
+                            <div class="results-grid">
+                                <!-- Cards will be inserted here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Add New Component Tab -->
-            <div class="tab-content" id="add-tab">
+            <!-- Add Component Tab Content -->
+            <div id="add-tab" class="tab-content">
                 <div class="content-panel">
                     <form id="addComponentForm">
                         <h2>Add New Component</h2>
@@ -148,119 +240,26 @@
                 </div>
             </div>
 
-            <!-- Import Components Tab -->
-            <div class="tab-content" id="import-tab">
+            <!-- Import Tab Content -->
+            <div id="import-tab" class="tab-content">
                 <div class="content-panel">
                     <form id="uploadCsvForm">
-                        <h2>Import Components</h2>
-                        <p>Import components from LCSC CSV export file</p>
-                        <div class="import-container">
-                            <div class="file-upload-container">
-                                <label for="csvFile" class="file-upload-label">
-                                    <span class="file-upload-icon">📂</span>
-                                    <span class="file-upload-text">Choose LCSC CSV File</span>
-                                </label>
-                                <input type="file" id="csvFile" accept=".csv" class="file-upload-input">
-                                <span id="selected-file-name">No file selected</span>
-                            </div>
-                            <div class="import-actions">
-                                <button type="submit" class="primary-button">Import Components</button>
-                            </div>
+                        <h2>Import LCSC Components</h2>
+                        <p>Import components from LCSC CSV export file.</p>
+                        <div class="file-upload-container">
+                            <label for="csvFile" class="file-upload-label">
+                                <span class="material-icons">attach_file</span> Select CSV File
+                            </label>
+                            <input type="file" id="csvFile" accept=".csv" class="file-upload-input">
+                            <span id="selected-file-name">No file selected</span>
                         </div>
-                        <div class="import-help">
-                            <h3>How to import:</h3>
-                            <ol>
-                                <li>Export your order from LCSC as CSV</li>
-                                <li>Upload the CSV file using the button above</li>
-                                <li>Review the imported components in the search results</li>
-                            </ol>
-                        </div>
+                        <button type="submit" class="primary-button">Import Components</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="searchResults">
-        <div class="results-header">
-            <h3>Search Results</h3>
-            <div class="filter-controls">
-                <div class="filter-group">
-                    <label for="filterCategory">Filter by:</label>
-                    <select id="filterCategory" class="select-control">
-                        <option value="">Select category...</option>
-                        <option value="manufacturer">Manufacturer</option>
-                        <option value="package">Package</option>
-                        <option value="capacitance">Capacitance</option>
-                        <option value="resistance">Resistance</option>
-                        <option value="inductance">Inductance</option>
-                        <option value="storage_place">Storage Place</option>
-                    </select>
-                    <select id="filterValue" class="select-control" disabled>
-                        <option value="">Select value...</option>
-                    </select>
-                </div>
-                <div class="sort-group">
-                    <label for="sortColumn">Sort by:</label>
-                    <select id="sortColumn" class="select-control">
-                        <option value="">Select field...</option>
-                        <option value="resistance" data-unit="Ω">Resistance</option>
-                        <option value="capacitance" data-unit="F">Capacitance</option>
-                        <option value="inductance" data-unit="H">Inductance</option>
-                        <option value="voltage" data-unit="V">Voltage</option>
-                        <option value="current_power" data-unit="[AW]">Current/Power</option>
-                        <option value="order_qty">Quantity</option>
-                        <option value="package">Package</option>
-                        <option value="storage_place">Storage Place</option>
-                    </select>
-                    <button id="sortOrderBtn" class="icon-button fixed-width-small" title="Toggle sort order">
-                        <span class="sort-icon"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Mobile view selector -->
-        <div class="view-toggle">
-            <button id="tableView" class="view-button active">Table View</button>
-            <button id="cardView" class="view-button">Card View</button>
-        </div>
-
-        <!-- Table view (original) -->
-        <div id="tableViewContainer" class="view-container">
-            <table id="resultsTable">
-                <thead>
-                    <tr>
-                        <th>LCSC Part Number</th>
-                        <th>MPN</th>
-                        <th>Manufacturer</th>
-                        <th>Package</th>
-                        <th>Description</th>
-                        <th>Unit Price($)</th>
-                        <th>Component Type</th>
-                        <th>Component Branch</th>
-                        <th>Capacitance</th>
-                        <th>Resistance</th>
-                        <th>Voltage</th>
-                        <th>Tolerance</th>
-                        <th>Inductance</th>
-                        <th>Current/Power</th>
-                        <th>Quantity</th> <!-- Renamed from Order Qty. -->
-                        <th>Storage Place</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsTableBody">
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Card view (new mobile-friendly view) -->
-        <div id="cardViewContainer" class="view-container" style="display: none">
-            <div class="results-grid">
-                <!-- Cards will be inserted here by JavaScript -->
-            </div>
-        </div>
-    </div>
     <script src="/static/script.js"></script>
 </body>
 
