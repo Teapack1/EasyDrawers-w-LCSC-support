@@ -195,43 +195,82 @@
                 <button id="closeMapModal" class="close-modal-btn">&times;</button>
             </div>
             <div class="map-modal-body">
-                <!-- Map content will be loaded here -->
-                <div class="map-container">
+                <!-- Map content structure similar to map.html -->
+                <div class="map-container" style="height: 100%;"> <!-- Ensure map-container takes full height -->
                     <!-- Side Panel -->
-                    <div class="side-panel">
-                        <h3>Storage Map Controls</h3>
+                    <div class="side-panel"
+                        style="display: flex; flex-direction: column; height: 100%; justify-content: flex-start;">
+                        <h2>Storage Map Controls</h2>
 
                         <!-- Search Section -->
-                        <div class="search-section">
-                            <input type="text" id="partNumberSearch" placeholder="Search by LCSC Part Number">
-                            <button id="searchButtonMap">Search</button>
+                        <div class="control-section">
+                            <h3>Search</h3>
+                            <div class="search-section">
+                                <input type="text" id="modalPartNumberSearch" placeholder="Search by LCSC Part Number">
+                                <button id="modalSearchButton">Search</button> <!-- Changed ID -->
+                            </div>
                         </div>
 
                         <!-- Filters Section -->
-                        <div class="filter-section">
-                            <h4>Filters</h4>
-                            <select id="componentTypeFilter">
-                                <option value="">Select Component Type</option>
-                            </select>
-                            <select id="componentBranchFilter">
-                                <option value="">Select Component Branch</option>
-                            </select>
+                        <div class="control-section">
+                            <h3>Filters</h3>
+                            <div class="filter-section">
+                                <select id="modalComponentTypeFilter">
+                                    <option value="">Select Component Type</option>
+                                </select>
+                                <select id="modalComponentBranchFilter">
+                                    <option value="">Select Component Branch</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <!-- Legend Section -->
-                        <div class="legend-section">
-                            <h4>Legend</h4>
-                            <div class="legend-item">
-                                <div class="legend-color empty"></div>
-                                <span>Empty</span>
+                        <!-- Spacer to push the rest to the bottom -->
+                        <div style="flex: 1 1 auto;"></div>
+
+                        <!-- Bottom Tools/Settings Section -->
+                        <div class="bottom-controls">
+                            <!-- Legend Section -->
+                            <div class="control-section">
+                                <h3>Legend</h3>
+                                <div class="legend-section">
+                                    <div class="legend-item">
+                                        <div class="legend-color empty"></div>
+                                        <span>Empty</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color occupied"></div>
+                                        <span>Occupied</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color highlighted"></div>
+                                        <span>Selected/Filtered</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="legend-item">
-                                <div class="legend-color occupied"></div>
-                                <span>Occupied</span>
+
+                            <!-- Layout Settings -->
+                            <div class="control-section">
+                                <h3>Layout Settings</h3>
+                                <div class="layout-controls">
+                                    <div class="input-group">
+                                        <label for="modalMapRows">Rows:</label>
+                                        <input type="number" id="modalMapRows" min="1" max="20" value="6"
+                                            class="number-input">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="modalMapCols">Columns:</label>
+                                        <input type="number" id="modalMapCols" min="1" max="20" value="8"
+                                            class="number-input">
+                                    </div>
+                                    <button id="modalApplyLayoutBtn" class="primary-button">Apply Layout</button>
+                                </div>
                             </div>
-                            <div class="legend-item">
-                                <div class="legend-color highlighted"></div>
-                                <span>Selected/Filtered</span>
+                            <!-- Help Section -->
+                            <div class="control-section">
+                                <h3>Tips</h3>
+                                <div class="help-section">
+                                    <p><i>Shift + Click</i> on a drawer to assign a component branch to it.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -240,7 +279,46 @@
                     <div class="map-grid">
                         <!-- Grid will be populated by JavaScript -->
                     </div>
+
+                    <!-- Drawer Info Panel (can be reused or adapted if needed) -->
+                    <div class="drawer-info-panel" style="display: none;">
+                        <div class="drawer-info-header">
+                            <h3>Drawer Contents</h3>
+                            <button class="close-button">&times;</button>
+                        </div>
+                        <div class="drawer-info-content">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Branch Modal -->
+    <div id="assignBranchModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Assign Branch to Location: <span id="assignLocationLabel"></span></h2>
+                <button id="closeAssignModal" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 15px;">
+                <p>Select the component type and branch to assign to this storage location.</p>
+                <div>
+                    <label for="assignComponentType">Component Type:</label>
+                    <select id="assignComponentType" style="width: 100%; padding: 8px; margin-top: 5px;">
+                        <option value="">Select Type</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label for="assignComponentBranch">Component Branch:</label>
+                    <select id="assignComponentBranch" style="width: 100%; padding: 8px; margin-top: 5px;" disabled>
+                        <option value="">Select Branch</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <button id="assignBranchButton" class="primary-button" style="margin-top: 10px;">Assign Branch</button>
             </div>
         </div>
     </div>

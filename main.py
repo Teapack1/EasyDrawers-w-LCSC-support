@@ -128,6 +128,12 @@ class Component(BaseModel):
     manufacture_part_number: Optional[str] = None
 
 
+class AssignBranchRequest(BaseModel):
+    location: str
+    component_type: str
+    component_branch: str
+
+
 # Endpoint to add a new component
 @app.post("/add_component")
 async def add_component(component: Component):
@@ -199,71 +205,73 @@ async def search_component(
     sql_query = "SELECT * FROM components WHERE 1=1"
     params = []
 
-    # Check if the query matches a resistance value pattern (e.g., "100ohm", "100Ω")
-    resistance_pattern = re.match(
-        r"^(\d+\.?\d*)\s*(ohm|Ω|ohms)$", query.strip(), re.IGNORECASE
-    )
-
-    if resistance_pattern:
-        # Extract the numeric value
-        value = resistance_pattern.group(1)
-        # Create both versions of the resistance value
-        resistance_exact = f"{value}Ω"
-        resistance_exact_ohm = f"{value}ohm"
-
-        # Add specific resistance search condition
-        sql_query += """ AND (
-            resistance LIKE ? OR 
-            resistance LIKE ? OR
-            resistance = ? OR 
-            resistance = ?
-        )"""
-        params.extend(
-            [f"{value}Ω%", f"{value}ohm%", resistance_exact, resistance_exact_ohm]
+    # Handle the search query terms with AND logic
+    if query and query.strip():
+        # Special handling for resistance pattern remains, but only if it's the *only* term
+        resistance_pattern = re.match(
+            r"^(\d+\.?\d*)\s*(ohm|Ω|ohms)$", query.strip(), re.IGNORECASE
         )
-    else:
-        # Regular search for other queries
-        # Replace "ohm" with "Ω" in the search query
-        query = re.sub(r"(?i)ohm", "Ω", query)
-        search_terms = query.strip().split()
 
-        # For each term that contains Ω, create an alternative with "ohm"
-        expanded_terms = []
-        for term in search_terms:
-            expanded_terms.append(term.lower())
-            if "Ω" in term:
-                # Add version with "ohm"
-                expanded_terms.append(term.replace("Ω", "ohm"))
+        if resistance_pattern and len(query.strip().split()) == 1:
+            # Extract the numeric value
+            value = resistance_pattern.group(1)
+            resistance_exact = f"{value}Ω"
+            resistance_exact_ohm = f"{value}ohm"
+            # Add specific resistance search condition
+            sql_query += """ AND (
+                resistance LIKE ? OR 
+                resistance LIKE ? OR
+                resistance = ? OR 
+                resistance = ?
+            )"""
+            params.extend(
+                [f"{value}Ω%", f"{value}ohm%", resistance_exact, resistance_exact_ohm]
+            )
+        else:
+            # --- Combined AND search logic ---
+            search_terms = query.strip().lower().split()
 
-        search_patterns = [f"%{term}%" for term in expanded_terms]
-
-        # Add search conditions
-        if search_patterns:
-            sql_query += " AND ("
             search_columns = [
-                "LOWER(part_number)",
-                "LOWER(manufacturer)",
-                "LOWER(description)",
-                "LOWER(component_type)",
-                "LOWER(component_branch)",
-                "LOWER(capacitance)",
-                "LOWER(resistance)",
-                "LOWER(voltage)",
-                "LOWER(tolerance)",
-                "LOWER(inductance)",
-                "LOWER(current_power)",
-                "LOWER(package)",
-                "LOWER(manufacture_part_number)",
+                "part_number",  # Keep original case for potential exact matches if needed
+                "manufacturer",
+                "description",
+                "component_type",
+                "component_branch",
+                "capacitance",
+                "resistance",
+                "voltage",
+                "tolerance",
+                "inductance",
+                "current_power",
+                "package",
+                "manufacture_part_number",
+                "storage_place",
             ]
-            conditions = []
-            for pattern in search_patterns:
-                cols_conditions = [f"{col} LIKE ?" for col in search_columns]
-                conditions.append("(" + " OR ".join(cols_conditions) + ")")
-                params.extend([pattern] * len(search_columns))
-            sql_query += " OR ".join(conditions)
-            sql_query += ")"
 
-    # Apply filters
+            # For each search term, add an AND condition block
+            for term in search_terms:
+                # Handle ohm/Ω variation within the term
+                term_variations = [term]
+                if "ohm" in term:
+                    term_variations.append(term.replace("ohm", "Ω"))
+                elif "Ω" in term:
+                    term_variations.append(term.replace("Ω", "ohm"))
+
+                # Build OR conditions for this term across all columns
+                term_conditions = []
+                term_params = []
+                for variation in term_variations:
+                    pattern = f"%{variation}%"
+                    for col in search_columns:
+                        term_conditions.append(f"LOWER({col}) LIKE ?")
+                        term_params.append(pattern)
+
+                # Combine conditions for this term with OR
+                if term_conditions:
+                    sql_query += f" AND ({' OR '.join(term_conditions)})"
+                    params.extend(term_params)
+
+    # Apply filters (remain single-select for now)
     if component_type:
         sql_query += " AND component_type = ?"
         params.append(component_type)
@@ -273,15 +281,18 @@ async def search_component(
     if in_stock:
         sql_query += " AND order_qty > 0"
 
-    cursor.execute(sql_query, params)
-    results = cursor.fetchall()
-    conn.close()
+    try:
+        cursor.execute(sql_query, params)
+        results = cursor.fetchall()
+    except sqlite3.OperationalError as e:
+        print(f"SQL Error: {e}")
+        print(f"Query: {sql_query}")
+        print(f"Params: {params}")
+        raise HTTPException(status_code=500, detail=f"Database search error: {e}")
+    finally:
+        conn.close()
 
-    if not results:
-        raise HTTPException(
-            status_code=404, detail="No components found matching the query"
-        )
-
+    # Return results (even if empty, don't raise 404, let frontend handle empty display)
     return [dict(row) for row in results]
 
 
@@ -1398,6 +1409,66 @@ async def upload_bom(file: UploadFile = File(...), user: str = Query(...)):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
+
+
+@app.post("/assign_branch_to_location")
+async def assign_branch_to_location(request_data: AssignBranchRequest):
+    location = request_data.location
+    component_type = request_data.component_type
+    component_branch = request_data.component_branch
+
+    if not location or not component_type or not component_branch:
+        raise HTTPException(
+            status_code=400, detail="Location, component type, and branch are required."
+        )
+
+    config_path = "component_config.json"
+
+    try:
+        # Read the current config
+        with open(config_path, "r") as f:
+            config = json.load(f)
+
+        # --- Update logic ---
+        branch_found = False
+        # 1. Clear the target location from any *other* branch that might currently hold it
+        for c_type, type_data in config.items():
+            for branch, branch_data in type_data.get("Component Branch", {}).items():
+                if branch_data.get("Storage Place") == location and not (
+                    c_type == component_type and branch == component_branch
+                ):
+                    branch_data["Storage Place"] = ""  # Clear it
+
+        # 2. Find the target branch and assign the location
+        if component_type in config and component_branch in config[component_type].get(
+            "Component Branch", {}
+        ):
+            config[component_type]["Component Branch"][component_branch][
+                "Storage Place"
+            ] = location
+            branch_found = True
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Component type '{component_type}' or branch '{component_branch}' not found in configuration.",
+            )
+
+        # Write the updated config back
+        with open(config_path, "w") as f:
+            json.dump(config, f, indent=4)
+
+        return {
+            "message": f"Successfully assigned '{component_branch}' to location '{location}'"
+        }
+
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=500, detail="Component configuration file not found."
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error updating configuration: {str(e)}"
+        )
 
 
 if __name__ == "__main__":

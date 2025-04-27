@@ -2529,7 +2529,7 @@ table td:last-child {
 }
 
 .menu-icon:after {
-    top: 6px;
+    bottom: -6px;
 }
 
 .menu-btn.active .menu-icon {
@@ -2543,7 +2543,7 @@ table td:last-child {
 
 .menu-btn.active .menu-icon:after {
     transform: rotate(-45deg);
-    top: 0;
+    bottom: 0;
 }
 
 .menu-items {
@@ -2551,13 +2551,12 @@ table td:last-child {
     top: 100%;
     left: 0;
     background-color: #fff;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     padding: 8px 0;
     min-width: 200px;
     display: none;
     flex-direction: column;
-    z-index: 1000;
 }
 
 .menu-items.active {
@@ -2634,7 +2633,7 @@ table td:last-child {
     box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
-/* Drawer info panel */
+/* Drawer Info Panel */
 .drawer-info-panel {
     display: none;
     position: fixed;
@@ -3010,4 +3009,370 @@ details[open] summary::after {
 /* Style adjustments for primary buttons */
 .primary-button {
     width: 100%;
+}
+
+/* Map Modal Specific Styles (Copied and Adapted from map.css) */
+#mapModal .map-container {
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    /* Modal body already has padding */
+    height: 100%;
+    /* Fill modal body */
+}
+
+#mapModal .side-panel {
+    width: 300px;
+    min-width: 260px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+#mapModal .side-panel h2 {
+    margin: 0 0 16px 0;
+    color: #333;
+    font-size: 1.4em;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 8px;
+}
+
+#mapModal .side-panel h3 {
+    margin: 0 0 10px 0;
+    color: #555;
+    font-size: 1.1em;
+}
+
+#mapModal .control-section {
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #eaeaea;
+}
+
+#mapModal .bottom-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: auto;
+    margin-bottom: 8px;
+}
+
+#mapModal .search-section {
+    display: flex;
+    gap: 8px;
+}
+
+#mapModal .search-section input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+#mapModal .search-section button {
+    padding: 8px 12px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#mapModal .search-section button:hover {
+    background: #0d8bf2;
+}
+
+#mapModal .filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#mapModal .filter-section select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 0.9em;
+}
+
+#mapModal .legend-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#mapModal .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#mapModal .legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+#mapModal .legend-color.empty {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+}
+
+#mapModal .legend-color.occupied {
+    background: #b8e6ff;
+    border: 1px solid #7fd4ff;
+}
+
+#mapModal .legend-color.highlighted {
+    background: #ffd700;
+    border: 1px solid #ffc700;
+}
+
+#mapModal .layout-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#mapModal .input-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#mapModal .number-input {
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.95em;
+}
+
+#mapModal .primary-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin-top: 5px;
+}
+
+#mapModal .primary-button:hover {
+    background-color: #388E3C;
+}
+
+#mapModal .help-section {
+    color: #666;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+#mapModal .help-section p {
+    margin: 0;
+    padding: 0;
+}
+
+#mapModal .help-section i {
+    font-style: italic;
+    color: #333;
+}
+
+#mapModal .map-grid {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    /* Default, JS will override */
+    gap: 10px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    align-content: start;
+    max-height: 100%;
+}
+
+#mapModal .drawer {
+    aspect-ratio: 1;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    max-width: 120px;
+    box-sizing: border-box;
+}
+
+#mapModal .drawer.occupied {
+    background: #b8e6ff;
+    border-color: #7fd4ff;
+}
+
+#mapModal .drawer.highlighted {
+    background: #ffd700;
+    border-color: #ffc700;
+    transform: scale(1.05);
+    z-index: 1;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#mapModal .drawer[data-location=""] {
+    background-color: #e9ecef;
+    cursor: default;
+}
+
+#mapModal .drawer[data-location=""]:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+#mapModal .drawer[data-location=""] .drawer-label {
+    color: #adb5bd;
+}
+
+#mapModal .drawer:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#mapModal .drawer-label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    word-break: break-word;
+    padding: 5px;
+}
+
+/* Drawer Info Panel */
+#mapModal .drawer-info-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1010;
+    /* Ensure it's above modal overlay */
+}
+
+#mapModal .drawer-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+#mapModal .close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+#mapModal .close-button:hover {
+    color: #333;
+}
+
+/* Assign Branch Modal Specific Styles */
+#assignBranchModal {
+    align-items: center;
+    justify-content: center;
+    z-index: 1020;
+    /* Ensure it's above map modal */
+}
+
+#assignBranchModal .modal-content {
+    background-color: #fff;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#assignBranchModal .modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+#assignBranchModal .modal-header h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+#assignBranchModal .modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+#assignBranchModal .modal-body div {
+    display: flex;
+    flex-direction: column;
+}
+
+#assignBranchModal .modal-body label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #333;
+}
+
+#assignBranchModal .modal-body select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+#assignBranchModal .modal-body select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+#assignBranchModal .modal-body button#assignBranchButton {
+    margin-top: 15px;
+    padding: 12px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1em;
 }
