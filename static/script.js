@@ -76,7 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeMapModalBtn = document.getElementById('closeMapModal');
     const assignBranchModal = document.getElementById('assignBranchModal');
 
-    // --- Reused Map Config Logic --- 
+    // --- Simplified Map Config Logic for Modal --- 
+    // We still read from localStorage to maintain consistency if user set it elsewhere,
+    // but we don't provide UI controls to change it within this modal.
     const MODAL_DEFAULT_ROWS = 6;
     const MODAL_DEFAULT_COLS = 8;
     const MODAL_MAP_CONFIG = {
@@ -86,20 +88,20 @@ document.addEventListener('DOMContentLoaded', function () {
         get cols() {
             return parseInt(localStorage.getItem('mapCols')) || MODAL_DEFAULT_COLS;
         },
-        drawerSize: 100, // size in pixels (adjust if needed for modal view)
-        gap: 10, // gap between drawers in pixels
+        drawerSize: 100, // Adjust size for modal if needed
+        gap: 10,
     };
 
-    let modalComponentConfig = {}; // Store config fetched for modal
-    let modalStorageData = {};     // Store storage data fetched for modal
-    let modalCurrentAssignLocation = null;
+    let modalComponentConfig = {};
+    let modalStorageData = {};
+    // let modalCurrentAssignLocation = null; // No longer needed in modal
 
     // Function to open the map modal and load map data
     function openMapModal() {
         mapModal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        document.body.classList.add('modal-open'); // Add class to body
-        initializeModalMap(); // Load/initialize map content
+        document.body.classList.add('modal-open');
+        initializeModalMap();
     }
 
     // Function to close the map modal
@@ -107,7 +109,10 @@ document.addEventListener('DOMContentLoaded', function () {
         mapModal.classList.remove('active');
         document.body.style.overflow = '';
         document.body.classList.remove('modal-open');
-        closeAssignModal(); // Ensure assign modal is also closed
+        // closeAssignModal(); // Assign modal is no longer opened from here
+        // Hide drawer info panel if open
+        const infoPanel = mapModal.querySelector('.drawer-info-panel');
+        if (infoPanel) infoPanel.style.display = 'none';
     }
 
     // --- Initialize Modal Map --- 
@@ -117,56 +122,34 @@ document.addEventListener('DOMContentLoaded', function () {
             if (Object.keys(modalComponentConfig).length === 0) {
                 const configResponse = await fetch('/component_config');
                 modalComponentConfig = await configResponse.json();
-                populateModalFilterDropdowns(); // Populate filters once config is loaded
+                populateModalFilterDropdowns();
             }
 
-            // Extract unique storage places
             const storagePlaces = extractStoragePlaces(modalComponentConfig);
-
             const mapGrid = mapModal.querySelector('.map-grid');
-            if (!mapGrid) {
-                console.error("Map grid element not found in modal.");
-                return;
-            }
+            if (!mapGrid) return;
 
-            // Clear previous grid
-            mapGrid.innerHTML = '';
+            mapGrid.innerHTML = ''; // Clear previous grid
 
-            // Set grid template based on configuration
+            // Use the read (or default) config for layout
             mapGrid.style.gridTemplateColumns = `repeat(${MODAL_MAP_CONFIG.cols}, ${MODAL_MAP_CONFIG.drawerSize}px)`;
-            mapGrid.style.gridTemplateRows = `repeat(${MODAL_MAP_CONFIG.rows}, ${MODAL_MAP_CONFIG.drawerSize}px)`; // Set rows too
+            mapGrid.style.gridTemplateRows = `repeat(${MODAL_MAP_CONFIG.rows}, ${MODAL_MAP_CONFIG.drawerSize}px)`;
             mapGrid.style.gap = `${MODAL_MAP_CONFIG.gap}px`;
 
-            // Calculate total cells needed
             const totalCells = MODAL_MAP_CONFIG.rows * MODAL_MAP_CONFIG.cols;
 
             // Create drawers
             storagePlaces.forEach((place, index) => {
                 if (index < totalCells) {
-                    const drawer = createModalDrawerElement(place);
-                    mapGrid.appendChild(drawer);
+                    mapGrid.appendChild(createModalDrawerElement(place));
                 }
             });
-
-            // Fill remaining cells
             for (let i = storagePlaces.length; i < totalCells; i++) {
-                const drawer = createModalDrawerElement('');
-                mapGrid.appendChild(drawer);
+                mapGrid.appendChild(createModalDrawerElement(''));
             }
 
-            // Load and update storage data occupancy
             await loadModalStorageData();
-
-            // Set layout input values
-            const mapRowsInput = document.getElementById('modalMapRows');
-            const mapColsInput = document.getElementById('modalMapCols');
-            if (mapRowsInput && mapColsInput) {
-                mapRowsInput.value = MODAL_MAP_CONFIG.rows;
-                mapColsInput.value = MODAL_MAP_CONFIG.cols;
-            }
-
-            // Ensure event listeners are set up (might need adjustments)
-            setupModalMapEventListeners();
+            setupModalMapEventListeners(); // Ensure listeners are set up
 
         } catch (error) {
             console.error('Error initializing modal map:', error);
@@ -178,27 +161,23 @@ document.addEventListener('DOMContentLoaded', function () {
         const drawer = document.createElement('div');
         drawer.className = 'drawer empty';
         drawer.setAttribute('data-location', location);
-
         const labelSpan = document.createElement('span');
         labelSpan.className = 'drawer-label';
         labelSpan.textContent = location || 'Empty';
         drawer.appendChild(labelSpan);
 
-        drawer.addEventListener('click', (event) => { // Pass event to check Shift key
-            if (location) {
+        // Simplified click listener: always show contents
+        drawer.addEventListener('click', (event) => {
+            if (location) { // Only clickable if it has a location
                 handleModalDrawerClick(drawer, location, event);
             }
         });
-
         return drawer;
     }
 
+    // Simplified handler - removed Shift-key check
     function handleModalDrawerClick(drawerElement, location, event) {
-        if (event.shiftKey) {
-            openModalAssignModal(location);
-        } else {
-            showModalDrawerContents(drawerElement);
-        }
+        showModalDrawerContents(drawerElement);
     }
 
     async function loadModalStorageData() {
@@ -235,7 +214,6 @@ document.addEventListener('DOMContentLoaded', function () {
             option.textContent = type;
             typeFilter.appendChild(option);
         });
-        // Ensure branch filter is reset and disabled initially
         const branchFilter = document.getElementById('modalComponentBranchFilter');
         if (branchFilter) {
             branchFilter.innerHTML = '<option value="">Select Component Branch</option>';
@@ -276,14 +254,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const mapGrid = mapModal.querySelector('.map-grid');
         if (!mapGrid) return;
 
-        // Clear previous highlights
         mapGrid.querySelectorAll('.drawer').forEach(drawer => {
             drawer.classList.remove('highlighted');
         });
 
-        if (!selectedType && !selectedBranch) return; // No filters applied
+        if (!selectedType && !selectedBranch) return;
 
-        // Fetch storage data if not already loaded (should be loaded by initialize)
         if (Object.keys(modalStorageData).length === 0) {
             await loadModalStorageData();
         }
@@ -312,7 +288,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 highlightModalStorageLocations(results);
             } else {
                 alert('Component not found in database.');
-                // Clear highlights if search fails or finds nothing
                 const mapGrid = mapModal.querySelector('.map-grid');
                 if (mapGrid) {
                     mapGrid.querySelectorAll('.drawer').forEach(drawer => {
@@ -330,14 +305,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const mapGrid = mapModal.querySelector('.map-grid');
         if (!mapGrid) return;
 
-        // Clear previous highlights
         mapGrid.querySelectorAll('.drawer').forEach(drawer => {
             drawer.classList.remove('highlighted');
         });
 
         if (!components || components.length === 0) return;
 
-        // Highlight drawers containing the components
         const storageLocations = new Set();
         components.forEach(component => {
             if (component.storage_place) {
@@ -357,17 +330,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const location = drawer.getAttribute('data-location');
         const contents = modalStorageData[location] || [];
 
-        const infoPanel = mapModal.querySelector('.drawer-info-panel');
+        const infoPanel = mapModal.querySelector('.drawer-info-panel'); // Target modal's panel
+        if (!infoPanel) return;
         const infoContent = infoPanel.querySelector('.drawer-info-content');
+        if (!infoContent) return;
 
-        // Clear previous content
         infoContent.innerHTML = '';
-
         if (contents.length === 0) {
-            infoContent.innerHTML = '<p>No components stored in this location.</p>';
+            infoContent.innerHTML = '<p>No components stored here.</p>';
         } else {
             const groupedContents = contents.reduce((acc, component) => {
-                const key = `${component.component_type} - ${component.component_branch}`;
+                const key = `${component.component_type || 'N/A'} - ${component.component_branch || 'N/A'}`;
                 if (!acc[key]) acc[key] = [];
                 acc[key].push(component);
                 return acc;
@@ -381,8 +354,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <ul>
                         ${components.map(comp => `
                             <li>
-                                ${comp.part_number} - ${comp.description || 'No description'}
-                                (Qty: ${comp.order_qty})
+                                <span>${comp.part_number}</span>
+                                <small>${comp.description || ''}</small>
+                                <span>Qty: ${comp.order_qty}</span>
                             </li>
                         `).join('')}
                     </ul>
@@ -391,108 +365,51 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
         infoPanel.style.display = 'block';
+
+        // Add temporary listener to close panel on outside click
+        setTimeout(() => { // Use timeout to prevent immediate closing
+            document.addEventListener('click', closeModalInfoPanelOnClickOutside, { once: true });
+        }, 0);
     }
 
-    // --- Assign Branch Modal Logic (for Modal Map) ---
-    function openModalAssignModal(location) {
-        modalCurrentAssignLocation = location;
-        document.getElementById('assignLocationLabel').textContent = location;
-
-        const typeSelect = document.getElementById('assignComponentType');
-        const branchSelect = document.getElementById('assignComponentBranch');
-
-        typeSelect.innerHTML = '<option value="">Select Type</option>';
-        Object.keys(modalComponentConfig).sort().forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            typeSelect.appendChild(option);
-        });
-
-        branchSelect.innerHTML = '<option value="">Select Branch</option>';
-        branchSelect.disabled = true;
-
-        assignBranchModal.style.display = 'flex';
+    // Function to close the modal info panel when clicking outside
+    function closeModalInfoPanelOnClickOutside(event) {
+        const infoPanel = mapModal.querySelector('.drawer-info-panel');
+        // Check if the click is outside the infoPanel and not on a drawer
+        if (infoPanel && !infoPanel.contains(event.target) && !event.target.closest('.drawer')) {
+            infoPanel.style.display = 'none';
+        } else if (infoPanel && infoPanel.style.display === 'block') {
+            // If clicked inside or on a drawer, re-add the listener
+            document.addEventListener('click', closeModalInfoPanelOnClickOutside, { once: true });
+        }
     }
 
+    // --- Assign Branch Modal Logic (Removed from Modal Context) ---
+    // Functions openModalAssignModal, updateAssignBranchDropdown, assignBranch are removed
+    // closeAssignModal remains as it's used by the Escape key listener
     function closeAssignModal() {
-        assignBranchModal.style.display = 'none';
-        modalCurrentAssignLocation = null;
-    }
-
-    function updateAssignBranchDropdown() {
-        const typeSelect = document.getElementById('assignComponentType');
-        const branchSelect = document.getElementById('assignComponentBranch');
-        const selectedType = typeSelect.value;
-
-        branchSelect.innerHTML = '<option value="">Select Branch</option>';
-
-        if (selectedType && modalComponentConfig[selectedType] && modalComponentConfig[selectedType]['Component Branch']) {
-            const branches = modalComponentConfig[selectedType]['Component Branch'];
-            Object.keys(branches).sort().forEach(branch => {
-                const option = document.createElement('option');
-                option.value = branch;
-                option.textContent = branch;
-                branchSelect.appendChild(option);
-            });
-            branchSelect.disabled = false;
-        } else {
-            branchSelect.disabled = true;
-        }
-    }
-
-    async function assignBranch() {
-        const typeSelect = document.getElementById('assignComponentType');
-        const branchSelect = document.getElementById('assignComponentBranch');
-        const componentType = typeSelect.value;
-        const componentBranch = branchSelect.value;
-
-        if (!modalCurrentAssignLocation || !componentType || !componentBranch) {
-            alert('Please select a location, component type, and branch.');
-            return;
-        }
-
-        try {
-            const response = await fetch('/assign_branch_to_location', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    location: modalCurrentAssignLocation,
-                    component_type: componentType,
-                    component_branch: componentBranch
-                })
-            });
-            const result = await response.json();
-            if (response.ok) {
-                alert(result.message);
-                closeAssignModal();
-                // Reload config for next modal open and re-init map
-                modalComponentConfig = {}; // Clear cached config
-                await initializeModalMap();
-            } else {
-                alert(`Error: ${result.detail || 'Failed to assign branch.'}`);
-            }
-        } catch (error) {
-            console.error('Error assigning branch:', error);
-            alert('An unexpected error occurred.');
-        }
+        if (assignBranchModal) assignBranchModal.style.display = 'none';
+        // modalCurrentAssignLocation = null; // Variable removed
     }
 
     // --- Event Listeners --- 
     // General Modal Listeners
+    const mapFloatingBtn = document.getElementById('mapFloatingBtn'); // Define mapFloatingBtn
+    const mobileMapBtn = document.getElementById('mobileMapBtn'); // Define mobileMapBtn
     if (mapFloatingBtn) mapFloatingBtn.addEventListener('click', openMapModal);
     if (mobileMapBtn) mobileMapBtn.addEventListener('click', () => { setActiveMobileTab(mobileMapBtn); openMapModal(); });
     if (closeMapModalBtn) closeMapModalBtn.addEventListener('click', closeMapModal);
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-            if (assignBranchModal.style.display === 'flex') {
+            // Close assign modal first if it's open (though it shouldn't open from here now)
+            if (assignBranchModal && assignBranchModal.style.display === 'flex') {
                 closeAssignModal();
             } else if (mapModal.classList.contains('active')) {
                 closeMapModal();
             }
         }
     });
-    mapModal.addEventListener('click', (event) => { // Close map modal on overlay click
+    mapModal.addEventListener('click', (event) => {
         if (event.target === mapModal) closeMapModal();
     });
 
@@ -501,36 +418,25 @@ document.addEventListener('DOMContentLoaded', function () {
     function setupModalMapEventListeners() {
         if (modalListenersSetup) return;
 
-        // Layout
-        const applyLayoutBtn = document.getElementById('modalApplyLayoutBtn');
-        const mapRowsInput = document.getElementById('modalMapRows');
-        const mapColsInput = document.getElementById('modalMapCols');
-        if (applyLayoutBtn && mapRowsInput && mapColsInput) {
-            applyLayoutBtn.addEventListener('click', () => {
-                const rows = Math.max(1, Math.min(20, parseInt(mapRowsInput.value) || MODAL_DEFAULT_ROWS));
-                const cols = Math.max(1, Math.min(20, parseInt(mapColsInput.value) || MODAL_DEFAULT_COLS));
-                localStorage.setItem('mapRows', rows);
-                localStorage.setItem('mapCols', cols);
-                mapRowsInput.value = rows; // Update input in case value was clamped
-                mapColsInput.value = cols;
-                initializeModalMap(); // Re-initialize the map grid
-            });
-        }
+        // Layout Apply Button REMOVED
+        // const applyLayoutBtn = document.getElementById('modalApplyLayoutBtn');
+        // ... listener removed ...
 
         // Search
         const modalSearchBtn = document.getElementById('modalSearchButton');
         const modalSearchInput = document.getElementById('modalPartNumberSearch');
         if (modalSearchBtn && modalSearchInput) {
+            // ... (search listeners remain the same) ...
             modalSearchBtn.addEventListener('click', () => {
                 const query = modalSearchInput.value.trim();
                 if (query) searchComponentInModalMap(query);
-                else highlightModalStorageLocations([]); // Clear highlights if query is empty
+                else highlightModalStorageLocations([]);
             });
             modalSearchInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     const query = modalSearchInput.value.trim();
                     if (query) searchComponentInModalMap(query);
-                    else highlightModalStorageLocations([]); // Clear highlights if query is empty
+                    else highlightModalStorageLocations([]);
                 }
             });
         }
@@ -545,22 +451,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const drawerInfoCloseBtn = mapModal.querySelector('.drawer-info-panel .close-button');
         if (drawerInfoCloseBtn) drawerInfoCloseBtn.addEventListener('click', () => { mapModal.querySelector('.drawer-info-panel').style.display = 'none'; });
 
-        // Assign Branch Modal Listeners
-        const closeAssignBtn = document.getElementById('closeAssignModal');
-        const assignTypeSelect = document.getElementById('assignComponentType');
-        const assignButton = document.getElementById('assignBranchButton');
-        if (closeAssignBtn) closeAssignBtn.addEventListener('click', closeAssignModal);
-        if (assignTypeSelect) assignTypeSelect.addEventListener('change', updateAssignBranchDropdown);
-        if (assignButton) assignButton.addEventListener('click', assignBranch);
-        assignBranchModal.addEventListener('click', (event) => { // Close assign modal on overlay click
-            if (event.target === assignBranchModal) closeAssignModal();
-        });
+        // Assign Branch Modal Listeners REMOVED
+        // const closeAssignBtn = document.getElementById('closeAssignModal');
+        // ... listeners removed ...
 
         modalListenersSetup = true;
     }
 
     // Helper function to extract storage places (reusable)
     function extractStoragePlaces(config) {
+        // ... (same as before) ...
         const storagePlaces = new Set();
         Object.values(config).forEach(type => {
             Object.values(type['Component Branch'] || {}).forEach(branch => {

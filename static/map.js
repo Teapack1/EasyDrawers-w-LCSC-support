@@ -308,6 +308,7 @@ function updateMapOccupancy() {
     });
 }
 
+// Function to show drawer contents (on dedicated map page)
 function showDrawerContents(drawer) {
     const location = drawer.getAttribute('data-location');
     const contents = storageData[location] || [];
@@ -315,23 +316,18 @@ function showDrawerContents(drawer) {
     const infoPanel = document.querySelector('.drawer-info-panel');
     const infoContent = infoPanel.querySelector('.drawer-info-content');
 
-    // Clear previous content
-    infoContent.innerHTML = '';
+    infoContent.innerHTML = ''; // Clear previous content
 
     if (contents.length === 0) {
-        infoContent.innerHTML = '<p>No components stored in this location.</p>';
+        infoContent.innerHTML = '<p>No components stored here.</p>';
     } else {
-        // Group components by type and branch
         const groupedContents = contents.reduce((acc, component) => {
-            const key = `${component.component_type} - ${component.component_branch}`;
-            if (!acc[key]) {
-                acc[key] = [];
-            }
+            const key = `${component.component_type || 'N/A'} - ${component.component_branch || 'N/A'}`;
+            if (!acc[key]) acc[key] = [];
             acc[key].push(component);
             return acc;
         }, {});
 
-        // Create content HTML
         Object.entries(groupedContents).forEach(([group, components]) => {
             const section = document.createElement('div');
             section.className = 'content-section';
@@ -340,8 +336,9 @@ function showDrawerContents(drawer) {
                 <ul>
                     ${components.map(comp => `
                         <li>
-                            ${comp.part_number} - ${comp.description || 'No description'}
-                            (Qty: ${comp.order_qty})
+                            <span>${comp.part_number}</span> 
+                            <small>${comp.description || ''}</small> 
+                            <span>Qty: ${comp.order_qty}</span>
                         </li>
                     `).join('')}
                 </ul>
@@ -350,7 +347,25 @@ function showDrawerContents(drawer) {
         });
     }
 
-    infoPanel.style.display = 'block';
+    // Use flex display instead of block for better compatibility with new CSS
+    infoPanel.style.display = 'flex';
+
+    // Add temporary listener to close panel on outside click
+    setTimeout(() => { // Use timeout to prevent immediate closing
+        document.addEventListener('click', closeInfoPanelOnClickOutside, { once: true });
+    }, 0);
+}
+
+// Function to close the info panel when clicking outside
+function closeInfoPanelOnClickOutside(event) {
+    const infoPanel = document.querySelector('.drawer-info-panel');
+    // Check if the click is outside the infoPanel and not on a drawer
+    if (infoPanel && !infoPanel.contains(event.target) && !event.target.closest('.drawer')) {
+        infoPanel.style.display = 'none';
+    } else if (infoPanel && infoPanel.style.display === 'flex') {
+        // If clicked inside or on a drawer while panel is open, re-add the listener
+        document.addEventListener('click', closeInfoPanelOnClickOutside, { once: true });
+    }
 }
 
 function setupEventListeners() {
@@ -383,30 +398,46 @@ function setupEventListeners() {
         }
     });
 
-    // Close drawer info panel
-    document.querySelector('.drawer-info-panel .close-button').addEventListener('click', () => {
-        document.querySelector('.drawer-info-panel').style.display = 'none';
+    // Close drawer info panel (using the dedicated close button)
+    const drawerInfoCloseBtn = document.querySelector('.drawer-info-panel .close-button');
+    if (drawerInfoCloseBtn) {
+        drawerInfoCloseBtn.addEventListener('click', () => {
+            const infoPanel = document.querySelector('.drawer-info-panel');
+            if (infoPanel) infoPanel.style.display = 'none';
+            // Optional: Explicitly remove the outside click listener if the button is used
+            document.removeEventListener('click', closeInfoPanelOnClickOutside);
+        });
+    }
+
+    // Close assign modal if clicking outside the content
+    const assignModal = document.getElementById('assignBranchModal');
+    if (assignModal) { // Check if assignModal exists on this page
+        assignModal.addEventListener('click', (event) => {
+            if (event.target === assignModal) {
+                closeAssignModal();
+            }
+        });
+    }
+
+    // Add Escape key listener to close modals
+    document.addEventListener('keydown', (event) => {
+        const assignModal = document.getElementById('assignBranchModal');
+        const infoPanel = document.querySelector('.drawer-info-panel');
+
+        if (event.key === 'Escape') {
+            if (assignModal && assignModal.style.display === 'flex') {
+                closeAssignModal();
+            } else if (infoPanel && infoPanel.style.display === 'flex') {
+                infoPanel.style.display = 'none';
+                document.removeEventListener('click', closeInfoPanelOnClickOutside);
+            }
+        }
     });
 
     // --- New Event Listeners for Assign Modal ---
     document.getElementById('closeAssignModal').addEventListener('click', closeAssignModal);
     document.getElementById('assignComponentType').addEventListener('change', updateAssignBranchDropdown);
     document.getElementById('assignBranchButton').addEventListener('click', assignBranch);
-
-    // Close modal if clicking outside the content
-    const assignModal = document.getElementById('assignBranchModal');
-    assignModal.addEventListener('click', (event) => {
-        if (event.target === assignModal) {
-            closeAssignModal();
-        }
-    });
-
-    // Add Escape key listener to close modal
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && assignModal.style.display === 'flex') {
-            closeAssignModal();
-        }
-    });
 }
 
 async function searchByPartNumber(partNumber) {

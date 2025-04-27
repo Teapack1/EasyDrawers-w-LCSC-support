@@ -3376,3 +3376,130 @@ details[open] summary::after {
     box-sizing: border-box;
     font-size: 1em;
 }
+
+/* Map Modal Specific Styles */
+/* ... existing #mapModal styles ... */
+
+/* Drawer Info Panel Styles (Copied for Modal) */
+#mapModal .drawer-info-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    max-width: 450px;
+    width: 90%;
+    max-height: 85vh;
+    z-index: 1010;
+    /* Ensure it's above map modal overlay */
+    display: none;
+    flex-direction: column;
+}
+
+#mapModal .drawer-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+#mapModal .drawer-info-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #333;
+}
+
+#mapModal .drawer-info-panel .close-button {
+    /* Specific selector */
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    padding: 0 5px;
+}
+
+#mapModal .drawer-info-panel .close-button:hover {
+    color: #333;
+}
+
+#mapModal .drawer-info-content {
+    padding: 15px 18px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+#mapModal .drawer-info-content p {
+    text-align: center;
+    color: #777;
+    margin-top: 20px;
+}
+
+#mapModal .drawer-info-content .content-section {
+    margin-bottom: 15px;
+}
+
+#mapModal .drawer-info-content .content-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 1em;
+    color: #555;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 4px;
+}
+
+#mapModal .drawer-info-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#mapModal .drawer-info-content li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee;
+    gap: 10px;
+    font-size: 0.9em;
+}
+
+#mapModal .drawer-info-content li:last-child {
+    border-bottom: none;
+}
+
+#mapModal .drawer-info-content li span:first-child {
+    font-weight: 500;
+    color: #007bff;
+    flex-basis: 40%;
+    word-break: break-all;
+}
+
+#mapModal .drawer-info-content li small {
+    color: #666;
+    font-size: 0.85em;
+    flex-grow: 1;
+    text-align: left;
+    padding: 0 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#mapModal .drawer-info-content li span:last-child {
+    font-weight: bold;
+    flex-shrink: 0;
+    min-width: 50px;
+    text-align: right;
+}
+
+
+/* Assign Branch Modal Specific Styles */
+/* ... existing #assignBranchModal styles ... */
