@@ -6,16 +6,58 @@
     height: calc(100vh - 100px);
 }
 
+/* Top Bar Styles */
+.top-bar {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar button {
+    margin-right: 15px;
+}
+
+.top-buttons {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background-color: #e0e0e0;
+}
+
+.action-button i {
+    font-size: 18px;
+}
+
 /* Side Panel Styles */
 .side-panel {
     width: 300px;
+    min-width: 250px;
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     gap: 20px;
+    overflow-y: auto;
 }
 
 .side-panel h2 {
@@ -31,14 +73,62 @@
 /* Search Section */
 .search-section {
     display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
-.search-section input {
-    flex-grow: 1;
+.search-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.search-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.search-input-container input {
+    width: 100%;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+.smart-search-hint {
+    font-size: 12px;
+    color: #666;
+    display: none;
+}
+
+.search-toggle input[type="checkbox"]:checked~.search-input-container .smart-search-hint {
+    display: block;
+}
+
+.search-toggle input[type="checkbox"]:checked~.search-input-container input {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.search-section button {
+    align-self: flex-end;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-section button:hover {
+    background-color: #0056b3;
 }
 
 /* Filter Section */
@@ -89,6 +179,12 @@
     border: 1px solid #ffc700;
 }
 
+#dynamicLegendItems {
+    margin-top: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
 /* Map Grid Styles */
 .map-grid {
     flex-grow: 1;
@@ -98,7 +194,8 @@
     padding: 20px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: auto;
 }
 
 .drawer {
@@ -142,13 +239,38 @@
 
 .drawer:hover {
     transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .drawer-label {
     font-size: 1.2em;
     font-weight: bold;
     color: #333;
+}
+
+/* Component category coloring for drawers */
+.drawer-component-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.drawer[data-component-type] {
+    position: relative;
+}
+
+.drawer[data-component-type]::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--component-color, #333);
 }
 
 /* Drawer Info Panel */
@@ -160,11 +282,12 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     max-width: 500px;
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
+    z-index: 100;
 }
 
 .drawer-info-header {
@@ -186,6 +309,162 @@
     color: #333;
 }
 
+/* Editor Panels */
+.editor-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    width: 400px;
+    max-width: 90%;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 200;
+}
+
+.editor-panel.active {
+    display: flex;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.editor-header h3 {
+    margin: 0;
+    color: #343a40;
+}
+
+.editor-content {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #343a40;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.primary-button,
+.secondary-button,
+.warning-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.primary-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.primary-button:hover {
+    background-color: #0056b3;
+}
+
+.primary-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.secondary-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+.secondary-button:hover {
+    background-color: #5a6268;
+}
+
+.secondary-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.warning-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.warning-button:hover {
+    background-color: #c82333;
+}
+
+.info-text {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.assignment-color-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.color-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+}
+
+.assignment-status {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+/* Assignment mode */
+.map-container.assignment-mode .drawer:hover {
+    border: 2px dashed #007bff;
+}
+
+.map-container.assignment-mode .drawer.selected {
+    border: 2px solid #007bff;
+    transform: scale(1.05);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .map-container {
@@ -194,11 +473,60 @@
 
     .side-panel {
         width: auto;
+        min-width: 0;
     }
 
     .map-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .top-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .action-button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .editor-panel {
+        width: 95%;
+        max-height: 95vh;
+    }
+}
+
+/* Component type colors - will be dynamically applied */
+.resistor-color {
+    --component-color: #ff5252;
+}
+
+.capacitor-color {
+    --component-color: #4caf50;
+}
+
+.inductor-color {
+    --component-color: #ba68c8;
+}
+
+.diode-color {
+    --component-color: #ff9800;
+}
+
+.transistor-color {
+    --component-color: #2196f3;
+}
+
+.ic-color {
+    --component-color: #9c27b0;
+}
+
+.connector-color {
+    --component-color: #795548;
+}
+
+.misc-color {
+    --component-color: #607d8b;
 }
 
 /* Touch-friendly adjustments */
@@ -213,5 +541,12 @@
 
     .drawer.active {
         transform: scale(1.05);
+    }
+
+    .form-group input,
+    .form-group select,
+    button {
+        min-height: 44px;
+        /* Touch target size */
     }
 }
