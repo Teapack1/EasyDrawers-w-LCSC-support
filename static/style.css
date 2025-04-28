@@ -133,8 +133,9 @@ h1 {
 
 .map-modal-body {
     flex: 1;
-    overflow: auto;
-    padding: 20px;
+    overflow: hidden;
+    padding: 15px;
+    display: flex;
 }
 
 /* Map Container Styles (for modal) */
@@ -3014,418 +3015,379 @@ details[open] summary::after {
 /* Map Modal Specific Styles (Copied and Adapted from map.css) */
 #mapModal .map-container {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     padding: 0;
-    /* Modal body already has padding */
     height: 100%;
-    /* Fill modal body */
+    width: 100%;
+    /* Ensure container takes full width of body */
+    flex-grow: 1;
+    /* Allow container to grow */
 }
 
 #mapModal .side-panel {
-    width: 300px;
-    min-width: 260px;
+    width: 280px;
+    /* Slightly narrower for modal */
+    min-width: 240px;
     background: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: 100%;
-    overflow-y: auto;
-}
-
-#mapModal .side-panel h2 {
-    margin: 0 0 16px 0;
-    color: #333;
-    font-size: 1.4em;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 8px;
-}
-
-#mapModal .side-panel h3 {
-    margin: 0 0 10px 0;
-    color: #555;
-    font-size: 1.1em;
-}
-
-#mapModal .control-section {
-    background-color: #f9f9f9;
-    border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 12px;
-    border: 1px solid #eaeaea;
-}
-
-#mapModal .bottom-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: auto;
-    margin-bottom: 8px;
-}
-
-#mapModal .search-section {
-    display: flex;
-    gap: 8px;
-}
-
-#mapModal .search-section input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.9em;
-}
-
-#mapModal .search-section button {
-    padding: 8px 12px;
-    background: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-#mapModal .search-section button:hover {
-    background: #0d8bf2;
-}
-
-#mapModal .filter-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#mapModal .filter-section select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-    font-size: 0.9em;
-}
-
-#mapModal .legend-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-#mapModal .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#mapModal .legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-}
-
-#mapModal .legend-color.empty {
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-}
-
-#mapModal .legend-color.occupied {
-    background: #b8e6ff;
-    border: 1px solid #7fd4ff;
-}
-
-#mapModal .legend-color.highlighted {
-    background: #ffd700;
-    border: 1px solid #ffc700;
-}
-
-#mapModal .layout-controls {
     display: flex;
     flex-direction: column;
     gap: 12px;
-}
-
-#mapModal .input-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#mapModal .number-input {
-    width: 70px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 0.95em;
-}
-
-#mapModal .primary-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-    margin-top: 5px;
-}
-
-#mapModal .primary-button:hover {
-    background-color: #388E3C;
-}
-
-#mapModal .help-section {
-    color: #666;
-    font-size: 0.9em;
-    line-height: 1.4;
-}
-
-#mapModal .help-section p {
-    margin: 0;
-    padding: 0;
-}
-
-#mapModal .help-section i {
-    font-style: italic;
-    color: #333;
-}
-
-#mapModal .map-grid {
-    flex-grow: 1;
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    /* Default, JS will override */
-    gap: 10px;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    overflow: auto;
-    align-content: start;
-    max-height: 100%;
-}
-
-#mapModal .drawer {
-    aspect-ratio: 1;
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    max-width: 120px;
-    box-sizing: border-box;
-}
-
-#mapModal .drawer.occupied {
-    background: #b8e6ff;
-    border-color: #7fd4ff;
-}
-
-#mapModal .drawer.highlighted {
-    background: #ffd700;
-    border-color: #ffc700;
-    transform: scale(1.05);
-    z-index: 1;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-#mapModal .drawer[data-location=""] {
-    background-color: #e9ecef;
-    cursor: default;
-}
-
-#mapModal .drawer[data-location=""]:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-#mapModal .drawer[data-location=""] .drawer-label {
-    color: #adb5bd;
-}
-
-#mapModal .drawer:hover {
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-#mapModal .drawer-label {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    word-break: break-word;
-    padding: 5px;
-}
-
-/* Drawer Info Panel */
-#mapModal .drawer-info-panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
+    /* Adjusted gap */
+    height: 100%;
     overflow-y: auto;
-    z-index: 1010;
-    /* Ensure it's above modal overlay */
-}
-
-#mapModal .drawer-info-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-#mapModal .close-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-}
-
-#mapModal .close-button:hover {
-    color: #333;
-}
-
-/* Assign Branch Modal Specific Styles */
-#assignBranchModal {
-    align-items: center;
-    justify-content: center;
-    z-index: 1020;
-    /* Ensure it's above map modal */
-}
-
-#assignBranchModal .modal-content {
-    background-color: #fff;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-#assignBranchModal .modal-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
     flex-shrink: 0;
+    /* Prevent shrinking */
 }
 
-#assignBranchModal .modal-header h2 {
-    margin: 0;
-    font-size: 1.2em;
-}
-
-#assignBranchModal .modal-body {
-    padding: 20px;
+#mapModal .map-area-wrapper {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    overflow-y: auto;
-    flex-grow: 1;
-}
-
-#assignBranchModal .modal-body div {
-    display: flex;
-    flex-direction: column;
-}
-
-#assignBranchModal .modal-body label {
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #333;
-}
-
-#assignBranchModal .modal-body select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 1em;
-}
-
-#assignBranchModal .modal-body select:disabled {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
-}
-
-#assignBranchModal .modal-body button#assignBranchButton {
-    margin-top: 15px;
-    padding: 12px 20px;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 1em;
-}
-
-/* Map Modal Specific Styles */
-/* ... existing #mapModal styles ... */
-
-/* Drawer Info Panel Styles (Copied for Modal) */
-#mapModal .drawer-info-panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
+    overflow: auto;
+    min-width: 0;
     padding: 0;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-    max-width: 450px;
-    width: 90%;
-    max-height: 85vh;
-    z-index: 1010;
-    /* Ensure it's above map modal overlay */
-    display: none;
-    flex-direction: column;
+    height: 100%;
+    /* Ensure wrapper takes full height */
 }
 
-#mapModal .drawer-info-header {
+#mapModal .map-grid {
+    /* ... variable defs ... */
+    display: grid;
+    grid-template-columns: repeat(var(--map-cols), minmax(0, var(--map-drawer-size)));
+    gap: var(--map-gap);
+    padding: 10px;
+    /* Padding inside grid */
+    background: white;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    align-content: start;
+    /* Remove width/height/overflow - wrapper handles scroll */
+    min-height: 100px;
+    /* Example, adjust as needed */
+}
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    /* ... */
+}
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    #mapModal .map-container {
+        flex-direction: column;
+    }
+
+    #mapModal .side-panel {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        /* Override desktop height */
+        max-height: 40vh;
+        overflow-y: auto;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        /* Include padding in width */
+    }
+
+    #mapModal .map-grid {
+        /* Override grid columns directly for mobile */
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        height: auto;
+        padding: 10px;
+        flex-grow: 1;
+    }
+
+    #mapModal .drawer-label {
+        font-size: 0.8rem;
+    }
+
+    #mapModal .map-area-wrapper {
+        /* ... existing styles ... */
+        height: auto;
+        /* Allow height adjustment based on flex */
+    }
+}
+
+@media (max-width: 600px) {
+    #mapModal .map-area-wrapper {
+        gap: 10px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        padding: 5px;
+        gap: 5px;
+    }
+
+    #mapModal .side-panel {
+        padding: 10px;
+        max-height: 35vh;
+        /* Further reduce height */
+    }
+
+    #mapModal .drawer-label {
+        font-size: 0.7rem;
+    }
+
+    /* Make modal content take more screen height */
+    #mapModal .map-modal-content {
+        height: 95%;
+        width: 98%;
+    }
+}
+
+/* ... rest of style.css ... */
+
+/* ... existing modal drawer styles ... */
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    grid-column: 1 / -1;
+    height: 0;
+    border-top: 2px dashed #ccc;
+    margin: var(--map-gap, 10px) 0;
+    padding: 0;
+}
+
+/* Extra Drawers Container Styles for Modal */
+#mapModal .extra-drawers-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 18px;
-    border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+    gap: var(--map-gap, 10px);
+    padding: 10px 0;
+    /* Vertical padding */
+    justify-content: flex-start;
+    border-top: 2px dashed #e0e0e0;
+    width: 100%;
+    grid-template-columns: repeat(var(--map-cols), minmax(0, var(--map-drawer-size)));
+}
+
+#mapModal .extra-drawers-container .drawer {
+    width: var(--map-drawer-size, 100px);
+    height: var(--map-drawer-size, 100px);
+    max-width: 100px;
     flex-shrink: 0;
 }
 
-#mapModal .drawer-info-header h3 {
-    margin: 0;
-    font-size: 1.1em;
-    color: #333;
+/* ... drawer info panel styles ... */
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    /* ... existing modal side panel styles ... */
+
+    #mapModal .map-area-wrapper {
+        padding: 0;
+        gap: 15px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        /* ... other styles ... */
+        padding: 10px 5px;
+    }
+
+    #mapModal .extra-drawers-container {
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        padding: 10px 5px;
+        justify-content: flex-start;
+    }
+
+    /* ... */
+}
+
+@media (max-width: 600px) {
+    #mapModal .map-area-wrapper {
+        gap: 10px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        /* ... other styles ... */
+        padding: 5px;
+        gap: 5px;
+    }
+
+    #mapModal .extra-drawers-container {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        padding: 10px 5px;
+        gap: 5px;
+        border-top: none;
+    }
+
+    /* ... */
+}
+
+/* ... rest of style.css ... */
+
+/* ... existing modal drawer styles ... */
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    grid-column: 1 / -1;
+    height: 0;
+    border-top: 2px dashed #ccc;
+    margin: var(--map-gap, 10px) 0;
+    padding: 0;
+}
+
+/* Extra Drawers Container Styles for Modal REMOVED */
+/* #mapModal .extra-drawers-container { ... } */
+/* #mapModal .extra-drawers-container .drawer { ... } */
+
+/* ... existing modal drawer info panel styles ... */
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    /* ... */
+    /* Remove responsive styles for #mapModal .extra-drawers-container */
+    /* #mapModal .extra-drawers-container { ... } */
+    /* ... */
+}
+
+@media (max-width: 600px) {
+
+    /* ... */
+    #mapModal .grid-separator {
+        margin: 5px 0;
+        border-top-width: 1px;
+    }
+
+    /* Remove responsive styles for #mapModal .extra-drawers-container */
+    /* #mapModal .extra-drawers-container { ... } */
+    /* ... */
+}
+
+/* ... rest of style.css ... */
+
+/* style.css */
+/* ... */
+
+/* Map Modal Specific Styles */
+#mapModal .map-container {
+    display: flex;
+    gap: 15px;
+    /* Adjusted gap for modal */
+    padding: 0;
+    height: 100%;
+}
+
+#mapModal .side-panel {
+    width: 280px;
+    /* Slightly narrower for modal */
+    min-width: 240px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Adjusted gap */
+    height: 100%;
+    overflow-y: auto;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+#mapModal .map-area-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: auto;
+    min-width: 0;
+    /* Prevent flex overflow */
+    padding: 0;
+    /* Padding is inside grid now */
+}
+
+#mapModal .map-grid {
+    /* ... variable defs ... */
+    display: grid;
+    grid-template-columns: repeat(var(--map-cols), minmax(0, var(--map-drawer-size)));
+    gap: var(--map-gap);
+    padding: 10px;
+    /* Padding inside grid */
+    background: white;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    align-content: start;
+    /* Remove width/height/overflow - wrapper handles scroll */
+}
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    /* ... */
+}
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    #mapModal .map-container {
+        flex-direction: column;
+    }
+
+    #mapModal .side-panel {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        max-height: 40vh;
+        /* Reduced height for modal context */
+        overflow-y: auto;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+
+    #mapModal .map-area-wrapper {
+        flex-grow: 1;
+        /* Take remaining vertical space */
+        overflow: auto;
+        /* Scroll if grid+extra is too tall */
+        gap: 10px;
+        padding: 0 5px 5px 5px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        padding: 10px 5px;
+    }
+
+    /* ... */
+}
+
+@media (max-width: 600px) {
+
+    /* ... */
+    #mapModal .map-area-wrapper {
+        gap: 5px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        padding: 5px;
+        gap: 5px;
+    }
+
+    /* ... */
+}
+
+/* ... existing style.css ... */
+
+/* Drawer Info Panel Styles (Copied for Modal) */
+#mapModal .drawer-info-panel {
+    /* ... existing panel styles ... */
+}
+
+#mapModal .drawer-info-header {
+    /* ... existing header styles ... */
 }
 
 #mapModal .drawer-info-panel .close-button {
-    /* Specific selector */
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #aaa;
-    padding: 0 5px;
-}
-
-#mapModal .drawer-info-panel .close-button:hover {
-    color: #333;
+    /* ... existing close button styles ... */
 }
 
 #mapModal .drawer-info-content {
@@ -3435,21 +3397,15 @@ details[open] summary::after {
 }
 
 #mapModal .drawer-info-content p {
-    text-align: center;
-    color: #777;
-    margin-top: 20px;
+    /* ... existing empty message style ... */
 }
 
 #mapModal .drawer-info-content .content-section {
-    margin-bottom: 15px;
+    /* ... existing section style ... */
 }
 
 #mapModal .drawer-info-content .content-section h4 {
-    margin: 0 0 8px 0;
-    font-size: 1em;
-    color: #555;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 4px;
+    /* ... existing heading style ... */
 }
 
 #mapModal .drawer-info-content ul {
@@ -3459,6 +3415,7 @@ details[open] summary::after {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    /* Re-add gap for spacing */
 }
 
 #mapModal .drawer-info-content li {
@@ -3476,6 +3433,7 @@ details[open] summary::after {
 }
 
 #mapModal .drawer-info-content li span:first-child {
+    /* Part Number */
     font-weight: 500;
     color: #007bff;
     flex-basis: 40%;
@@ -3483,6 +3441,7 @@ details[open] summary::after {
 }
 
 #mapModal .drawer-info-content li small {
+    /* Description */
     color: #666;
     font-size: 0.85em;
     flex-grow: 1;
@@ -3494,12 +3453,34 @@ details[open] summary::after {
 }
 
 #mapModal .drawer-info-content li span:last-child {
+    /* Quantity */
     font-weight: bold;
     flex-shrink: 0;
     min-width: 50px;
     text-align: right;
 }
 
+/* ... rest of style.css ... */
 
-/* Assign Branch Modal Specific Styles */
-/* ... existing #assignBranchModal styles ... */
+#mapModal .drawer.highlighted {
+    background-color: #ffd700;
+    /* Solid yellow background */
+    border-color: #e6b800;
+    /* Slightly darker border for definition */
+    color: #333;
+    /* Ensure text is readable */
+    transform: scale(1.02);
+    /* Slightly less pronounced scale */
+    z-index: 1;
+    box-shadow: none;
+    /* Remove box shadow, background is highlight */
+}
+
+/* Ensure occupied style doesn't override highlight */
+#mapModal .drawer.occupied.highlighted {
+    background-color: #ffd700;
+    border-color: #e6b800;
+    color: #333;
+}
+
+/* ... rest of styles ... */

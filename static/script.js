@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
         get cols() {
             return parseInt(localStorage.getItem('mapCols')) || MODAL_DEFAULT_COLS;
         },
-        drawerSize: 100, // Adjust size for modal if needed
+        drawerSize: 100, // Base size, CSS can adjust
         gap: 10,
     };
 
@@ -129,27 +129,46 @@ document.addEventListener('DOMContentLoaded', function () {
             const mapGrid = mapModal.querySelector('.map-grid');
             if (!mapGrid) return;
 
-            mapGrid.innerHTML = ''; // Clear previous grid
+            mapGrid.innerHTML = ''; // Clear previous grid content
 
-            // Use the read (or default) config for layout
-            mapGrid.style.gridTemplateColumns = `repeat(${MODAL_MAP_CONFIG.cols}, ${MODAL_MAP_CONFIG.drawerSize}px)`;
-            mapGrid.style.gridTemplateRows = `repeat(${MODAL_MAP_CONFIG.rows}, ${MODAL_MAP_CONFIG.drawerSize}px)`;
-            mapGrid.style.gap = `${MODAL_MAP_CONFIG.gap}px`;
+            // Set CSS Custom Properties
+            mapGrid.style.setProperty('--map-cols', MODAL_MAP_CONFIG.cols);
+            mapGrid.style.setProperty('--map-rows', MODAL_MAP_CONFIG.rows);
+            mapGrid.style.setProperty('--map-drawer-size', `${MODAL_MAP_CONFIG.drawerSize}px`);
+            mapGrid.style.setProperty('--map-gap', `${MODAL_MAP_CONFIG.gap}px`);
 
+            // --- Create Main Grid Drawers and Empty Fillers --- 
             const totalCells = MODAL_MAP_CONFIG.rows * MODAL_MAP_CONFIG.cols;
-
-            // Create drawers
+            let cellCounter = 0;
             storagePlaces.forEach((place, index) => {
                 if (index < totalCells) {
                     mapGrid.appendChild(createModalDrawerElement(place));
+                    cellCounter++;
                 }
             });
-            for (let i = storagePlaces.length; i < totalCells; i++) {
+            while (cellCounter < totalCells) {
                 mapGrid.appendChild(createModalDrawerElement(''));
+                cellCounter++;
+            }
+
+            // --- Add Separator and Extra Drawers --- 
+            const extraCount = parseInt(localStorage.getItem('mapExtra')) || 0; // Read extra count
+            if (extraCount > 0) {
+                // Add separator
+                const separator = document.createElement('div');
+                separator.className = 'grid-separator';
+                separator.style.gridColumn = `1 / -1`;
+                mapGrid.appendChild(separator);
+
+                // Add extra drawers
+                for (let i = 1; i <= extraCount; i++) {
+                    const location = `U${i}`;
+                    mapGrid.appendChild(createModalDrawerElement(location)); // Append to mapGrid
+                }
             }
 
             await loadModalStorageData();
-            setupModalMapEventListeners(); // Ensure listeners are set up
+            setupModalMapEventListeners();
 
         } catch (error) {
             console.error('Error initializing modal map:', error);

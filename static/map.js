@@ -1,6 +1,8 @@
 // Map configuration
 const DEFAULT_ROWS = 6;
 const DEFAULT_COLS = 8;
+const DEFAULT_EXTRA = 0; // Default extra drawers
+
 const MAP_CONFIG = {
     get rows() {
         return parseInt(localStorage.getItem('mapRows')) || DEFAULT_ROWS;
@@ -8,8 +10,11 @@ const MAP_CONFIG = {
     get cols() {
         return parseInt(localStorage.getItem('mapCols')) || DEFAULT_COLS;
     },
-    drawerSize: 100, // size in pixels
-    gap: 10, // gap between drawers in pixels
+    get extra() { // Add getter for extra drawers
+        return parseInt(localStorage.getItem('mapExtra')) || DEFAULT_EXTRA;
+    },
+    drawerSize: 100, // Base size, CSS can adjust
+    gap: 10,
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,21 +34,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set layout input values from localStorage or defaults
     const mapRowsInput = document.getElementById('mapRows');
     const mapColsInput = document.getElementById('mapCols');
-    mapRowsInput.value = MAP_CONFIG.rows;
-    mapColsInput.value = MAP_CONFIG.cols;
+    const mapExtraInput = document.getElementById('mapExtra'); // Get extra input
+    if (mapRowsInput) mapRowsInput.value = MAP_CONFIG.rows;
+    if (mapColsInput) mapColsInput.value = MAP_CONFIG.cols;
+    if (mapExtraInput) mapExtraInput.value = MAP_CONFIG.extra; // Set initial extra value
 
     // Apply Layout button event
-    document.getElementById('applyLayoutBtn').addEventListener('click', () => {
-        const rows = Math.max(1, Math.min(20, parseInt(mapRowsInput.value) || DEFAULT_ROWS));
-        const cols = Math.max(1, Math.min(20, parseInt(mapColsInput.value) || DEFAULT_COLS));
-        localStorage.setItem('mapRows', rows);
-        localStorage.setItem('mapCols', cols);
-        // Update input values in case user entered out-of-bounds
-        mapRowsInput.value = rows;
-        mapColsInput.value = cols;
-        // Re-initialize the map grid
-        initializeMap();
-    });
+    const applyLayoutBtn = document.getElementById('applyLayoutBtn');
+    if (applyLayoutBtn) {
+        applyLayoutBtn.addEventListener('click', () => {
+            // Read and clamp values
+            const rows = Math.max(1, Math.min(20, parseInt(mapRowsInput.value) || DEFAULT_ROWS));
+            const cols = Math.max(1, Math.min(20, parseInt(mapColsInput.value) || DEFAULT_COLS));
+            const extra = Math.max(0, Math.min(10, parseInt(mapExtraInput.value) || DEFAULT_EXTRA)); // Read and clamp extra
+
+            // Save to localStorage
+            localStorage.setItem('mapRows', rows);
+            localStorage.setItem('mapCols', cols);
+            localStorage.setItem('mapExtra', extra); // Save extra
+
+            // Update input fields (in case values were clamped)
+            mapRowsInput.value = rows;
+            mapColsInput.value = cols;
+            mapExtraInput.value = extra; // Update extra input
+
+            // Re-initialize the map grid
+            initializeMap();
+        });
+    }
 });
 
 let componentConfig = {};
@@ -87,40 +105,59 @@ function extractStoragePlaces(config) {
 
 async function initializeMap() {
     try {
-        // Load component config
         const configResponse = await fetch('/component_config');
         const componentConfig = await configResponse.json();
-
-        // Extract unique storage places
         const storagePlaces = extractStoragePlaces(componentConfig);
 
         const mapGrid = document.querySelector('.map-grid');
-
-        // Clear previous grid
-        mapGrid.innerHTML = '';
-
-        // Set grid template based on configuration
-        mapGrid.style.gridTemplateColumns = `repeat(${MAP_CONFIG.cols}, ${MAP_CONFIG.drawerSize}px)`;
-        mapGrid.style.gap = `${MAP_CONFIG.gap}px`;
-
-        // Calculate total cells needed
-        const totalCells = MAP_CONFIG.rows * MAP_CONFIG.cols;
-
-        // Create drawers for each storage place (up to totalCells)
-        storagePlaces.forEach((place, index) => {
-            if (index < totalCells) {
-                const drawer = createDrawerElement(place);
-                mapGrid.appendChild(drawer);
-            }
-        });
-
-        // Fill remaining cells with empty drawers if needed
-        for (let i = storagePlaces.length; i < totalCells; i++) {
-            const drawer = createDrawerElement(''); // Empty location
-            mapGrid.appendChild(drawer);
+        if (!mapGrid) {
+            console.error("Map grid container not found.");
+            return;
         }
 
-        // Load and update storage data
+        mapGrid.innerHTML = ''; // Clear previous grid content
+
+        // Set CSS Custom Properties for the grid
+        mapGrid.style.setProperty('--map-cols', MAP_CONFIG.cols);
+        mapGrid.style.setProperty('--map-rows', MAP_CONFIG.rows);
+        mapGrid.style.setProperty('--map-drawer-size', `${MAP_CONFIG.drawerSize}px`);
+        mapGrid.style.setProperty('--map-gap', `${MAP_CONFIG.gap}px`);
+
+        // --- Create Main Grid Drawers and Empty Fillers --- 
+        const totalCells = MAP_CONFIG.rows * MAP_CONFIG.cols;
+        let cellCounter = 0;
+        storagePlaces.forEach((place, index) => {
+            if (index < totalCells) { // Check against total cells, not MAP_CONFIG.rows * MAP_CONFIG.cols directly
+                const drawer = createDrawerElement(place);
+                mapGrid.appendChild(drawer);
+                cellCounter++;
+            }
+        });
+        // Add empty cells to complete the main grid rectangle
+        while (cellCounter < totalCells) {
+            const drawer = createDrawerElement('');
+            mapGrid.appendChild(drawer);
+            cellCounter++;
+        }
+
+        // --- Add Separator and Extra Drawers --- 
+        const extraCount = MAP_CONFIG.extra;
+        if (extraCount > 0) {
+            // Add a separator element that spans the grid width
+            const separator = document.createElement('div');
+            separator.className = 'grid-separator';
+            separator.style.gridColumn = `1 / -1`; // Span all columns
+            mapGrid.appendChild(separator);
+
+            // Add extra drawers
+            for (let i = 1; i <= extraCount; i++) {
+                const location = `U${i}`;
+                const drawer = createDrawerElement(location);
+                mapGrid.appendChild(drawer); // Append directly to mapGrid
+            }
+        }
+
+        // Load and update storage data (will update all drawers in mapGrid)
         await loadStorageData();
 
     } catch (error) {

@@ -80,6 +80,10 @@
                             <label for="mapCols">Columns:</label>
                             <input type="number" id="mapCols" min="1" max="20" value="8" class="number-input">
                         </div>
+                        <div class="input-group">
+                            <label for="mapExtra">Extra:</label>
+                            <input type="number" id="mapExtra" min="0" max="10" value="0" class="number-input">
+                        </div>
                         <button id="applyLayoutBtn" class="primary-button">Apply Layout</button>
                     </div>
                 </div>
@@ -94,10 +98,21 @@
             </div>
         </div>
 
-        <!-- Map Grid -->
-        <div class="map-grid">
-            <!-- Grid will be populated by JavaScript -->
-        </div>
+        <!-- Map Area Wrapper -->
+        <div class="map-area-wrapper">
+            <!-- Map Grid -->
+            <div class="map-grid">
+                <!-- Grid will be populated by JavaScript -->
+                <!-- Both main and extra drawers (+ separator) go here -->
+            </div>
+
+            <!-- Extra Drawers Container REMOVED -->
+            <!-- 
+            <div class="extra-drawers-container">
+                
+            </div> 
+            -->
+        </div> <!-- End Map Area Wrapper -->
 
         <!-- Drawer Info Panel -->
         <div class="drawer-info-panel" style="display: none;">
