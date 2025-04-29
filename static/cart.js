@@ -3,10 +3,10 @@ let currentUser = localStorage.getItem('currentUser');
 document.addEventListener('DOMContentLoaded', () => {
     // Update user display
     document.getElementById('currentUserDisplay').textContent = `Current User: ${currentUser || 'None'}`;
-    
+
     // Load cart contents
     loadCart();
-    
+
     // Add event listeners
     document.getElementById('clearCartBtn').addEventListener('click', clearCart);
     document.getElementById('getPartsBtn').addEventListener('click', processCart);
@@ -23,7 +23,7 @@ async function loadCart() {
         alert('Please log in first');
         return;
     }
-    
+
     try {
         const response = await fetch(`/get_cart?user=${encodeURIComponent(currentUser)}`);
         const items = await response.json();
@@ -113,7 +113,7 @@ async function removeFromCart(cartItemId) {
 
 async function clearCart() {
     if (!confirm('Are you sure you want to clear your cart?')) return;
-    
+
     try {
         const response = await fetch('/clear_cart', {
             method: 'POST',
@@ -135,8 +135,8 @@ async function clearCart() {
 }
 
 async function processCart() {
-    if (!confirm('Are you sure you want to process these items?')) return;
-    
+    if (!confirm('Are you sure you want to process these items? This will subtract them from stock.')) return;
+
     try {
         const response = await fetch('/process_cart', {
             method: 'POST',
@@ -145,11 +145,13 @@ async function processCart() {
             },
             body: JSON.stringify({ user: currentUser })
         });
-        
+
         if (response.ok) {
             const result = await response.json();
-            alert('Cart processed successfully');
-            window.location.href = '/'; // Return to main page
+            if (result.items && result.items.length > 0) {
+                sessionStorage.setItem('processedCartItems', JSON.stringify(result.items));
+            }
+            window.location.href = '/';
         } else {
             const error = await response.json();
             throw new Error(error.detail || 'Failed to process cart');

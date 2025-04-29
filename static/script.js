@@ -1,5 +1,5 @@
 // Hamburger menu functionality
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     // Tab Functionality
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -45,13 +45,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const menuButton = document.getElementById('menuButton');
     const menuItems = document.querySelector('.menu-items');
 
-    menuButton.addEventListener('click', function () {
+    menuButton.addEventListener('click', function() {
         menuButton.classList.toggle('active');
         menuItems.classList.toggle('active');
     });
 
     // Close menu when clicking outside
-    document.addEventListener('click', function (event) {
+    document.addEventListener('click', function(event) {
         if (!event.target.closest('.hamburger-menu')) {
             menuButton.classList.remove('active');
             menuItems.classList.remove('active');
@@ -59,15 +59,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handle menu item clicks
-    document.getElementById('mapButtonMenu').addEventListener('click', function () {
+    document.getElementById('mapButtonMenu').addEventListener('click', function() {
         window.location.href = '/map';
     });
 
-    document.getElementById('databaseButton').addEventListener('click', function () {
+    document.getElementById('databaseButton').addEventListener('click', function() {
         window.location.href = '/database';
     });
 
-    document.getElementById('changelogButton').addEventListener('click', function () {
+    document.getElementById('changelogButton').addEventListener('click', function() {
         window.location.href = '/changelog';
     });
 
@@ -496,19 +496,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // =============================
 
     // Mobile tab bar functionality
-    document.getElementById('mobileSearchBtn').addEventListener('click', function () {
+    document.getElementById('mobileSearchBtn').addEventListener('click', function() {
         setActiveMobileTab(this);
         // Show search tab
         showTabContent('search');
     });
 
-    document.getElementById('mobileAddBtn').addEventListener('click', function () {
+    document.getElementById('mobileAddBtn').addEventListener('click', function() {
         setActiveMobileTab(this);
         // Show add component tab
         showTabContent('add');
     });
 
-    document.getElementById('mobileImportBtn').addEventListener('click', function () {
+    document.getElementById('mobileImportBtn').addEventListener('click', function() {
         setActiveMobileTab(this);
         // Show import tab
         showTabContent('import');
@@ -526,6 +526,77 @@ document.addEventListener('DOMContentLoaded', function () {
         const tabButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
         if (tabButton) {
             tabButton.click();
+        }
+    }
+
+    // --- Display Withdrawal Summary if available --- 
+    displayWithdrawalSummary();
+
+    // ==========================
+    // Map Modal Functionality
+    // ==========================
+    // ... (existing map modal logic) ...
+
+    // =============================
+    // End Map Modal Functionality
+    // =============================
+
+    // --- Function to Display Withdrawal Summary --- 
+    function displayWithdrawalSummary() {
+        const summaryData = sessionStorage.getItem('processedCartItems');
+        const summarySection = document.getElementById('withdrawalSummary');
+        const summaryContent = document.getElementById('summaryContent');
+        const clearSummaryBtn = document.getElementById('clearSummaryBtn');
+
+        if (summaryData && summarySection && summaryContent && clearSummaryBtn) {
+            try {
+                let items = JSON.parse(summaryData);
+
+                if (items.length > 0) {
+                    // Sort items by Storage Place for easier picking
+                    items.sort((a, b) => {
+                        const placeA = a.storage_place || 'ZZZ'; // Place items without location last
+                        const placeB = b.storage_place || 'ZZZ';
+                        return placeA.localeCompare(placeB);
+                    });
+
+                    // Generate summary HTML (using a simple table)
+                    let html = '<table class="summary-table"><thead><tr><th>Part Number</th><th>Qty Taken</th><th>Location</th><th>Description</th></tr></thead><tbody>';
+                    items.forEach(item => {
+                        html += `
+                            <tr>
+                                <td>${item.part_number}</td>
+                                <td class="qty-taken">${item.cart_quantity || 1}</td>
+                                <td class="storage-location">${item.storage_place || 'N/A'}</td>
+                                <td class="description-summary">${item.description || ''}</td>
+                            </tr>
+                        `;
+                    });
+                    html += '</tbody></table>';
+
+                    summaryContent.innerHTML = html;
+                    summarySection.style.display = 'block'; // Show the section
+
+                    // Add listener for the clear button
+                    clearSummaryBtn.addEventListener('click', () => {
+                        summarySection.style.display = 'none';
+                        summaryContent.innerHTML = '';
+                        sessionStorage.removeItem('processedCartItems');
+                    }, { once: true }); // Add listener only once
+
+                    // Optionally clear after displaying (or keep until cleared by button)
+                    // sessionStorage.removeItem('processedCartItems'); 
+                } else {
+                    sessionStorage.removeItem('processedCartItems'); // Clear if empty array somehow
+                }
+
+            } catch (error) {
+                console.error("Error displaying withdrawal summary:", error);
+                sessionStorage.removeItem('processedCartItems'); // Clear on error
+            }
+        } else {
+            // Ensure section is hidden if no data
+            if (summarySection) summarySection.style.display = 'none';
         }
     }
 });
@@ -1075,6 +1146,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
+        lastDisplayedResults = results;
         displaySearchResults(results);
     }
 
@@ -1198,6 +1270,30 @@ let searchResults = []; // Store current search results
 let currentSortColumn = null;
 let sortOrderAsc = true; // Sort order flag
 
+// --- Range Filter Dropdowns ---
+const rangeFields = [
+    { field: 'capacitance', minId: 'capacitanceMin', maxId: 'capacitanceMax' },
+    { field: 'resistance', minId: 'resistanceMin', maxId: 'resistanceMax' },
+    { field: 'voltage', minId: 'voltageMin', maxId: 'voltageMax' },
+    { field: 'inductance', minId: 'inductanceMin', maxId: 'inductanceMax' },
+    { field: 'package', minId: 'packageMin', maxId: 'packageMax' },
+];
+
+async function populateRangeDropdowns() {
+    for (const { field, minId, maxId } of rangeFields) {
+        try {
+            const res = await fetch(`/unique_values?field=${field}`);
+            const values = await res.json();
+            const minSel = document.getElementById(minId);
+            const maxSel = document.getElementById(maxId);
+            if (minSel && maxSel) {
+                minSel.innerHTML = '<option value="">Min</option>' + values.map(v => `<option value="${v}">${v}</option>`).join('');
+                maxSel.innerHTML = '<option value="">Max</option>' + values.map(v => `<option value="${v}">${v}</option>`).join('');
+            }
+        } catch (e) { console.error('Failed to fetch unique values for', field, e); }
+    }
+}
+
 async function searchComponent() {
     const query = document.getElementById("searchQuery").value;
     const componentType = document.getElementById("filterComponentType").value;
@@ -1205,21 +1301,24 @@ async function searchComponent() {
     const inStockOnly = document.getElementById("inStockCheckbox").checked;
 
     let url = `/search_component?query=${encodeURIComponent(query)}`;
+    if (componentType) url += `&component_type=${encodeURIComponent(componentType)}`;
+    if (componentBranch) url += `&component_branch=${encodeURIComponent(componentBranch)}`;
+    if (inStockOnly) url += `&in_stock=true`;
 
-    if (componentType) {
-        url += `&component_type=${encodeURIComponent(componentType)}`;
-    }
-    if (componentBranch) {
-        url += `&component_branch=${encodeURIComponent(componentBranch)}`;
-    }
-    if (inStockOnly) {
-        url += `&in_stock=true`;
+    // Only filter by selected category
+    const cat = filterCategory.value;
+    const minVal = filterMinValue.value;
+    const maxVal = filterMaxValue.value;
+    if (cat && minVal && maxVal) {
+        url += `&${cat}_min=${encodeURIComponent(minVal)}&${cat}_max=${encodeURIComponent(maxVal)}`;
+    } else if (cat && minVal) {
+        url += `&${cat}_min=${encodeURIComponent(minVal)}&${cat}_max=${encodeURIComponent(minVal)}`;
     }
 
     const response = await fetch(url);
     if (response.ok) {
-        searchResults = await response.json(); // Save results for sorting
-        displaySearchResults(searchResults);
+        searchResults = await response.json();
+        applyFiltersAndSort();
     } else {
         const error = await response.json();
         alert(`Error: ${error.detail}`);
@@ -1237,75 +1336,72 @@ function displaySearchResults(results) {
     resultsGrid.innerHTML = "";
     tableBody.innerHTML = "";
 
+    // Table view rendering (unchanged)
     results.forEach(component => {
-        // Create table row
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${component.part_number}</td>
-            <td>${component.manufacture_part_number || ''}</td>
-            <td>${component.manufacturer || ''}</td>
-            <td>${component.package || ''}</td>
-            <td>${component.description || ''}</td>
-            <td>${component.unit_price || ''}</td>
-            <td>${component.component_type || ''}</td>
             <td>${component.component_branch || ''}</td>
-            <td>${component.capacitance || ''}</td>
-            <td>${component.resistance || ''}</td>
-            <td>${component.voltage || ''}</td>
-            <td>${component.tolerance || ''}</td>
-            <td>${component.inductance || ''}</td>
-            <td>${component.current_power || ''}</td>
+            <td class="key-col capacitance-col">${component.capacitance || ''}</td>
+            <td class="key-col resistance-col">${component.resistance || ''}</td>
+            <td class="key-col voltage-col">${component.voltage || ''}</td>
+            <td class="key-col inductance-col">${component.inductance || ''}</td>
+            <td class="key-col package-col">${component.package || ''}</td>
             <td class="order-qty">${component.order_qty}</td>
-            <td>${component.storage_place || ''}</td>
             <td>
                 <div class="actions-container">
-                    <button class="add-to-cart-button" data-id="${component.id}"
-                        data-tooltip="Add to cart">Add to Cart</button>
+                    <button class="add-to-cart-button" data-id="${component.id}" data-tooltip="Add to cart">Add to Cart</button>
                     <div class="controls-row">
                         <div class="quantity-controls">
-                            <button class="decrease" data-id="${component.id}" 
-                                data-tooltip="Decrease stock quantity">-</button>
+                            <button class="decrease" data-id="${component.id}" data-tooltip="Decrease stock quantity">-</button>
                             <input type="number" class="quantity-input" value="1" min="1">
-                            <button class="increase" data-id="${component.id}"
-                                data-tooltip="Increase stock quantity">+</button>
+                            <button class="increase" data-id="${component.id}" data-tooltip="Increase stock quantity">+</button>
                         </div>
-                        <button class="delete-button" data-id="${component.id}"
-                            data-tooltip="Delete component">×</button>
+                        <button class="delete-button" data-id="${component.id}" data-tooltip="Delete component">×</button>
                     </div>
                 </div>
             </td>
         `;
-
-        // Add click handler for row expansion
         row.addEventListener('click', (event) => {
-            // Don't expand if clicking buttons or inputs
-            if (event.target.tagName === 'BUTTON' ||
-                event.target.tagName === 'INPUT' ||
-                event.target.classList.contains('delete-button')) {
+            if (event.target.tagName === 'BUTTON' || event.target.tagName === 'INPUT' || event.target.classList.contains('delete-button')) {
                 return;
             }
-
-            // Toggle expanded class
             row.classList.toggle('expanded');
-
-            // If row is expanded, collapse any other expanded rows
             if (row.classList.contains('expanded')) {
-                const otherExpandedRows = tableBody.querySelectorAll('tr.expanded');
-                otherExpandedRows.forEach(otherRow => {
-                    if (otherRow !== row) {
-                        otherRow.classList.remove('expanded');
-                    }
+                tableBody.querySelectorAll('tr.detail-row').forEach(r => r.remove());
+                tableBody.querySelectorAll('tr.expanded').forEach(otherRow => {
+                    if (otherRow !== row) otherRow.classList.remove('expanded');
                 });
+                const detailRow = document.createElement('tr');
+                detailRow.className = 'detail-row';
+                detailRow.innerHTML = `<td colspan="9">
+                    <div class="detail-content">
+                        <strong>MPN:</strong> ${component.manufacture_part_number || ''} &nbsp; 
+                        <strong>Manufacturer:</strong> ${component.manufacturer || ''} &nbsp; 
+                        <strong>Description:</strong> ${component.description || ''} &nbsp; 
+                        <strong>Unit Price($):</strong> ${component.unit_price || ''} &nbsp; 
+                        <strong>Component Type:</strong> ${component.component_type || ''} &nbsp; 
+                        <strong>Tolerance:</strong> ${component.tolerance || ''} &nbsp; 
+                        <strong>Current/Power:</strong> ${component.current_power || ''} &nbsp; 
+                        <strong>Storage Place:</strong> ${component.storage_place || ''}
+                    </div>
+                </td>`;
+                row.after(detailRow);
+            } else {
+                if (row.nextSibling && row.nextSibling.classList && row.nextSibling.classList.contains('detail-row')) {
+                    row.nextSibling.remove();
+                }
             }
         });
-
         tableBody.appendChild(row);
+    });
+    addQuantityControlEventListeners();
+    addDeleteButtonEventListeners();
 
-        // Create card element (existing card creation code)
+    // --- Card view rendering ---
+    results.forEach(component => {
         const card = document.createElement("div");
         card.className = "component-card";
-
-        // Essential info header
         card.innerHTML = `
             <div class="card-header">
                 <span class="essential-field">${component.part_number}</span>
@@ -1313,21 +1409,23 @@ function displaySearchResults(results) {
             </div>
             <div class="card-content">
                 <div class="essential-info">
-                    <div><span class="card-label">Type:</span> ${component.component_type}</div>
-                    <div><span class="card-label">Branch:</span> ${component.component_branch}</div>
-                    <div><span class="card-label">Storage:</span> ${component.storage_place}</div>
-                </div>
-                <div class="specs-info">
-                    ${component.resistance ? `<div><span class="card-label">Resistance:</span> ${component.resistance}</div>` : ''}
-                    ${component.capacitance ? `<div><span class="card-label">Capacitance:</span> ${component.capacitance}</div>` : ''}
-                    ${component.voltage ? `<div><span class="card-label">Voltage:</span> ${component.voltage}</div>` : ''}
+                    <div><span class="card-label">Branch:</span> ${component.component_branch || ''}</div>
+                    <div><span class="card-label">Capacitance:</span> ${component.capacitance || ''}</div>
+                    <div><span class="card-label">Resistance:</span> ${component.resistance || ''}</div>
+                    <div><span class="card-label">Voltage:</span> ${component.voltage || ''}</div>
+                    <div><span class="card-label">Inductance:</span> ${component.inductance || ''}</div>
+                    <div><span class="card-label">Package:</span> ${component.package || ''}</div>
                 </div>
                 <button class="show-more">Show More Details</button>
-                <div class="optional-fields">
-                    <div><span class="card-label">MPN:</span> ${component.manufacture_part_number}</div>
-                    <div><span class="card-label">Manufacturer:</span> ${component.manufacturer}</div>
-                    <div><span class="card-label">Package:</span> ${component.package}</div>
-                    <div><span class="card-label">Description:</span> ${component.description}</div>
+                <div class="optional-fields" style="display:none;">
+                    <div><span class="card-label">MPN:</span> ${component.manufacture_part_number || ''}</div>
+                    <div><span class="card-label">Manufacturer:</span> ${component.manufacturer || ''}</div>
+                    <div><span class="card-label">Description:</span> ${component.description || ''}</div>
+                    <div><span class="card-label">Unit Price($):</span> ${component.unit_price || ''}</div>
+                    <div><span class="card-label">Component Type:</span> ${component.component_type || ''}</div>
+                    <div><span class="card-label">Tolerance:</span> ${component.tolerance || ''}</div>
+                    <div><span class="card-label">Current/Power:</span> ${component.current_power || ''}</div>
+                    <div><span class="card-label">Storage Place:</span> ${component.storage_place || ''}</div>
                 </div>
             </div>
             <div class="card-actions">
@@ -1340,14 +1438,9 @@ function displaySearchResults(results) {
                 <button class="delete-button" data-id="${component.id}">Delete</button>
             </div>
         `;
-
-        resultsGrid.appendChild(card);
-    });
-
-    // Add event listeners for show more/less
-    document.querySelectorAll('.show-more').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const optionalFields = e.target.nextElementSibling;
+        // Show more/less toggle
+        card.querySelector('.show-more').addEventListener('click', (e) => {
+            const optionalFields = card.querySelector('.optional-fields');
             if (optionalFields.style.display === 'none') {
                 optionalFields.style.display = 'block';
                 e.target.textContent = 'Show Less';
@@ -1356,36 +1449,25 @@ function displaySearchResults(results) {
                 e.target.textContent = 'Show More Details';
             }
         });
+        resultsGrid.appendChild(card);
     });
-
-    // Add event listeners for quantity controls and delete buttons
-    addQuantityControlEventListeners();
-    addDeleteButtonEventListeners();
-
-    // Add event listener for Add to Cart button
-    document.querySelectorAll('.add-to-cart-button').forEach(button => {
+    // Add event listeners for card actions
+    resultsGrid.querySelectorAll('.add-to-cart-button').forEach(button => {
         button.addEventListener('click', async (event) => {
             event.stopPropagation();
             if (!currentUser) {
                 alert('Please log in first');
                 return;
             }
-
             try {
                 const response = await fetch('/add_to_cart', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        user: currentUser,
-                        component_id: event.target.dataset.id
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: currentUser, component_id: event.target.dataset.id })
                 });
-
                 if (response.ok) {
                     alert('Item added to cart');
-                    updateCartState(); // Update cart state after adding item
+                    updateCartState();
                 } else {
                     const error = await response.json();
                     alert(error.detail);
@@ -1396,6 +1478,52 @@ function displaySearchResults(results) {
             }
         });
     });
+    resultsGrid.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            const id = event.target.getAttribute('data-id');
+            const confirmDelete = confirm('Are you sure you want to delete this item?');
+            if (confirmDelete) {
+                if (!currentUser) {
+                    alert('Please select a user before performing this action.');
+                    return;
+                }
+                try {
+                    const response = await fetch(`/delete_component`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ component_id: id, user: currentUser })
+                    });
+                    if (response.ok) {
+                        card.remove();
+                    } else {
+                        const error = await response.json();
+                        alert(`Error: ${error.detail}`);
+                    }
+                } catch (error) {
+                    alert(`Unexpected error: ${error.message}`);
+                }
+            }
+        });
+    });
+    resultsGrid.querySelectorAll('.decrease').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            const id = event.target.getAttribute('data-id');
+            const quantityInput = button.parentElement.querySelector('.quantity-input');
+            const change = parseInt(quantityInput.value) || 1;
+            await updateOrderQuantity(id, -change);
+        });
+    });
+    resultsGrid.querySelectorAll('.increase').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            const id = event.target.getAttribute('data-id');
+            const quantityInput = button.parentElement.querySelector('.quantity-input');
+            const change = parseInt(quantityInput.value) || 1;
+            await updateOrderQuantity(id, change);
+        });
+    });
 }
 
 // View toggle handling
@@ -1404,10 +1532,11 @@ document.querySelectorAll('.view-button').forEach(button => {
         const viewType = button.id;
         document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-
         document.querySelectorAll('.view-container').forEach(container => {
             container.style.display = container.id === viewType + 'Container' ? 'block' : 'none';
         });
+        // Always re-render the current results in the new view
+        displaySearchResults(lastDisplayedResults.length ? lastDisplayedResults : searchResults);
     });
 });
 
@@ -1723,109 +1852,78 @@ let sortState = {
 
 function initializeFilterAndSort() {
     const filterCategory = document.getElementById('filterCategory');
-    const filterValue = document.getElementById('filterValue');
-    const sortColumn = document.getElementById('sortColumn');
-    const sortOrderBtn = document.getElementById('sortOrderBtn');
+    const filterMinValue = document.getElementById('filterMinValue');
+    const filterMaxValue = document.getElementById('filterMaxValue');
+    const sortCategory = document.getElementById('sortCategory');
+    const sortOrder = document.getElementById('sortOrder');
 
-    // Filter category change handler - immediate effect
-    filterCategory.addEventListener('change', () => {
+    const unitFields = {
+        resistance: 'Ω',
+        capacitance: 'F',
+        inductance: 'H',
+        voltage: 'V',
+    };
+
+    filterCategory.addEventListener('change', async () => {
         const category = filterCategory.value;
-        activeFilters.category = category;
-
-        if (category) {
-            // Get unique values for the selected category
-            const uniqueValues = [...new Set(searchResults
-                .map(item => item[category])
-                .filter(value => value !== null && value !== undefined)
-                .map(value => String(value).trim())
-                .filter(value => value !== '')
-            )].sort((a, b) => {
-                const numA = parseFloat(a);
-                const numB = parseFloat(b);
-                if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
-                return a.localeCompare(b);
-            });
-
-            // Update filter value dropdown
-            filterValue.innerHTML = '<option value="">Select value...</option>' +
-                uniqueValues.map(value => `<option value="${value}">${value}</option>`).join('');
-            filterValue.disabled = false;
-        } else {
-            filterValue.innerHTML = '<option value="">Select value...</option>';
-            filterValue.disabled = true;
-            activeFilters.value = null;
-            applyFiltersAndSort(); // Apply immediately when clearing category
-        }
+        filterMinValue.disabled = true;
+        filterMaxValue.disabled = true;
+        filterMinValue.innerHTML = '<option value="">Min/Exact value...</option>';
+        filterMaxValue.innerHTML = '<option value="">Max value (optional)...</option>';
+        if (!category) return;
+        try {
+            const res = await fetch(`/unique_values?field=${category}`);
+            const values = await res.json();
+            filterMinValue.innerHTML = '<option value="">Min/Exact value...</option>' + values.map(v => `<option value="${v}">${v}</option>`).join('');
+            filterMaxValue.innerHTML = '<option value="">Max value (optional)...</option>' + values.map(v => `<option value="${v}">${v}</option>`).join('');
+            filterMinValue.disabled = false;
+            filterMaxValue.disabled = false;
+        } catch (e) { console.error('Failed to fetch unique values for', category, e); }
     });
 
-    // Filter value change handler - immediate effect
-    filterValue.addEventListener('change', () => {
-        activeFilters.value = filterValue.value;
-        applyFiltersAndSort(); // Apply immediately when value changes
-    });
+    filterMinValue.addEventListener('change', searchComponent);
+    filterMaxValue.addEventListener('change', searchComponent);
 
-    // Sort column change handler - sort ascending initially
-    sortColumn.addEventListener('change', () => {
-        const column = sortColumn.value;
-        if (column) {
-            sortState.column = column;
-            sortState.ascending = true; // Always start with ascending
-            sortOrderBtn.classList.remove('descending');
-            applyFiltersAndSort();
-        } else {
-            sortState.column = null;
-            applyFiltersAndSort();
-        }
-    });
-
-    // Sort order button - toggle between ascending/descending
-    sortOrderBtn.addEventListener('click', () => {
-        if (sortState.column) {
-            sortState.ascending = !sortState.ascending;
-            sortOrderBtn.classList.toggle('descending', !sortState.ascending);
-            applyFiltersAndSort();
-        }
-    });
+    sortCategory.addEventListener('change', applyFiltersAndSort);
+    sortOrder.addEventListener('change', applyFiltersAndSort);
 }
 
 function applyFiltersAndSort() {
     let results = [...searchResults];
-
-    // Apply filters first
-    if (activeFilters.category && activeFilters.value) {
-        results = results.filter(item => {
-            const itemValue = item[activeFilters.category];
-            if (itemValue === null || itemValue === undefined) return false;
-            return String(itemValue).trim().toLowerCase() === String(activeFilters.value).trim().toLowerCase();
-        });
-    }
-
-    // Then apply sorting if a sort column is selected
-    if (sortState.column) {
-        const unit = document.getElementById('sortColumn').selectedOptions[0]?.dataset.unit;
+    const sortCol = sortCategory.value;
+    const order = sortOrder.value;
+    if (sortCol) {
+        const unit = unitFields[sortCol] || null;
         results.sort((a, b) => {
-            let valA = unit ? extractSortableValue(a[sortState.column], unit) : a[sortState.column];
-            let valB = unit ? extractSortableValue(b[sortState.column], unit) : b[sortState.column];
-
-            // Handle null/undefined values
-            if (valA === null || valA === undefined) valA = '';
-            if (valB === null || valB === undefined) valB = '';
-
-            // Convert to comparable types
-            if (typeof valA === 'string') valA = valA.toLowerCase();
-            if (typeof valB === 'string') valB = valB.toLowerCase();
-
-            const compareResult = valA < valB ? -1 : valA > valB ? 1 : 0;
-            return sortState.ascending ? compareResult : -compareResult;
+            let valA = a[sortCol];
+            let valB = b[sortCol];
+            if (unit) {
+                valA = extractSortableValue(valA, unit);
+                valB = extractSortableValue(valB, unit);
+            } else {
+                valA = valA !== null && valA !== undefined ? valA : '';
+                valB = valB !== null && valB !== undefined ? valB : '';
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+            }
+            if (valA < valB) return order === 'asc' ? -1 : 1;
+            if (valA > valB) return order === 'asc' ? 1 : -1;
+            return 0;
         });
     }
-
+    lastDisplayedResults = results;
     displaySearchResults(results);
 }
 
 // Call this function when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeFilterAndSort();
+    populateRangeDropdowns();
+    // Add event listeners for range filters
+    rangeFields.forEach(({ minId, maxId }) => {
+        document.getElementById(minId).addEventListener('change', searchComponent);
+        document.getElementById(maxId).addEventListener('change', searchComponent);
+    });
 });
 
 // Settings dropdown functionality

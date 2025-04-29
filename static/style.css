@@ -3484,3 +3484,211 @@ details[open] summary::after {
 }
 
 /* ... rest of styles ... */
+
+/* ... existing styles ... */
+
+/* Withdrawal Summary Section */
+.summary-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #e9f5ff;
+    /* Light blue background */
+    border: 1px solid #b3d7ff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.summary-section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #0056b3;
+    /* Darker blue heading */
+    font-size: 1.4em;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.summary-table th,
+.summary-table td {
+    border: 1px solid #cce0ff;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.summary-table th {
+    background-color: #cce0ff;
+    color: #003d80;
+    font-weight: 600;
+}
+
+.summary-table tr:nth-child(even) {
+    background-color: #f0f8ff;
+}
+
+.summary-table .storage-location {
+    font-weight: bold;
+    background-color: #fffacd;
+    /* Light yellow highlight for location */
+}
+
+.summary-table .qty-taken {
+    text-align: center;
+    font-weight: bold;
+}
+
+.summary-table .description-summary {
+    font-size: 0.9em;
+    color: #555;
+    max-width: 250px;
+    /* Limit width */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#clearSummaryBtn {
+    display: block;
+    /* Center button */
+    margin: 10px auto 0 auto;
+    background-color: #6c757d;
+    /* Use secondary color */
+}
+
+#clearSummaryBtn:hover {
+    background-color: #5a6268;
+}
+
+
+/* Cart Table Mobile Responsiveness */
+@media (max-width: 768px) {
+
+    /* Hide specific columns in the main cart view */
+    #cartTable th:nth-child(2),
+    /* MPN */
+    #cartTable td:nth-child(2),
+    #cartTable th:nth-child(4),
+    /* Package */
+    #cartTable td:nth-child(4),
+    #cartTable th:nth-child(5),
+    /* Description */
+    #cartTable td:nth-child(5) {
+        display: none;
+    }
+
+    #cartTable th,
+    #cartTable td {
+        padding: 8px 5px;
+        /* Reduce padding */
+        font-size: 0.9em;
+        /* Slightly smaller font */
+    }
+
+    #cartTable .cart-quantity {
+        width: 40px;
+        /* Smaller quantity input */
+    }
+
+    /* Adjust summary table for mobile */
+    .summary-table th,
+    .summary-table td {
+        padding: 8px 6px;
+        font-size: 0.9em;
+    }
+
+    .summary-table .description-summary {
+        max-width: 100px;
+        /* Further limit description */
+    }
+}
+
+
+/* ... rest of style.css ... */
+
+/* Key column coloring for table view */
+.key-col.capacitance-col {
+    background-color: #e6f7ff;
+}
+
+.key-col.resistance-col {
+    background-color: #fffbe6;
+}
+
+.key-col.voltage-col {
+    background-color: #e6ffe6;
+}
+
+.key-col.inductance-col {
+    background-color: #f0e6ff;
+}
+
+.key-col.package-col {
+    background-color: #f9e6ff;
+}
+
+/* Slimmer table rows for compact view */
+#resultsTable th,
+#resultsTable td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 13px;
+    height: 28px;
+}
+
+/* Highlight key columns on hover for better orientation */
+#resultsTable tr:hover .key-col {
+    filter: brightness(0.95);
+}
+
+/* ... existing code ... */
+
+/* Expanded detail row in table view: wrap text, allow multi-line, prevent overflow */
+tr.detail-row td {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: 100vw;
+    padding: 12px 8px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+}
+
+.detail-content {
+    max-width: 100vw;
+    overflow-x: auto;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* On small screens, allow horizontal scroll for detail row */
+@media (max-width: 600px) {
+
+    tr.detail-row td,
+    .detail-content {
+        max-width: 98vw;
+        overflow-x: auto;
+    }
+}
+
+/* Card view: make optional-fields wrap and scroll if too large */
+.optional-fields {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #f8f9fa;
+    padding: 8px 6px;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+/* ... existing code ... */

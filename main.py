@@ -9,6 +9,7 @@ from fastapi import (
     File,
     Request,
     Query,
+    Depends,
 )  # Add this import
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -23,6 +24,7 @@ from typing import Optional  # Add this line
 from collections import defaultdict
 from fastapi.responses import StreamingResponse
 import csv
+import functools
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -134,6 +136,43 @@ class AssignBranchRequest(BaseModel):
     component_branch: str
 
 
+# Helper: Convert value with units to float for sorting/comparison
+UNIT_MULTIPLIERS = {
+    "p": 1e-12,
+    "n": 1e-9,
+    "u": 1e-6,
+    "µ": 1e-6,
+    "m": 1e-3,
+    "k": 1e3,
+    "meg": 1e6,
+    "M": 1e6,
+}
+
+
+def parse_unit_value(val):
+    if not val or not isinstance(val, str):
+        return None
+    val = (
+        val.strip()
+        .replace("Ω", "")
+        .replace("ohm", "")
+        .replace("Ohm", "")
+        .replace("F", "")
+        .replace("H", "")
+        .replace("V", "")
+        .replace(" ", "")
+    )
+    # Match number and optional prefix
+    match = re.match(r"(-?\d+\.?\d*)([pnuµmkM]?)", val)
+    if not match:
+        return None
+    num = float(match.group(1))
+    prefix = match.group(2)
+    if prefix in UNIT_MULTIPLIERS:
+        num *= UNIT_MULTIPLIERS[prefix]
+    return num
+
+
 # Endpoint to add a new component
 @app.post("/add_component")
 async def add_component(component: Component):
@@ -196,12 +235,19 @@ async def search_component(
     component_type: Optional[str] = None,
     component_branch: Optional[str] = None,
     in_stock: Optional[bool] = False,
+    resistance_min: Optional[str] = None,
+    resistance_max: Optional[str] = None,
+    capacitance_min: Optional[str] = None,
+    capacitance_max: Optional[str] = None,
+    voltage_min: Optional[str] = None,
+    voltage_max: Optional[str] = None,
+    inductance_min: Optional[str] = None,
+    inductance_max: Optional[str] = None,
 ):
     conn = sqlite3.connect("components.db")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # Build the base query
     sql_query = "SELECT * FROM components WHERE 1=1"
     params = []
 
@@ -281,6 +327,7 @@ async def search_component(
     if in_stock:
         sql_query += " AND order_qty > 0"
 
+    # Execute query and fetch all
     try:
         cursor.execute(sql_query, params)
         results = cursor.fetchall()
@@ -292,8 +339,42 @@ async def search_component(
     finally:
         conn.close()
 
-    # Return results (even if empty, don't raise 404, let frontend handle empty display)
-    return [dict(row) for row in results]
+    # --- Range filtering in Python (unit-aware) ---
+    def in_range(val, min_val, max_val):
+        v = parse_unit_value(val)
+        if min_val is not None and v is not None and v < min_val:
+            return False
+        if max_val is not None and v is not None and v > max_val:
+            return False
+        return True
+
+    # Parse min/max values
+    rmin = parse_unit_value(resistance_min) if resistance_min else None
+    rmax = parse_unit_value(resistance_max) if resistance_max else None
+    cmin = parse_unit_value(capacitance_min) if capacitance_min else None
+    cmax = parse_unit_value(capacitance_max) if capacitance_max else None
+    vmin = parse_unit_value(voltage_min) if voltage_min else None
+    vmax = parse_unit_value(voltage_max) if voltage_max else None
+    imin = parse_unit_value(inductance_min) if inductance_min else None
+    imax = parse_unit_value(inductance_max) if inductance_max else None
+
+    filtered = []
+    for row in results:
+        if resistance_min or resistance_max:
+            if not in_range(row["resistance"], rmin, rmax):
+                continue
+        if capacitance_min or capacitance_max:
+            if not in_range(row["capacitance"], cmin, cmax):
+                continue
+        if voltage_min or voltage_max:
+            if not in_range(row["voltage"], vmin, vmax):
+                continue
+        if inductance_min or inductance_max:
+            if not in_range(row["inductance"], imin, imax):
+                continue
+        filtered.append(dict(row))
+
+    return filtered
 
 
 # Endpoint to serve the UI
@@ -1469,6 +1550,32 @@ async def assign_branch_to_location(request_data: AssignBranchRequest):
         raise HTTPException(
             status_code=500, detail=f"Error updating configuration: {str(e)}"
         )
+
+
+# --- Unique values endpoint for populating dropdowns ---
+@app.get("/unique_values")
+async def unique_values(field: str):
+    allowed = {"resistance", "capacitance", "voltage", "inductance", "package"}
+    if field not in allowed:
+        raise HTTPException(status_code=400, detail="Invalid field")
+    conn = sqlite3.connect("components.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        f"SELECT DISTINCT {field} FROM components WHERE {field} IS NOT NULL AND {field} != ''"
+    )
+    values = [row[0] for row in cursor.fetchall() if row[0]]
+    conn.close()
+    # Sort with unit-aware sort for all except package
+    if field != "package":
+        values = sorted(
+            values,
+            key=lambda v: (
+                parse_unit_value(v) if parse_unit_value(v) is not None else float("inf")
+            ),
+        )
+    else:
+        values = sorted(values)
+    return values
 
 
 if __name__ == "__main__":

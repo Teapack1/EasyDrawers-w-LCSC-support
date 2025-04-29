@@ -334,6 +334,13 @@
         </button>
     </div>
 
+    <!-- Withdrawal Summary Section (Hidden by default) -->
+    <div id="withdrawalSummary" class="summary-section" style="display: none;">
+        <h2>Withdrawal Summary / Picking List</h2>
+        <div id="summaryContent"></div>
+        <button id="clearSummaryBtn" class="secondary-button">Clear Summary</button>
+    </div>
+
     <div id="searchResults">
         <div class="results-header">
             <h3>Search Results</h3>
@@ -342,33 +349,39 @@
                     <label for="filterCategory">Filter by:</label>
                     <select id="filterCategory" class="select-control">
                         <option value="">Select category...</option>
-                        <option value="manufacturer">Manufacturer</option>
-                        <option value="package">Package</option>
-                        <option value="capacitance">Capacitance</option>
                         <option value="resistance">Resistance</option>
+                        <option value="capacitance">Capacitance</option>
                         <option value="inductance">Inductance</option>
+                        <option value="voltage">Voltage</option>
+                        <option value="package">Package</option>
+                        <option value="component_branch">Component Branch</option>
+                        <option value="manufacturer">Manufacturer</option>
                         <option value="storage_place">Storage Place</option>
                     </select>
-                    <select id="filterValue" class="select-control" disabled>
-                        <option value="">Select value...</option>
+                    <select id="filterMinValue" class="select-control" disabled>
+                        <option value="">Min/Exact value...</option>
+                    </select>
+                    <select id="filterMaxValue" class="select-control" disabled>
+                        <option value="">Max value (optional)...</option>
                     </select>
                 </div>
                 <div class="sort-group">
-                    <label for="sortColumn">Sort by:</label>
-                    <select id="sortColumn" class="select-control">
+                    <label for="sortCategory">Sort by:</label>
+                    <select id="sortCategory" class="select-control">
                         <option value="">Select field...</option>
-                        <option value="resistance" data-unit="Ω">Resistance</option>
-                        <option value="capacitance" data-unit="F">Capacitance</option>
-                        <option value="inductance" data-unit="H">Inductance</option>
-                        <option value="voltage" data-unit="V">Voltage</option>
-                        <option value="current_power" data-unit="[AW]">Current/Power</option>
-                        <option value="order_qty">Quantity</option>
+                        <option value="resistance">Resistance</option>
+                        <option value="capacitance">Capacitance</option>
+                        <option value="inductance">Inductance</option>
+                        <option value="voltage">Voltage</option>
                         <option value="package">Package</option>
+                        <option value="component_branch">Component Branch</option>
+                        <option value="manufacturer">Manufacturer</option>
                         <option value="storage_place">Storage Place</option>
                     </select>
-                    <button id="sortOrderBtn" class="icon-button fixed-width-small" title="Toggle sort order">
-                        <span class="sort-icon"></span>
-                    </button>
+                    <select id="sortOrder" class="select-control">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -384,21 +397,13 @@
                 <thead>
                     <tr>
                         <th>LCSC Part Number</th>
-                        <th>MPN</th>
-                        <th>Manufacturer</th>
-                        <th>Package</th>
-                        <th>Description</th>
-                        <th>Unit Price($)</th>
-                        <th>Component Type</th>
                         <th>Component Branch</th>
-                        <th>Capacitance</th>
-                        <th>Resistance</th>
-                        <th>Voltage</th>
-                        <th>Tolerance</th>
-                        <th>Inductance</th>
-                        <th>Current/Power</th>
-                        <th>Quantity</th> <!-- Renamed from Order Qty. -->
-                        <th>Storage Place</th>
+                        <th class="key-col capacitance-col">Capacitance</th>
+                        <th class="key-col resistance-col">Resistance</th>
+                        <th class="key-col voltage-col">Voltage</th>
+                        <th class="key-col inductance-col">Inductance</th>
+                        <th class="key-col package-col">Package</th>
+                        <th>Quantity</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
