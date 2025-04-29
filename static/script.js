@@ -1146,40 +1146,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        lastDisplayedResults = results;
         displaySearchResults(results);
-    }
-
-    // Enhanced number extraction function for sorting
-    function extractSortableValue(value, unit) {
-        if (!value) return 0;
-        value = value.toString().toLowerCase();
-
-        // Multipliers for different units
-        const multipliers = {
-            'p': 1e-12,  // pico
-            'n': 1e-9,   // nano
-            'u': 1e-6,   // micro
-            'µ': 1e-6,   // micro (alternative)
-            'm': 1e-3,   // milli
-            'k': 1e3,    // kilo
-            'meg': 1e6,  // mega
-            'M': 1e6     // mega
-        };
-
-        // Extract number and unit prefix
-        const match = value.match(/(-?\d+\.?\d*)\s*([pnuµmkM])?/);
-        if (!match) return 0;
-
-        let [, num, prefix] = match;
-        num = parseFloat(num);
-
-        // Apply multiplier if prefix exists
-        if (prefix && multipliers[prefix]) {
-            num *= multipliers[prefix];
-        }
-
-        return num;
     }
 
     // References to new filter elements
@@ -1336,8 +1303,8 @@ function displaySearchResults(results) {
     resultsGrid.innerHTML = "";
     tableBody.innerHTML = "";
 
-    // Table view rendering (unchanged)
     results.forEach(component => {
+        // Create table row (new column order)
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${component.part_number}</td>
@@ -1362,6 +1329,7 @@ function displaySearchResults(results) {
                 </div>
             </td>
         `;
+        // Add click handler for row expansion
         row.addEventListener('click', (event) => {
             if (event.target.tagName === 'BUTTON' || event.target.tagName === 'INPUT' || event.target.classList.contains('delete-button')) {
                 return;
@@ -1394,14 +1362,11 @@ function displaySearchResults(results) {
             }
         });
         tableBody.appendChild(row);
-    });
-    addQuantityControlEventListeners();
-    addDeleteButtonEventListeners();
 
-    // --- Card view rendering ---
-    results.forEach(component => {
+        // --- Create Card View Element --- 
         const card = document.createElement("div");
         card.className = "component-card";
+        // Essential info header
         card.innerHTML = `
             <div class="card-header">
                 <span class="essential-field">${component.part_number}</span>
@@ -1410,22 +1375,24 @@ function displaySearchResults(results) {
             <div class="card-content">
                 <div class="essential-info">
                     <div><span class="card-label">Branch:</span> ${component.component_branch || ''}</div>
-                    <div><span class="card-label">Capacitance:</span> ${component.capacitance || ''}</div>
-                    <div><span class="card-label">Resistance:</span> ${component.resistance || ''}</div>
-                    <div><span class="card-label">Voltage:</span> ${component.voltage || ''}</div>
-                    <div><span class="card-label">Inductance:</span> ${component.inductance || ''}</div>
-                    <div><span class="card-label">Package:</span> ${component.package || ''}</div>
+                    <div><span class="card-label">Storage:</span> ${component.storage_place || 'N/A'}</div>
                 </div>
-                <button class="show-more">Show More Details</button>
-                <div class="optional-fields" style="display:none;">
+                <div class="specs-info">
+                    ${component.resistance ? `<div><span class="card-label">R:</span> ${component.resistance}</div>` : ''}
+                    ${component.capacitance ? `<div><span class="card-label">C:</span> ${component.capacitance}</div>` : ''}
+                    ${component.voltage ? `<div><span class="card-label">V:</span> ${component.voltage}</div>` : ''}
+                    ${component.inductance ? `<div><span class="card-label">L:</span> ${component.inductance}</div>` : ''}
+                    ${component.package ? `<div><span class="card-label">Pkg:</span> ${component.package}</div>` : ''}
+                </div>
+                <button class="show-more">More Details</button>
+                <div class="optional-fields" style="display: none;">
                     <div><span class="card-label">MPN:</span> ${component.manufacture_part_number || ''}</div>
-                    <div><span class="card-label">Manufacturer:</span> ${component.manufacturer || ''}</div>
-                    <div><span class="card-label">Description:</span> ${component.description || ''}</div>
-                    <div><span class="card-label">Unit Price($):</span> ${component.unit_price || ''}</div>
-                    <div><span class="card-label">Component Type:</span> ${component.component_type || ''}</div>
-                    <div><span class="card-label">Tolerance:</span> ${component.tolerance || ''}</div>
-                    <div><span class="card-label">Current/Power:</span> ${component.current_power || ''}</div>
-                    <div><span class="card-label">Storage Place:</span> ${component.storage_place || ''}</div>
+                    <div><span class="card-label">Manuf:</span> ${component.manufacturer || ''}</div>
+                    <div><span class="card-label">Desc:</span> ${component.description || ''}</div>
+                    <div><span class="card-label">Type:</span> ${component.component_type || ''}</div>
+                    <div><span class="card-label">Tol:</span> ${component.tolerance || ''}</div>
+                    <div><span class="card-label">Pwr:</span> ${component.current_power || ''}</div>
+                    <div><span class="card-label">Price:</span> ${component.unit_price || ''}</div>
                 </div>
             </div>
             <div class="card-actions">
@@ -1435,95 +1402,30 @@ function displaySearchResults(results) {
                     <button class="increase" data-id="${component.id}">+</button>
                 </div>
                 <button class="add-to-cart-button" data-id="${component.id}">Add</button>
-                <button class="delete-button" data-id="${component.id}">Delete</button>
+                <button class="delete-button" data-id="${component.id}">Del</button>
             </div>
         `;
-        // Show more/less toggle
-        card.querySelector('.show-more').addEventListener('click', (e) => {
-            const optionalFields = card.querySelector('.optional-fields');
-            if (optionalFields.style.display === 'none') {
-                optionalFields.style.display = 'block';
-                e.target.textContent = 'Show Less';
-            } else {
-                optionalFields.style.display = 'none';
-                e.target.textContent = 'Show More Details';
-            }
-        });
         resultsGrid.appendChild(card);
     });
-    // Add event listeners for card actions
-    resultsGrid.querySelectorAll('.add-to-cart-button').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.stopPropagation();
-            if (!currentUser) {
-                alert('Please log in first');
-                return;
-            }
-            try {
-                const response = await fetch('/add_to_cart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: currentUser, component_id: event.target.dataset.id })
-                });
-                if (response.ok) {
-                    alert('Item added to cart');
-                    updateCartState();
-                } else {
-                    const error = await response.json();
-                    alert(error.detail);
-                }
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                alert('Failed to add item to cart');
+
+    // Add event listeners for show more/less in cards
+    document.querySelectorAll('#cardViewContainer .show-more').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const optionalFields = e.target.nextElementSibling;
+            if (optionalFields.style.display === 'none' || optionalFields.style.display === '') {
+                optionalFields.style.display = 'block';
+                e.target.textContent = 'Less Details';
+            } else {
+                optionalFields.style.display = 'none';
+                e.target.textContent = 'More Details';
             }
         });
     });
-    resultsGrid.querySelectorAll('.delete-button').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.stopPropagation();
-            const id = event.target.getAttribute('data-id');
-            const confirmDelete = confirm('Are you sure you want to delete this item?');
-            if (confirmDelete) {
-                if (!currentUser) {
-                    alert('Please select a user before performing this action.');
-                    return;
-                }
-                try {
-                    const response = await fetch(`/delete_component`, {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ component_id: id, user: currentUser })
-                    });
-                    if (response.ok) {
-                        card.remove();
-                    } else {
-                        const error = await response.json();
-                        alert(`Error: ${error.detail}`);
-                    }
-                } catch (error) {
-                    alert(`Unexpected error: ${error.message}`);
-                }
-            }
-        });
-    });
-    resultsGrid.querySelectorAll('.decrease').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.stopPropagation();
-            const id = event.target.getAttribute('data-id');
-            const quantityInput = button.parentElement.querySelector('.quantity-input');
-            const change = parseInt(quantityInput.value) || 1;
-            await updateOrderQuantity(id, -change);
-        });
-    });
-    resultsGrid.querySelectorAll('.increase').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            event.stopPropagation();
-            const id = event.target.getAttribute('data-id');
-            const quantityInput = button.parentElement.querySelector('.quantity-input');
-            const change = parseInt(quantityInput.value) || 1;
-            await updateOrderQuantity(id, change);
-        });
-    });
+
+    // Re-attach listeners to controls within both views
+    addQuantityControlEventListeners();
+    addDeleteButtonEventListeners();
+    addAddToCartButtonEventListeners();
 }
 
 // View toggle handling
@@ -1532,11 +1434,10 @@ document.querySelectorAll('.view-button').forEach(button => {
         const viewType = button.id;
         document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
+
         document.querySelectorAll('.view-container').forEach(container => {
             container.style.display = container.id === viewType + 'Container' ? 'block' : 'none';
         });
-        // Always re-render the current results in the new view
-        displaySearchResults(lastDisplayedResults.length ? lastDisplayedResults : searchResults);
     });
 });
 
@@ -1850,19 +1751,20 @@ let sortState = {
     ascending: true
 };
 
+// Define unitFields in a shared scope
+const unitFields = {
+    resistance: 'Ω',
+    capacitance: 'F',
+    inductance: 'H',
+    voltage: 'V',
+};
+
 function initializeFilterAndSort() {
     const filterCategory = document.getElementById('filterCategory');
     const filterMinValue = document.getElementById('filterMinValue');
     const filterMaxValue = document.getElementById('filterMaxValue');
     const sortCategory = document.getElementById('sortCategory');
     const sortOrder = document.getElementById('sortOrder');
-
-    const unitFields = {
-        resistance: 'Ω',
-        capacitance: 'F',
-        inductance: 'H',
-        voltage: 'V',
-    };
 
     filterCategory.addEventListener('change', async () => {
         const category = filterCategory.value;
@@ -1898,6 +1800,7 @@ function applyFiltersAndSort() {
             let valA = a[sortCol];
             let valB = b[sortCol];
             if (unit) {
+                // Use the globally defined function
                 valA = extractSortableValue(valA, unit);
                 valB = extractSortableValue(valB, unit);
             } else {
@@ -1911,7 +1814,6 @@ function applyFiltersAndSort() {
             return 0;
         });
     }
-    lastDisplayedResults = results;
     displaySearchResults(results);
 }
 
@@ -2112,4 +2014,70 @@ async function updateCartState() {
     } catch (error) {
         console.error('Error updating cart state:', error);
     }
+}
+
+// Helper function for sorting (unit-aware)
+function extractSortableValue(value, unit) {
+    if (!value) return 0;
+    value = value.toString().toLowerCase();
+
+    // Multipliers for different units
+    const multipliers = {
+        'p': 1e-12,  // pico
+        'n': 1e-9,   // nano
+        'u': 1e-6,   // micro
+        'µ': 1e-6,   // micro (alternative)
+        'm': 1e-3,   // milli
+        'k': 1e3,    // kilo
+        'meg': 1e6,  // mega
+        'M': 1e6     // mega
+    };
+
+    // Extract number and unit prefix
+    const match = value.match(/(-?\d+\.?\d*)\s*([pnuµmkM])?/);
+    if (!match) return 0;
+
+    let [, num, prefix] = match;
+    num = parseFloat(num);
+
+    // Apply multiplier if prefix exists
+    if (prefix && multipliers[prefix]) {
+        num *= multipliers[prefix];
+    }
+
+    return num;
+}
+
+// --- Function to attach Add to Cart button listeners ---
+function addAddToCartButtonEventListeners() {
+    document.querySelectorAll('.add-to-cart-button').forEach(button => {
+        // Check if listener already attached to prevent duplicates
+        if (!button.dataset.listenerAttached) {
+            button.addEventListener('click', async (event) => {
+                event.stopPropagation();
+                if (!currentUser) {
+                    alert('Please log in first');
+                    return;
+                }
+                try {
+                    const response = await fetch('/add_to_cart', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user: currentUser, component_id: event.target.dataset.id })
+                    });
+                    if (response.ok) {
+                        alert('Item added to cart');
+                        updateCartState();
+                    } else {
+                        const error = await response.json();
+                        alert(error.detail);
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add item to cart');
+                }
+            });
+            button.dataset.listenerAttached = 'true'; // Mark as attached
+        }
+    });
 }
