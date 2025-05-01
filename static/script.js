@@ -1,5 +1,5 @@
 // Hamburger menu functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Tab Functionality
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -45,13 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.getElementById('menuButton');
     const menuItems = document.querySelector('.menu-items');
 
-    menuButton.addEventListener('click', function() {
+    menuButton.addEventListener('click', function () {
         menuButton.classList.toggle('active');
         menuItems.classList.toggle('active');
     });
 
     // Close menu when clicking outside
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         if (!event.target.closest('.hamburger-menu')) {
             menuButton.classList.remove('active');
             menuItems.classList.remove('active');
@@ -59,15 +59,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle menu item clicks
-    document.getElementById('mapButtonMenu').addEventListener('click', function() {
+    document.getElementById('mapButtonMenu').addEventListener('click', function () {
         window.location.href = '/map';
     });
 
-    document.getElementById('databaseButton').addEventListener('click', function() {
+    document.getElementById('databaseButton').addEventListener('click', function () {
         window.location.href = '/database';
     });
 
-    document.getElementById('changelogButton').addEventListener('click', function() {
+    document.getElementById('changelogButton').addEventListener('click', function () {
         window.location.href = '/changelog';
     });
 
@@ -496,19 +496,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // =============================
 
     // Mobile tab bar functionality
-    document.getElementById('mobileSearchBtn').addEventListener('click', function() {
+    document.getElementById('mobileSearchBtn').addEventListener('click', function () {
         setActiveMobileTab(this);
         // Show search tab
         showTabContent('search');
     });
 
-    document.getElementById('mobileAddBtn').addEventListener('click', function() {
+    document.getElementById('mobileAddBtn').addEventListener('click', function () {
         setActiveMobileTab(this);
         // Show add component tab
         showTabContent('add');
     });
 
-    document.getElementById('mobileImportBtn').addEventListener('click', function() {
+    document.getElementById('mobileImportBtn').addEventListener('click', function () {
         setActiveMobileTab(this);
         // Show import tab
         showTabContent('import');
@@ -645,6 +645,8 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         const fileInput = document.getElementById("csvFile");
         const file = fileInput.files[0];
+        // Define fileNameDisplayElement here to ensure it's in scope
+        const fileNameDisplayElement = document.getElementById('selected-file-name');
         const currentUser = localStorage.getItem('currentUser');
 
         if (!currentUser) {
@@ -682,15 +684,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Display the uploaded components in the search results
                 if (result.components && result.components.length > 0) {
                     searchResults = result.components;
-                    displaySearchResults(searchResults);
+                    applyFiltersAndSort(); // Refresh results view
 
-                    // Show summary of changes
-                    let summary = "Uploaded components:\n\n";
+                    // Show summary of changes (optional)
+                    let summary = "Processed components:\n\n";
                     result.components.forEach(comp => {
+                        // Logic based on the structure returned by the enhanced endpoint
                         if (comp.action === 'update') {
                             summary += `${comp.part_number}: Updated quantity from ${comp.old_qty} to ${comp.new_qty}\n`;
-                        } else {
+                        } else if (comp.action === 'add') {
                             summary += `${comp.part_number}: Added with quantity ${comp.new_qty}\n`;
+                        } else { // Fallback if action not specified
+                            summary += `${comp.part_number}: Processed with quantity ${comp.new_qty || comp.order_qty}\n`;
                         }
                     });
                     console.log(summary);
@@ -698,8 +703,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Clear the file input
                 fileInput.value = '';
-                if (fileNameDisplay) {
-                    fileNameDisplay.textContent = 'No file selected';
+                // *** FIX: Use the already defined fileNameDisplayElement ***
+                if (fileNameDisplayElement) {
+                    fileNameDisplayElement.textContent = 'No file selected';
                 }
 
                 // Switch to search tab after successful import
@@ -1316,17 +1322,9 @@ function displaySearchResults(results) {
             <td class="key-col package-col">${component.package || ''}</td>
             <td class="order-qty">${component.order_qty}</td>
             <td>
-                <div class="actions-container">
-                    <button class="add-to-cart-button" data-id="${component.id}" data-tooltip="Add to cart">Add to Cart</button>
-                    <div class="controls-row">
-                        <div class="quantity-controls">
-                            <button class="decrease" data-id="${component.id}" data-tooltip="Decrease stock quantity">-</button>
-                            <input type="number" class="quantity-input" value="1" min="1">
-                            <button class="increase" data-id="${component.id}" data-tooltip="Increase stock quantity">+</button>
-                        </div>
-                        <button class="delete-button" data-id="${component.id}" data-tooltip="Delete component">×</button>
-                    </div>
-                </div>
+                <button class="add-to-cart-button icon-only" data-id="${component.id}" data-tooltip="Add to cart">
+                    <span class="material-icons" style="font-size:18px;vertical-align:middle;">add_shopping_cart</span>
+                </button>
             </td>
         `;
         // Add click handler for row expansion
@@ -1342,18 +1340,28 @@ function displaySearchResults(results) {
                 });
                 const detailRow = document.createElement('tr');
                 detailRow.className = 'detail-row';
-                detailRow.innerHTML = `<td colspan="9">
-                    <div class="detail-content">
-                        <strong>MPN:</strong> ${component.manufacture_part_number || ''} &nbsp; 
-                        <strong>Manufacturer:</strong> ${component.manufacturer || ''} &nbsp; 
-                        <strong>Description:</strong> ${component.description || ''} &nbsp; 
-                        <strong>Unit Price($):</strong> ${component.unit_price || ''} &nbsp; 
-                        <strong>Component Type:</strong> ${component.component_type || ''} &nbsp; 
-                        <strong>Tolerance:</strong> ${component.tolerance || ''} &nbsp; 
-                        <strong>Current/Power:</strong> ${component.current_power || ''} &nbsp; 
-                        <strong>Storage Place:</strong> ${component.storage_place || ''}
-                    </div>
-                </td>`;
+                detailRow.innerHTML = `
+                    <td colspan="8">
+                        <div class="detail-content compact-detail-content">
+                            <div class="detail-fields">
+                                <strong>MPN:</strong> ${component.manufacture_part_number || ''} &nbsp; 
+                                <strong>Manufacturer:</strong> ${component.manufacturer || ''} &nbsp; 
+                                <strong>Description:</strong> ${component.description || ''} &nbsp; 
+                                <strong>Unit Price($):</strong> ${component.unit_price || ''} &nbsp; 
+                                <strong>Component Type:</strong> ${component.component_type || ''} &nbsp; 
+                                <strong>Tolerance:</strong> ${component.tolerance || ''} &nbsp; 
+                                <strong>Current/Power:</strong> ${component.current_power || ''} &nbsp; 
+                                <strong>Storage Place:</strong> ${component.storage_place || ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="expanded-actions-cell">
+                        <div class="expanded-actions-row">
+                            <input type="number" class="quantity-input" value="1" min="1" max="${component.order_qty}">
+                            <button class="delete-button" data-id="${component.id}" data-tooltip="Delete component">×</button>
+                        </div>
+                    </td>
+                `;
                 row.after(detailRow);
             } else {
                 if (row.nextSibling && row.nextSibling.classList && row.nextSibling.classList.contains('detail-row')) {
@@ -1398,7 +1406,7 @@ function displaySearchResults(results) {
             <div class="card-actions">
                 <div class="quantity-controls">
                     <button class="decrease" data-id="${component.id}">-</button>
-                    <input type="number" class="quantity-input" value="1" min="1">
+                    <input type="number" class="quantity-input" value="1" min="1" max="${component.order_qty}">
                     <button class="increase" data-id="${component.id}">+</button>
                 </div>
                 <button class="add-to-cart-button" data-id="${component.id}">Add</button>
@@ -2054,23 +2062,88 @@ function addAddToCartButtonEventListeners() {
         // Check if listener already attached to prevent duplicates
         if (!button.dataset.listenerAttached) {
             button.addEventListener('click', async (event) => {
-                event.stopPropagation();
+                event.stopPropagation(); // Prevent row expansion click
                 if (!currentUser) {
                     alert('Please log in first');
                     return;
                 }
+
+                // Get the button element (could be the target or a parent if icon/span was clicked)
+                const buttonEl = event.target.closest('.add-to-cart-button');
+                if (!buttonEl || !buttonEl.dataset.id) {
+                    console.error('Could not find component ID for cart addition');
+                    alert('Error adding to cart: Missing component information');
+                    return;
+                }
+
+                const componentId = buttonEl.dataset.id;
+                let quantity = 1; // Default quantity
+
+                // Find the corresponding row or card for this button
+                const parentRow = buttonEl.closest('tr'); // For table view
+                const parentCard = buttonEl.closest('.component-card'); // For card view
+
+                if (parentRow) {
+                    // --- Table View Logic ---
+                    // Check if the row is expanded AND the click came from the *main* row's button
+                    const detailRow = parentRow.nextElementSibling;
+                    if (parentRow.classList.contains('expanded') && buttonEl.classList.contains('icon-only') && detailRow && detailRow.classList.contains('detail-row')) {
+                        // Find the quantity input within the expanded actions cell of the detail row
+                        const quantityInput = detailRow.querySelector('.expanded-actions-cell .quantity-input');
+                        if (quantityInput) {
+                            quantity = parseInt(quantityInput.value) || 1;
+                            console.log(`Table View - Expanded Row: Got quantity ${quantity} for component ${componentId}`);
+                        } else {
+                            console.log(`Table View - Expanded Row: Could not find quantity input for component ${componentId}. Defaulting to 1.`);
+                        }
+                    } else {
+                        console.log(`Table View - Collapsed Row or button not icon-only: Defaulting quantity to 1 for component ${componentId}.`);
+                    }
+                } else if (parentCard) {
+                    // --- Card View Logic ---
+                    const quantityInput = parentCard.querySelector('.quantity-controls .quantity-input');
+                    if (quantityInput) {
+                        quantity = parseInt(quantityInput.value) || 1;
+                        console.log(`Card View: Got quantity ${quantity} for component ${componentId}`);
+                    } else {
+                        console.log(`Card View: Could not find quantity input for component ${componentId}. Defaulting to 1.`);
+                    }
+                } else {
+                    console.log(`Could not determine view type (Table/Card) for component ${componentId}. Defaulting quantity to 1.`);
+                }
+
+
                 try {
+                    // Ensure quantity is a number and not a string
+                    const quantityNum = Number(quantity);
+                    if (isNaN(quantityNum) || quantityNum < 1) {
+                        console.error(`Invalid quantity: ${quantity}`);
+                        alert('Invalid quantity. Please enter a valid number.');
+                        return;
+                    }
+
+                    const requestData = {
+                        user: currentUser,
+                        component_id: componentId,
+                        quantity: quantityNum // Ensure it's a number
+                    };
+
+                    console.log(`Sending to /add_to_cart:`, requestData); // Debug log
+
                     const response = await fetch('/add_to_cart', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user: currentUser, component_id: event.target.dataset.id })
+                        body: JSON.stringify(requestData)
                     });
+
                     if (response.ok) {
-                        alert('Item added to cart');
-                        updateCartState();
+                        const result = await response.json();
+                        // Use the determined quantity in the alert message
+                        alert(result.message || `Item added to cart (Qty: ${quantityNum})`);
+                        updateCartState(); // Update the cart icon state
                     } else {
                         const error = await response.json();
-                        alert(error.detail);
+                        alert(`Error: ${error.detail || 'Failed to add item'}`);
                     }
                 } catch (error) {
                     console.error('Error adding to cart:', error);

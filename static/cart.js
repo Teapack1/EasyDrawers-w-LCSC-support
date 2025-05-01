@@ -27,6 +27,7 @@ async function loadCart() {
     try {
         const response = await fetch(`/get_cart?user=${encodeURIComponent(currentUser)}`);
         const items = await response.json();
+        console.log("Cart items from API:", items); // Debug - log the raw response
         displayCartItems(items);
     } catch (error) {
         console.error('Error loading cart:', error);
@@ -39,7 +40,17 @@ function displayCartItems(items) {
     tbody.innerHTML = '';
 
     items.forEach(item => {
+        // Add debug logging
+        console.log("Processing cart item:", {
+            part_number: item.part_number,
+            cart_quantity: item.cart_quantity,
+            type: typeof item.cart_quantity
+        });
+
         const row = document.createElement('tr');
+        // Ensure cart_quantity is treated as a number
+        const quantity = parseInt(item.cart_quantity) || 1;
+
         row.innerHTML = `
             <td>${item.part_number}</td>
             <td>${item.manufacture_part_number || ''}</td>
@@ -48,10 +59,20 @@ function displayCartItems(items) {
             <td>${item.description || ''}</td>
             <td>${item.storage_place || ''}</td>
             <td>${item.order_qty}</td>
-            <td>
-                <input type="number" class="cart-quantity" value="${item.cart_quantity || 1}" 
-                    min="1" max="${item.order_qty}" data-cart-id="${item.cart_item_id}">
-                <button class="delete-button" data-cart-id="${item.cart_item_id}">×</button>
+            <td class="cart-quantity-cell">
+                <div class="cart-actions-container">
+                    <input type="number" class="cart-quantity" value="${quantity}" 
+                        min="1" max="${item.order_qty}" data-cart-id="${item.cart_item_id}">
+                    <button class="cart-delete-button" data-cart-id="${item.cart_item_id}" title="Remove item" aria-label="Remove">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:auto;">
+                            <path d="M6 8V15C6 15.55 6.45 16 7 16H13C13.55 16 14 15.55 14 15V8" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 11V13" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M11 11V13" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M4 6H16" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 6V5C8 4.45 8.45 4 9 4H11C11.55 4 12 4.45 12 5V6" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
             </td>
         `;
         tbody.appendChild(row);
@@ -67,7 +88,7 @@ function displayCartItems(items) {
     });
 
     // Add event listeners for delete buttons
-    document.querySelectorAll('.delete-button').forEach(button => {
+    document.querySelectorAll('.cart-delete-button').forEach(button => {
         button.addEventListener('click', async (e) => {
             const cartItemId = e.target.dataset.cartId;
             await removeFromCart(cartItemId);

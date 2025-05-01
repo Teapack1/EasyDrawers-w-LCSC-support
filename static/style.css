@@ -751,8 +751,9 @@ table {
 table th:nth-last-child(1),
 /* Actions column */
 table td:nth-last-child(1) {
-    width: 130px;
-    /* Increase this value as needed */
+    min-width: 90px;
+    width: 90px;
+    padding: 2px 4px;
 }
 
 table th:nth-last-child(2),
@@ -775,6 +776,10 @@ table td {
     /* Adds ellipsis for any overflowed text */
     cursor: pointer;
     /* Changes cursor to pointer to indicate clickability */
+    padding-top: 2px;
+    padding-bottom: 2px;
+    font-size: 12px;
+    height: 26px;
 }
 
 table tr.expanded td {
@@ -2537,12 +2542,12 @@ table td:last-child {
     background-color: transparent;
 }
 
-.menu-btn.active .menu-icon:before {
+.menu-btn.active .menu-icon::before {
     transform: rotate(45deg);
     top: 0;
 }
 
-.menu-btn.active .menu-icon:after {
+.menu-btn.active .menu-icon::after {
     transform: rotate(-45deg);
     bottom: 0;
 }
@@ -3645,3 +3650,1015 @@ details[open] summary::after {
 }
 
 /* ... existing code ... */
+
+/* ... existing styles ... */
+
+/* Info icon styling */
+.info-icon {
+    font-size: 16px;
+    /* Adjust size */
+    color: #007bff;
+    /* Match primary color */
+    vertical-align: middle;
+    margin-left: 5px;
+    cursor: pointer;
+    position: relative;
+    /* Needed for tooltip positioning */
+    outline: none;
+    /* Remove default focus outline if desired */
+}
+
+/* Tooltip styling (reusing/adapting existing) */
+[data-tooltip] {
+    position: relative;
+}
+
+/* Adjusted tooltip positioning and appearance */
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    /* Position above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    /* Allow more space for text */
+    max-width: 300px;
+    padding: 8px 12px;
+    background-color: rgba(51, 51, 51, 0.9);
+    /* Slightly transparent dark background */
+    color: white;
+    font-size: 12px;
+    font-weight: normal;
+    /* Ensure tooltip text isn't bold */
+    line-height: 1.4;
+    /* Improve readability */
+    border-radius: 4px;
+    white-space: normal;
+    /* Allow text wrapping */
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+    pointer-events: none;
+    /* Prevent tooltip from interfering with clicks */
+}
+
+/* Show tooltip on hover (desktop) */
+[data-tooltip]:hover:before,
+/* Show tooltip on focus (accessibility/mobile tap) */
+[data-tooltip]:focus:before {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.3s;
+    /* Slight delay on hover */
+    pointer-events: auto;
+    /* Allow interaction if needed, though unlikely here */
+}
+
+/* Reset delay for focus */
+[data-tooltip]:focus:before {
+    transition-delay: 0s;
+}
+
+
+/* ... rest of style.css ... */
+
+/* ==========================================================================
+   Override Tooltip Styling for Info Icon
+   ========================================================================== */
+
+/* Target only the info-icon to avoid conflicts with other data-tooltip elements */
+.info-icon[data-tooltip] {
+    position: relative;
+}
+
+.info-icon[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    white-space: normal;
+    /* Allow wrapping */
+    text-align: left;
+    max-width: 250px;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s;
+    font-family: Arial, sans-serif;
+    /* Use a readable font for tooltip text */
+}
+
+.info-icon[data-tooltip]:hover:before,
+.info-icon[data-tooltip]:focus:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ... existing styles ... */
+
+/* ==========================================================================
+   Search Tab Redesign Styles
+   ========================================================================== */
+
+.search-panel {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.main-search-panel h2,
+.bom-import-panel h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #333;
+    display: flex;
+    /* For aligning info icon */
+    align-items: center;
+}
+
+.main-search-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0 10px;
+    background-color: #fff;
+}
+
+.search-input-group:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.search-icon {
+    color: #777;
+    margin-right: 8px;
+}
+
+#searchQuery {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 10px 0;
+    font-size: 1em;
+}
+
+.primary-filters {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow wrapping on smaller screens */
+    gap: 10px;
+    align-items: center;
+}
+
+.primary-filters select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    min-width: 180px;
+    /* Give dropdowns some base width */
+    flex: 1;
+    /* Allow shrinking/growing */
+}
+
+.inline-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    /* Prevent label text wrapping */
+}
+
+.search-action-button {
+    align-self: flex-end;
+    /* Position button to the right */
+    padding: 10px 25px;
+}
+
+.bom-import-panel {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.bom-import-panel h2 .info-icon {
+    font-size: 18px;
+    /* Adjust size */
+}
+
+.bom-upload-group {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow wrapping */
+    gap: 10px;
+    align-items: center;
+}
+
+#bomFile {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    flex-grow: 1;
+    /* Take available space */
+    min-width: 150px;
+}
+
+.bom-upload-group .secondary-button {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+}
+
+.bom-upload-group .secondary-button:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .search-panel {
+        padding: 15px;
+    }
+
+    .primary-filters {
+        flex-direction: column;
+        align-items: stretch;
+        /* Make dropdowns full width */
+    }
+
+    .primary-filters select {
+        min-width: 0;
+    }
+
+    .search-action-button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .bom-upload-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bom-upload-group button {
+        width: 100%;
+    }
+}
+
+/* Existing tooltip styles should still apply */
+/* ... */
+
+/* Adjust results header margin */
+#searchResults .results-header {
+    margin-top: 20px;
+    /* Add space above results filters */
+}
+
+
+/* ... rest of style.css ... */
+
+/* Compact Add to Cart button (icon-only) */
+.add-to-cart-button.icon-only {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #28a745;
+    color: #fff;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.add-to-cart-button.icon-only:hover {
+    background: #218838;
+}
+
+/* Expanded row actions row: compact and horizontal */
+.expanded-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.expanded-actions-row .quantity-controls.compact {
+    flex-direction: row;
+    gap: 2px;
+    min-width: 0;
+}
+
+.expanded-actions-row .quantity-controls.compact button,
+.expanded-actions-row .quantity-controls.compact input {
+    height: 22px;
+    min-width: 22px;
+    font-size: 12px;
+    padding: 0 4px;
+}
+
+.expanded-actions-row .add-to-cart-button.icon-only {
+    width: 24px;
+    height: 24px;
+    font-size: 15px;
+}
+
+.expanded-actions-row .delete-button {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    padding: 0;
+    margin-left: 2px;
+}
+
+/* Compact detail content for expanded row */
+.compact-detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    padding: 2px 0;
+}
+
+.compact-detail-content .detail-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* Responsive: fit expanded row on small screens */
+@media (max-width: 900px) {
+    .compact-detail-content .detail-fields {
+        flex-direction: column;
+        gap: 2px 0;
+    }
+
+    .expanded-actions-row {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+}
+
+/* Make table row thinner */
+table th,
+table td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    font-size: 12px;
+    height: 26px;
+}
+
+/* Expanded actions cell alignment */
+.expanded-actions-cell {
+    vertical-align: top;
+    text-align: right;
+    padding-top: 4px;
+    min-width: 90px;
+    width: 90px;
+}
+
+/* Thin rectangular Add to Cart button for expanded row */
+.add-to-cart-button.thin-rect {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    min-width: 32px;
+    padding: 0 6px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    margin: 0 2px;
+    box-shadow: none;
+    transition: background 0.2s;
+}
+
+.add-to-cart-button.thin-rect:hover {
+    background: #218838;
+}
+
+.expanded-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+/* Make sure delete button is also compact */
+.expanded-actions-row .delete-button {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    padding: 0;
+    margin-left: 2px;
+}
+
+/* Expanded actions cell alignment - simplified version */
+.expanded-actions-cell {
+    vertical-align: top;
+    padding-top: 4px;
+    min-width: 70px;
+    width: 70px;
+}
+
+/* Quantity input in expanded row - standalone version */
+.expanded-actions-row .quantity-input {
+    width: 40px;
+    height: 22px;
+    padding: 0 4px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-right: 4px;
+}
+
+/* Clean, simple layout for expanded actions */
+.expanded-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+/* Make numerical columns narrower */
+.key-col.capacitance-col,
+.key-col.resistance-col,
+.key-col.voltage-col,
+.key-col.inductance-col {
+    width: 80px;
+    min-width: 80px;
+}
+
+/* Package column slightly narrower */
+.key-col.package-col {
+    width: 90px;
+    min-width: 90px;
+}
+
+/* Quantity column slightly narrower */
+table th:nth-last-child(2),
+/* Quantity column */
+table td:nth-last-child(2) {
+    width: 60px;
+    min-width: 60px;
+}
+
+/* Cart actions styling */
+.cart-actions-cell {
+    min-width: 140px;
+    width: 140px;
+    padding: 6px 8px;
+}
+
+.cart-actions-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.cart-quantity-controls {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.cart-decrease-btn,
+.cart-increase-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-decrease-btn:hover,
+.cart-increase-btn:hover {
+    background-color: #0056b3;
+}
+
+.cart-quantity {
+    width: 40px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 4px;
+    margin: 0 2px;
+}
+
+.cart-delete-button {
+    background: none;
+    color: #dc3545;
+    border: none;
+    font-size: 13px;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    margin-left: 1px;
+    margin-right: 0;
+    line-height: 1;
+}
+
+.cart-delete-button:hover {
+    color: #fff;
+    background: #dc3545;
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-actions-cell {
+        min-width: 100px;
+        padding: 4px;
+    }
+
+    .cart-quantity-controls {
+        flex-wrap: nowrap;
+    }
+
+    .cart-decrease-btn,
+    .cart-increase-btn {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        font-size: 12px;
+    }
+
+    .cart-quantity {
+        width: 30px;
+        height: 22px;
+        font-size: 12px;
+    }
+
+    .cart-delete-button {
+        font-size: 16px;
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Ensure the cart table is usable on mobile */
+    #cartTable th,
+    #cartTable td {
+        font-size: 12px;
+    }
+}
+
+/* Cart actions styling - simplified version */
+.cart-actions-cell {
+    min-width: 100px;
+    width: 100px;
+    padding: 4px 8px;
+}
+
+/* Make cart actions container better aligned */
+.cart-actions-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* Simplified quantity input */
+.cart-quantity {
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 4px;
+    font-size: 14px;
+}
+
+.cart-delete-button {
+    background-color: transparent;
+    color: #dc3545;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.cart-delete-button:hover {
+    color: #bd2130;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-actions-cell {
+        min-width: 80px;
+        width: 80px;
+        padding: 4px;
+    }
+
+    .cart-quantity {
+        width: 40px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .cart-delete-button {
+        font-size: 18px;
+        width: 26px;
+        height: 26px;
+    }
+}
+
+/* Cart actions styling - make wider */
+.cart-actions-cell {
+    min-width: 110px;
+    width: 110px;
+    padding: 4px 8px;
+}
+
+/* Ensure delete button is not overly large */
+.cart-delete-button {
+    font-size: 18px;
+    width: 26px;
+    height: 26px;
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-actions-cell {
+        min-width: 90px;
+        width: 90px;
+        padding: 4px;
+    }
+
+    .cart-quantity {
+        width: 35px;
+        height: 26px;
+        font-size: 12px;
+    }
+
+    .cart-delete-button {
+        font-size: 16px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Cart actions styling - simplified and renamed to Quantity */
+.cart-quantity-cell {
+    min-width: 170px;
+    width: 170px;
+    padding: 4px 8px;
+}
+
+.cart-quantity {
+    width: 36px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 2px;
+    font-size: 13px;
+    margin-right: 4px;
+}
+
+.cart-delete-button {
+    background: none;
+    color: #dc3545;
+    border: none;
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    margin-left: 2px;
+    line-height: 1;
+}
+
+.cart-delete-button:hover {
+    color: #fff;
+    background: #dc3545;
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-quantity-cell {
+        min-width: 100px;
+        width: 100px;
+        padding: 4px;
+    }
+
+    .cart-quantity {
+        width: 40px;
+        height: 26px;
+        font-size: 12px;
+    }
+}
+
+/* --- Unified Modern Button Styles --- */
+button,
+.primary-button,
+.secondary-button,
+.warning-button,
+.add-to-cart-button,
+.cart-delete-button,
+.user-button,
+.cart-button,
+.sort-order-btn,
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 16px;
+    background: var(--primary-color, #007bff);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    text-align: center;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    min-width: 36px;
+    min-height: 32px;
+}
+
+button:disabled,
+.primary-button:disabled,
+.secondary-button:disabled,
+.warning-button:disabled {
+    background: #e0e0e0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.primary-button {
+    background: #007bff;
+    color: #fff;
+}
+
+.primary-button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.secondary-button {
+    background: #6c757d;
+    color: #fff;
+}
+
+.secondary-button:hover:not(:disabled) {
+    background: #495057;
+}
+
+.warning-button {
+    background: #dc3545;
+    color: #fff;
+}
+
+.warning-button:hover:not(:disabled) {
+    background: #a71d2a;
+}
+
+.add-to-cart-button {
+    background: #28a745;
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 36px;
+    min-height: 32px;
+}
+
+.add-to-cart-button:hover:not(:disabled) {
+    background: #218838;
+}
+
+.user-button {
+    background: #007bff;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 0;
+    border-radius: 8px;
+}
+
+.user-button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.cart-button {
+    background: #f8f9fa;
+    color: #007bff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+}
+
+.cart-button:hover {
+    background: #e9ecef;
+}
+
+.sort-order-btn,
+.icon-button {
+    background: #fff;
+    color: #007bff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    min-width: 36px;
+    min-height: 32px;
+    padding: 0 8px;
+}
+
+.sort-order-btn:hover,
+.icon-button:hover {
+    background: #f0f8ff;
+    color: #0056b3;
+}
+
+/* --- Cart Remove Button (SVG icon) --- */
+.cart-delete-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 2px;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.cart-delete-button svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+}
+
+.cart-delete-button:hover {
+    background: #ffeaea;
+}
+
+/* --- Table Row Thinning --- */
+table th,
+table td {
+    padding: 2px 6px !important;
+    font-size: 12px !important;
+    height: 20px !important;
+    line-height: 1.2 !important;
+    vertical-align: middle !important;
+}
+
+#cartTable th,
+#cartTable td {
+    padding: 2px 4px !important;
+    font-size: 12px !important;
+    height: 20px !important;
+    line-height: 1.2 !important;
+}
+
+/* --- Center text in all buttons --- */
+button,
+.primary-button,
+.secondary-button,
+.warning-button,
+.add-to-cart-button,
+.user-button,
+.cart-button,
+.sort-order-btn,
+.icon-button {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+/* --- General Layout/Text Improvements --- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 600;
+    color: #222;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.5em;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
+}
+
+label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+input,
+select,
+textarea {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    font-size: 14px;
+    background: #fff;
+    color: #222;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    background: #f0f8ff;
+}
+
+/* --- Panel/Section Improvements --- */
+.top-bar,
+.cart-actions,
+.cart-actions-container,
+.right-buttons {
+    gap: 8px;
+}
+
+/* --- Misc --- */
+::-webkit-input-placeholder {
+    color: #aaa;
+}
+
+::-moz-placeholder {
+    color: #aaa;
+}
+
+:-ms-input-placeholder {
+    color: #aaa;
+}
+
+::placeholder {
+    color: #aaa;
+}

@@ -65,37 +65,47 @@
     <div class="tab-content-container">
         <!-- Search Tab Content -->
         <div id="search-tab" class="tab-content active">
-            <div class="search-panel">
+
+            <!-- Main Search & Primary Filters -->
+            <div class="search-panel main-search-panel">
                 <h2>Search Components</h2>
-                <!-- Filters -->
-                <div class="filter-container">
-                    <select id="filterComponentType">
-                        <option value="">All Component Types</option>
-                        <!-- Options populated dynamically -->
-                    </select>
-                    <select id="filterComponentBranch" disabled>
-                        <option value="">All Component Branches</option>
-                        <!-- Options populated dynamically -->
-                    </select>
-                    <label>
-                        <input type="checkbox" id="inStockCheckbox">
-                        Show Only In Stock
-                    </label>
-                </div>
-                <!-- Search Bar and BOM Upload -->
-                <div class="search-container">
+                <div class="main-search-controls">
                     <div class="search-input-group">
-                        <input type="text" id="searchQuery"
-                            placeholder="Search by part number, description, or specifications">
-                        <button id="searchButton">Search</button>
+                        <i class="material-icons search-icon">search</i>
+                        <input type="text" id="searchQuery" placeholder="Search LCSC Part#, MPN, Description, Specs...">
                     </div>
-                    <div class="bom-upload-group">
-                        <input type="file" id="bomFile" accept=".csv">
-                        <button id="uploadBomButton">Import BOM to Cart</button>
+                    <div class="primary-filters">
+                        <select id="filterComponentType">
+                            <option value="">All Component Types</option>
+                            <!-- Options populated dynamically -->
+                        </select>
+                        <select id="filterComponentBranch" disabled>
+                            <option value="">All Component Branches</option>
+                            <!-- Options populated dynamically -->
+                        </select>
+                        <label class="inline-checkbox">
+                            <input type="checkbox" id="inStockCheckbox">
+                            In Stock Only
+                        </label>
                     </div>
+                </div>
+                <button id="searchButton" class="primary-button search-action-button">Search</button>
+            </div>
+
+            <!-- BOM Import Section -->
+            <div class="search-panel bom-import-panel">
+                <h2>
+                    Quick Add: Import BOM to Cart
+                    <i class="material-icons info-icon" tabindex="0"
+                        data-tooltip="Select a BOM file (CSV). Found components based on LCSC Part#/MPN will be added directly to your cart for potential stock withdrawal.">info_outline</i>
+                </h2>
+                <div class="bom-upload-group">
+                    <input type="file" id="bomFile" accept=".csv">
+                    <button id="uploadBomButton" class="secondary-button">Import BOM</button>
                 </div>
             </div>
-        </div>
+
+        </div> <!-- End Search Tab Content -->
 
         <!-- Add Component Tab Content -->
         <div id="add-tab" class="tab-content">
@@ -157,16 +167,17 @@
             </div>
         </div>
 
-        <!-- Import Tab Content -->
+        <!-- Import Tab Content (LCSC Stock Import) -->
         <div id="import-tab" class="tab-content">
             <div class="import-container">
-                <h2>Import Components</h2>
+                <h2>Import LCSC Cart/Order</h2>
                 <form id="uploadCsvForm">
-                    <p>Import components from LCSC CSV export file</p>
+                    <p>Import components directly from your LCSC Cart or Order History CSV export. New components will
+                        be added, and quantities for existing components will be increased.</p>
                     <div class="file-upload-container">
                         <label class="file-upload-label">
                             <span class="file-upload-icon">📁</span>
-                            Select CSV File
+                            Select LCSC CSV File
                             <input type="file" id="csvFile" accept=".csv" class="file-upload-input">
                         </label>
                         <div id="selected-file-name">No file selected</div>
@@ -175,11 +186,15 @@
                         <button type="submit" class="primary-button">Import LCSC Components</button>
                     </div>
                     <div class="import-help">
-                        <h3>How to import components:</h3>
+                        <h3>
+                            How to import components
+                            <i class="material-icons info-icon" tabindex="0"
+                                data-tooltip="Export your cart or order history from LCSC as a CSV file. The import uses 'LCSC Part Number' to identify components. It adds the 'Order Qty.' from the CSV to the existing stock quantity in the database. New part numbers will be added automatically.">info_outline</i>
+                        </h3>
                         <ol>
-                            <li>Export component list from LCSC in CSV format</li>
-                            <li>Select the CSV file using the button above</li>
-                            <li>Click "Import LCSC Components" to add them to your inventory</li>
+                            <li>Export cart or order from LCSC (CSV format)</li>
+                            <li>Select the CSV file above</li>
+                            <li>Click "Import LCSC Components"</li>
                         </ol>
                     </div>
                 </form>
@@ -341,6 +356,7 @@
         <button id="clearSummaryBtn" class="secondary-button">Clear Summary</button>
     </div>
 
+    <!-- Search Results Area (Remains outside Tab Content Container) -->
     <div id="searchResults">
         <div class="results-header">
             <h3>Search Results</h3>

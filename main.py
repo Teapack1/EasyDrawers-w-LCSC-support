@@ -979,9 +979,31 @@ async def add_to_cart(data: dict):
     user = data.get("user")
     component_id = data.get("component_id")
 
+    # Ensure quantity is properly extracted and converted to integer
+    try:
+        quantity = int(
+            data.get("quantity", 1)
+        )  # Convert to int and default to 1 if not provided
+    except (ValueError, TypeError):
+        # Log the received data for debugging
+        print(f"Invalid quantity value received: {data.get('quantity')}")
+        print(f"Full data received: {data}")
+        raise HTTPException(
+            status_code=400, detail="Invalid quantity format. Must be a number."
+        )
+
+    print(
+        f"Processing add_to_cart: user={user}, component_id={component_id}, quantity={quantity}"
+    )  # Debug log
+
     if not user or not component_id:
         raise HTTPException(
             status_code=400, detail="User and component ID are required"
+        )
+
+    if quantity < 1:
+        raise HTTPException(
+            status_code=400, detail="Invalid quantity. Must be a positive integer."
         )
 
     conn = sqlite3.connect("components.db")
@@ -991,25 +1013,53 @@ async def add_to_cart(data: dict):
         # Check if item already exists in cart
         cursor.execute(
             """
-            SELECT id FROM cart 
+            SELECT id, quantity FROM cart 
             WHERE user = ? AND component_id = ?
         """,
             (user, component_id),
         )
+        existing_item = cursor.fetchone()
 
-        if cursor.fetchone():
-            raise HTTPException(status_code=400, detail="Item already in cart")
+        if existing_item:
+            # If item exists, update its quantity
+            cart_item_id, current_quantity = existing_item
+            # Ensure current_quantity is an integer
+            current_quantity = (
+                int(current_quantity) if current_quantity is not None else 0
+            )
+            new_quantity = current_quantity + quantity
+            print(
+                f"Updating existing cart item: current={current_quantity}, adding={quantity}, new={new_quantity}"
+            )  # Debug log
 
-        cursor.execute(
-            """
-            INSERT INTO cart (user, component_id, quantity)
-            VALUES (?, ?, 1)
-        """,
-            (user, component_id),
-        )
+            cursor.execute(
+                """
+                UPDATE cart
+                SET quantity = ?
+                WHERE id = ?
+            """,
+                (new_quantity, cart_item_id),
+            )
+            message = f"Updated cart quantity to {new_quantity}"
+        else:
+            # If item doesn't exist, insert it with the provided quantity
+            print(f"Adding new cart item with quantity={quantity}")  # Debug log
+
+            cursor.execute(
+                """
+                INSERT INTO cart (user, component_id, quantity)
+                VALUES (?, ?, ?)
+            """,
+                (user, component_id, quantity),
+            )
+            message = f"Item added to cart (Qty: {quantity})"
 
         conn.commit()
-        return {"message": "Item added to cart"}
+        return {"message": message}
+    except Exception as e:
+        conn.rollback()
+        print(f"Error in add_to_cart: {str(e)}")  # Debug log
+        raise HTTPException(status_code=500, detail=f"Failed to add to cart: {str(e)}")
     finally:
         conn.close()
 
@@ -1020,27 +1070,62 @@ async def get_cart(user: str):
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        SELECT c.*, ci.quantity as cart_quantity, ci.id as cart_item_id
-        FROM components c
-        JOIN cart ci ON c.id = ci.component_id
-        WHERE ci.user = ?
-    """,
-        (user,),
-    )
+    try:
+        cursor.execute(
+            """
+            SELECT 
+                c.*,
+                ci.quantity as cart_quantity,
+                ci.id as cart_item_id
+            FROM components c
+            JOIN cart ci ON c.id = ci.component_id
+            WHERE ci.user = ?
+        """,
+            (user,),
+        )
 
-    items = cursor.fetchall()
-    conn.close()
+        items = cursor.fetchall()
+        result_items = []
+        for item in items:
+            item_dict = dict(item)
+            # Ensure cart_quantity is properly converted to integer
+            item_dict["cart_quantity"] = (
+                int(item_dict["cart_quantity"])
+                if item_dict["cart_quantity"] is not None
+                else 1
+            )
+            result_items.append(item_dict)
 
-    return [dict(item) for item in items]
+        return result_items
+    except Exception as e:
+        print(f"Error in get_cart: {str(e)}")  # Add debug logging
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
 
 
 @app.post("/update_cart_quantity")
 async def update_cart_quantity(data: dict):
     user = data.get("user")
     cart_item_id = data.get("cart_item_id")
-    quantity = data.get("quantity")
+
+    # Ensure quantity is properly typed
+    try:
+        quantity = int(data.get("quantity", 1))
+    except (ValueError, TypeError):
+        print(f"Invalid quantity in update_cart_quantity: {data.get('quantity')}")
+        raise HTTPException(
+            status_code=400, detail="Invalid quantity. Must be a positive integer."
+        )
+
+    if quantity < 1:
+        raise HTTPException(
+            status_code=400, detail="Invalid quantity. Must be a positive integer."
+        )
+
+    print(
+        f"Updating cart quantity: user={user}, item_id={cart_item_id}, quantity={quantity}"
+    )  # Debug
 
     conn = sqlite3.connect("components.db")
     cursor = conn.cursor()
@@ -1057,7 +1142,7 @@ async def update_cart_quantity(data: dict):
     conn.commit()
     conn.close()
 
-    return {"message": "Cart updated"}
+    return {"message": f"Cart updated to quantity: {quantity}"}
 
 
 @app.delete("/remove_from_cart")
@@ -1280,6 +1365,135 @@ async def format_database():
         return {"message": "Database formatted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/import_database")
+async def import_database(file: UploadFile = File(...)):
+    if not file.filename.endswith(".csv"):
+        raise HTTPException(status_code=400, detail="Please upload a CSV file.")
+
+    # Read the uploaded CSV file content
+    content = await file.read()
+
+    try:
+        # Use BytesIO to treat the byte content as a file
+        csv_buffer = BytesIO(content)
+        # Assume UTF-8 encoding, which is standard for CSV exports
+        df = pd.read_csv(csv_buffer, encoding="utf-8")
+
+        # Expected columns based on the export function
+        expected_columns = [
+            "LCSC Part Number",
+            "Manufacture Part Number",
+            "Manufacturer",
+            "Package",
+            "Description",
+            "Order Qty.",
+            "Unit Price($)",
+            "Component Type",
+            "Component Branch",
+            "Storage Place",
+            "Capacitance",
+            "Resistance",
+            "Voltage",
+            "Tolerance",
+            "Inductance",
+            "Current/Power",
+        ]
+
+        # Verify columns match
+        if not all(col in df.columns for col in expected_columns):
+            missing = [col for col in expected_columns if col not in df.columns]
+            extra = [col for col in df.columns if col not in expected_columns]
+            error_msg = "CSV columns do not match the expected format."
+            if missing:
+                error_msg += f" Missing: {', '.join(missing)}."
+            if extra:
+                error_msg += f" Unexpected: {', '.join(extra)}."
+            raise HTTPException(status_code=400, detail=error_msg)
+
+        # Format the database (delete existing data)
+        conn = sqlite3.connect("components.db")
+        conn.close()  # Ensure closed before deleting
+        if os.path.exists("components.db"):
+            os.remove("components.db")
+        create_database()
+
+        # Insert data into the new database
+        conn = sqlite3.connect("components.db")
+        cursor = conn.cursor()
+
+        # Prepare data for insertion
+        # Rename columns to match the database schema
+        column_mapping = {
+            "LCSC Part Number": "part_number",
+            "Manufacture Part Number": "manufacture_part_number",
+            "Manufacturer": "manufacturer",
+            "Package": "package",
+            "Description": "description",
+            "Order Qty.": "order_qty",
+            "Unit Price($)": "unit_price",
+            "Component Type": "component_type",
+            "Component Branch": "component_branch",
+            "Storage Place": "storage_place",
+            "Capacitance": "capacitance",
+            "Resistance": "resistance",
+            "Voltage": "voltage",
+            "Tolerance": "tolerance",
+            "Inductance": "inductance",
+            "Current/Power": "current_power",
+        }
+        df_renamed = df.rename(columns=column_mapping)
+
+        # Convert relevant columns to appropriate types
+        df_renamed["order_qty"] = (
+            pd.to_numeric(df_renamed["order_qty"], errors="coerce")
+            .fillna(0)
+            .astype(int)
+        )
+        df_renamed["unit_price"] = (
+            pd.to_numeric(df_renamed["unit_price"], errors="coerce")
+            .fillna(0.0)
+            .astype(float)
+        )
+
+        # Get list of columns in the correct order for the database table
+        db_columns = list(column_mapping.values())
+        df_renamed = df_renamed[db_columns]
+
+        # Convert DataFrame to list of tuples for executemany
+        data_to_insert = [tuple(x) for x in df_renamed.to_numpy()]
+
+        # Use executemany for efficient bulk insertion
+        placeholders = ", ".join(["?"] * len(db_columns))
+        sql = (
+            f"INSERT INTO components ({', '.join(db_columns)}) VALUES ({placeholders})"
+        )
+
+        cursor.executemany(sql, data_to_insert)
+
+        conn.commit()
+        conn.close()
+
+        return {
+            "message": f"Database imported successfully. {len(data_to_insert)} records added."
+        }
+
+    except pd.errors.EmptyDataError:
+        raise HTTPException(status_code=400, detail="The uploaded CSV file is empty.")
+    except Exception as e:
+        # Clean up potentially corrupted DB file on error during import
+        try:
+            if "conn" in locals() and conn:
+                conn.close()
+            if os.path.exists("components.db"):
+                os.remove("components.db")
+            create_database()  # Create a fresh empty DB
+        except Exception as cleanup_e:
+            print(f"Error during cleanup after import failure: {cleanup_e}")
+        raise HTTPException(
+            status_code=500, detail=f"Error processing CSV file: {str(e)}"
+        )
 
 
 # Database connection function

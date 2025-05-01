@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/database.css">
 </head>
+
 <body>
     <div class="top-bar">
         <button onclick="window.location.href='/'">Back to Home</button>
@@ -26,6 +28,14 @@
                 <p>Warning: This will delete all data and create a new empty database</p>
                 <button id="formatDatabaseBtn" class="action-btn warning">Format Database</button>
             </div>
+
+            <div class="action-card">
+                <h3>Import Database</h3>
+                <p>Replace the current database with data from a previously exported CSV file. This will delete existing
+                    data.</p>
+                <input type="file" id="importFile" accept=".csv" style="margin-bottom: 10px;">
+                <button id="importDatabaseBtn" class="action-btn" disabled>Import Database</button>
+            </div>
         </div>
     </div>
 
@@ -43,4 +53,5 @@
 
     <script src="/static/database.js"></script>
 </body>
-</html> 
+
+</html>
