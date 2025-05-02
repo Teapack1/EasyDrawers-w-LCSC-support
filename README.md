@@ -170,7 +170,7 @@ EasyDrawers is a Python application using the FastAPI framework.
 
 1.  **Clone or Download:** Get the project files onto your computer.
     ```bash
-    git clone https://github.com/your-username/my_lcsc_stock.git # Replace with your repo URL
+    git clone https://github.com/Teapack1/EasyDrawers-w-LCSC-support.git
     cd my_lcsc_stock
     ```
     Or download the ZIP and extract it.
@@ -195,65 +195,159 @@ EasyDrawers is a Python application using the FastAPI framework.
 
 ## Deployment
 
-Running the app with `uvicorn` as shown above is great for personal use or small teams on a local network. Here are a few ways to deploy it more permanently:
+### Setting up EasyDrawers on Lubuntu (18.04/22.04)
 
-**Method 1: Simple Background Process (Basic)**
+This guide will walk you through deploying EasyDrawers as a permanent service that automatically starts on boot. Perfect for always-on access by small teams (up to 5 users).
 
-*   **Goal:** Keep the `uvicorn` command running even after you close the terminal.
-*   **Linux/macOS:** Use `nohup` and `&`:
-    ```bash
-    nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
-    ```
-    Output will go to `nohup.out`. To stop it, find the process ID (`ps aux | grep uvicorn`) and use `kill <pid>`.
-*   **Windows:** Create a simple batch file (`.bat`) with the uvicorn command and run it:
-    ```batch
-    @echo off
-    python -m uvicorn main:app --host 0.0.0.0 --port 8000
-    ```
+#### 1. Install System Dependencies
 
-**Method 2: Using a Process Manager (Recommended for Stability)**
+```bash
+# Update system packages
+sudo apt update
+sudo apt upgrade -y
 
-*   **Goal:** Ensure the app restarts automatically if it crashes.
-*   **Tools:** `systemd` (Linux), `supervisor` (Linux/macOS), `pm2` (Node.js based, works well for Python too).
-*   **Example (Conceptual `systemd` service file - `/etc/systemd/system/easydrawers.service`):**
-    ```ini
-    [Unit]
-    Description=EasyDrawers Service
-    After=network.target
+# Install required packages
+sudo apt install -y python3 python3-pip python3-venv git
+```
 
-    [Service]
-    User=your_user # The user to run the app as
-    WorkingDirectory=/path/to/my_lcsc_stock # Absolute path to the project
-    ExecStart=/path/to/your/python/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
-    Restart=always
+#### 2. Download & Set Up the Application
 
-    [Install]
-    WantedBy=multi-user.target
-    ```
-    *   You'd then enable and start it: `sudo systemctl enable easydrawers`, `sudo systemctl start easydrawers`.
+```bash
+# Create directory for the application
+mkdir -p ~/apps
+cd ~/apps
 
-**Method 3: Containerization (Docker)**
+# Clone the repository
+git clone https://github.com/Teapack1/EasyDrawers-w-LCSC-support.git
+cd EasyDrawers-w-LCSC-support
 
-*   **Goal:** Package the app and its dependencies into a portable container.
-*   Requires creating a `Dockerfile`. This is more advanced but offers great consistency across environments.
-*   Example basic Dockerfile:
-    ```dockerfile
-    FROM python:3.10-slim
-    
-    WORKDIR /app
-    
-    COPY requirements.txt .
-    RUN pip install --no-cache-dir -r requirements.txt
-    
-    COPY . .
-    
-    EXPOSE 8000
-    
-    CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-    ```
-    Build and run with: `docker build -t easydrawers .` and `docker run -p 8000:8000 easydrawers`
+# Create a virtual environment
+python3 -m venv venv
+source venv/bin/activate
 
-> **Note:** For production, you might run `uvicorn` behind a web server like Nginx or Caddy for handling HTTPS, load balancing, and serving static files more efficiently.
+# Install dependencies
+pip install -r requirements.txt
+```
+
+#### 3. Test the Application
+
+```bash
+# Start the server temporarily to test
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+Visit `http://localhost:8000` in your browser. If everything works correctly, proceed to set up the service. Press `Ctrl+C` to stop the server.
+
+#### 4. Create a Systemd Service
+
+Create a service file that will manage the application and ensure it runs at startup:
+
+```bash
+# Create the service file
+sudo nano /etc/systemd/system/easydrawers.service
+```
+
+Paste the following content (adjust paths as needed):
+
+```ini
+[Unit]
+Description=EasyDrawers Component Manager
+After=network.target
+
+[Service]
+User=$USER
+WorkingDirectory=/home/$USER/apps/EasyDrawers-w-LCSC-support
+ExecStart=/home/$USER/apps/EasyDrawers-w-LCSC-support/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=easydrawers
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Save and exit (Ctrl+O, Enter, Ctrl+X).
+
+#### 5. Enable & Start the Service
+
+```bash
+# Reload systemd configurations
+sudo systemctl daemon-reload
+
+# Enable the service to start on boot
+sudo systemctl enable easydrawers
+
+# Start the service now
+sudo systemctl start easydrawers
+
+# Check status
+sudo systemctl status easydrawers
+```
+
+The service is now running and will automatically start each time your system boots!
+
+#### 6. Network Configuration
+
+To make the app accessible from other devices on your network:
+
+1. **Find your server's IP address**:
+   ```bash
+   ip addr show | grep inet
+   ```
+   This will display your current IP address (look for something like 192.168.1.x or 10.0.0.x)
+
+2. **Set a static IP** (recommended for server stability):
+   ```bash
+   sudo nano /etc/netplan/01-network-manager-all.yaml
+   ```
+   
+   Add/edit configuration, replacing 192.168.1.100 with your desired static IP:
+   ```yaml
+   network:
+     version: 2
+     renderer: NetworkManager
+     ethernets:
+       eth0:
+         dhcp4: no
+         addresses: [192.168.1.100/24]  # Choose an IP in your network range
+         gateway4: 192.168.1.1  # Your router's IP address
+         nameservers:
+           addresses: [8.8.8.8, 8.8.4.4]
+   ```
+   Save, exit, and apply with: `sudo netplan apply`
+
+#### 7. Accessing EasyDrawers
+
+- From any device on your network, open a web browser and navigate to:
+  ```
+  http://SERVER_IP:8000
+  ```
+  Where SERVER_IP is the static IP you configured above (e.g., 192.168.1.100)
+
+- For easier access:
+  - **On mobile**: Create a home screen shortcut to the URL
+  - **On desktop**: Create a bookmark in your browser
+
+#### 8. Managing the Service
+
+- **Check status**: `sudo systemctl status easydrawers` - Shows if the service is running and recent log entries
+- **Restart service**: `sudo systemctl restart easydrawers` - Restarts the application after changes or if issues occur
+- **View logs**: `sudo journalctl -u easydrawers` - Shows detailed application logs for troubleshooting
+- **Stop service**: `sudo systemctl stop easydrawers` - Stops the application completely
+
+#### 9. Updating the Application
+
+```bash
+cd ~/apps/EasyDrawers-w-LCSC-support
+git pull
+source venv/bin/activate
+pip install -r requirements.txt
+sudo systemctl restart easydrawers
+```
+
+Enjoy your always-on, team-accessible component management system!
 
 ---
 
@@ -269,6 +363,6 @@ Running the app with `uvicorn` as shown above is great for personal use or small
 
 ## Final Words
 
-EasyDrawers aims to be a practical tool born from a real need for organizing electronic components. We hope it helps you stay organized and focus more on your projects and less on managing inventory! The app provides a robust solution specifically designed for LCSC parts while remaining flexible enough to adapt to your unique workflow.
+EasyDrawers aims to be a practical tool born from a real need for organizing electronic components. I hope it helps you stay organized, avoid ordering duplicate components and focus more on your projects and less on managing inventory! The app provides a robust solution specifically designed for LCSC parts while remaining flexible enough to adapt to your unique workflow.
 
 Feel free to contribute, report issues, or suggest features as you use the application.
