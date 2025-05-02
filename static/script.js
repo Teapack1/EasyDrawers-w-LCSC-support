@@ -560,17 +560,32 @@ document.addEventListener('DOMContentLoaded', function () {
                         return placeA.localeCompare(placeB);
                     });
 
-                    // Generate summary HTML (using a simple table)
-                    let html = '<table class="summary-table"><thead><tr><th>Part Number</th><th>Qty Taken</th><th>Location</th><th>Description</th></tr></thead><tbody>';
+                    // Generate summary HTML (using a simple table with fixed column widths)
+                    let html = `
+                    <table class="summary-table">
+                      <colgroup>
+                        <col style="width:120px;">
+                        <col style="width:auto;">
+                        <col style="width:80px;">
+                        <col style="width:80px;">
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th>Part Number</th>
+                          <th>Description</th>
+                          <th>Qty Taken</th>
+                          <th>Location</th>
+                        </tr>
+                      </thead>
+                      <tbody>`;
                     items.forEach(item => {
                         html += `
                             <tr>
                                 <td>${item.part_number}</td>
+                                <td class="description-summary">${item.description || ''}</td>
                                 <td class="qty-taken">${item.cart_quantity || 1}</td>
                                 <td class="storage-location">${item.storage_place || 'N/A'}</td>
-                                <td class="description-summary">${item.description || ''}</td>
-                            </tr>
-                        `;
+                            </tr>`;
                     });
                     html += '</tbody></table>';
 

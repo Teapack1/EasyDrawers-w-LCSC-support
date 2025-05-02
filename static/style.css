@@ -3549,11 +3549,10 @@ details[open] summary::after {
 .summary-table .description-summary {
     font-size: 0.9em;
     color: #555;
-    max-width: 250px;
-    /* Limit width */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    /* Flexible description width */
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
 }
 
 #clearSummaryBtn {

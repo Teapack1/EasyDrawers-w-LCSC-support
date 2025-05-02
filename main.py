@@ -1752,6 +1752,22 @@ async def assign_branch_to_location(request_data: AssignBranchRequest):
         with open(config_path, "w") as f:
             json.dump(config, f, indent=4)
 
+        # Update database storage places for components of this branch
+        conn = sqlite3.connect("components.db")
+        cursor = conn.cursor()
+        # Clear this location from any other branches in the DB
+        cursor.execute(
+            "UPDATE components SET storage_place = '' WHERE storage_place = ? AND NOT (component_type = ? AND component_branch = ?)",
+            (location, component_type, component_branch),
+        )
+        # Assign this location to all components of the selected branch
+        cursor.execute(
+            "UPDATE components SET storage_place = ? WHERE component_type = ? AND component_branch = ?",
+            (location, component_type, component_branch),
+        )
+        conn.commit()
+        conn.close()
+
         return {
             "message": f"Successfully assigned '{component_branch}' to location '{location}'"
         }

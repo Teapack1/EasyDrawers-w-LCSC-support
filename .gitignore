@@ -1,3 +1,5 @@
 /venv*
 /lcsc-scrape.rs-master*
-/JLC_Components.csv
+/.vscode*
+/__pycache__*
+/routers*

@@ -105,10 +105,8 @@ function extractStoragePlaces(config) {
 
 async function initializeMap() {
     try {
-        const configResponse = await fetch('/component_config');
-        const componentConfig = await configResponse.json();
-        const storagePlaces = extractStoragePlaces(componentConfig);
-
+        // No need to fetch componentConfig here for labeling
+        // Only need it for extracting storage places for occupancy, not for labeling
         const mapGrid = document.querySelector('.map-grid');
         if (!mapGrid) {
             console.error("Map grid container not found.");
@@ -123,22 +121,20 @@ async function initializeMap() {
         mapGrid.style.setProperty('--map-drawer-size', `${MAP_CONFIG.drawerSize}px`);
         mapGrid.style.setProperty('--map-gap', `${MAP_CONFIG.gap}px`);
 
-        // --- Create Main Grid Drawers and Empty Fillers --- 
+        // --- Create Main Grid Drawers with fixed labels --- 
         const totalCells = MAP_CONFIG.rows * MAP_CONFIG.cols;
-        let cellCounter = 0;
-        storagePlaces.forEach((place, index) => {
-            if (index < totalCells) { // Check against total cells, not MAP_CONFIG.rows * MAP_CONFIG.cols directly
-                const drawer = createDrawerElement(place);
-                mapGrid.appendChild(drawer);
-                cellCounter++;
+        let labelList = [];
+        for (let row = 0; row < MAP_CONFIG.rows; row++) {
+            const rowLetter = String.fromCharCode(65 + row); // 65 = 'A'
+            for (let col = 1; col <= MAP_CONFIG.cols; col++) {
+                labelList.push(`${rowLetter}${col}`);
             }
-        });
-        // Add empty cells to complete the main grid rectangle
-        while (cellCounter < totalCells) {
-            const drawer = createDrawerElement('');
-            mapGrid.appendChild(drawer);
-            cellCounter++;
         }
+        // Create drawers with fixed labels
+        labelList.forEach(label => {
+            const drawer = createDrawerElement(label);
+            mapGrid.appendChild(drawer);
+        });
 
         // --- Add Separator and Extra Drawers --- 
         const extraCount = MAP_CONFIG.extra;
