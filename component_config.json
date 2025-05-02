@@ -448,18 +448,5 @@
                 "Storage Place": "F20"
             }
         }
-    },
-    /*
-    "Motors": {
-        "Component Branch": {
-            "Stepper Motors": {
-                "Parameters": [
-                    "Voltage",
-                    "Current",
-                    "Step Angle"
-                ],
-                "Storage Place": "G1"
-            }
-        }
-    }*/
+    }
 }
