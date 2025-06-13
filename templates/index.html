@@ -50,25 +50,42 @@
         </div>
     </div>
 
-    <h1>Electronics Stock Search</h1>
+    <div class="content-container">
+        <h1>Electronics Component Inventory Manager</h1>
 
-    <!-- Tab Navigation (Desktop Only) -->
-    <div class="tab-container desktop-only">
-        <div class="tabs">
-            <button class="tab-button active" data-tab="search">Search Components</button>
-            <button class="tab-button" data-tab="add">Add Component</button>
-            <button class="tab-button" data-tab="import">Import CSV</button>
+        <!-- Tab Navigation (Desktop Only) -->
+        <div class="tab-container desktop-only">
+            <div class="tab-descriptions">
+                <p class="tab-help">Choose your action below:</p>
+            </div>
+            <div class="tabs">
+                <button class="tab-button active" data-tab="search">
+                    <span class="tab-icon">🔍</span>
+                    <span class="tab-text">Search Components</span>
+                    <span class="tab-subtitle">Find parts in your inventory</span>
+                </button>
+                <button class="tab-button" data-tab="add">
+                    <span class="tab-icon">➕</span>
+                    <span class="tab-text">Add Component</span>
+                    <span class="tab-subtitle">Manually add single parts</span>
+                </button>
+                <button class="tab-button" data-tab="import">
+                    <span class="tab-icon">📥</span>
+                    <span class="tab-text">Import from LCSC</span>
+                    <span class="tab-subtitle">Bulk import from CSV orders</span>
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Tab Content Container -->
-    <div class="tab-content-container">
+        <!-- Tab Content Container -->
+        <div class="tab-content-container">
         <!-- Search Tab Content -->
         <div id="search-tab" class="tab-content active">
 
             <!-- Main Search & Primary Filters -->
             <div class="search-panel main-search-panel">
-                <h2>Search Components</h2>
+                <h2>🔍 Search Your Component Database</h2>
+                <p class="panel-description">Search through your inventory to find components by part number, description, or specifications. Check stock levels and add parts to your project cart.</p>
                 <div class="main-search-controls">
                     <div class="search-input-group">
                         <i class="material-icons search-icon">search</i>
@@ -94,14 +111,17 @@
 
             <!-- BOM Import Section -->
             <div class="search-panel bom-import-panel">
-                <h2>
-                    Quick Add: Import BOM to Cart
-                    <i class="material-icons info-icon" tabindex="0"
-                        data-tooltip="Select a BOM file (CSV). Found components based on LCSC Part#/MPN will be added directly to your cart for potential stock withdrawal.">info_outline</i>
-                </h2>
+                <h2>🛒 Quick Add: Import BOM to Cart</h2>
+                <p class="panel-description">
+                    Upload your project's BOM (Bill of Materials) as a CSV file. Components found in your inventory 
+                    will be automatically added to your cart for withdrawal. Perfect for checking project availability!
+                </p>
                 <div class="bom-upload-group">
                     <input type="file" id="bomFile" accept=".csv">
-                    <button id="uploadBomButton" class="secondary-button">Import BOM</button>
+                    <button id="uploadBomButton" class="secondary-button">Import BOM File</button>
+                </div>
+                <div class="feature-note">
+                    <small>💡 Tip: Export your BOM from KiCad, Altium, or any CAD tool as CSV with LCSC part numbers or MPNs.</small>
                 </div>
             </div>
 
@@ -110,9 +130,15 @@
         <!-- Add Component Tab Content -->
         <div id="add-tab" class="tab-content">
             <div class="form-section">
-                <h2>Add New Component</h2>
+                <h2>➕ Add New Component to Inventory</h2>
+                <p class="panel-description">
+                    Manually add individual components to your inventory database. Use this when you get single parts 
+                    or small quantities that aren't from LCSC bulk orders.
+                </p>
+                <div class="usage-note">
+                    <strong>When to use this:</strong> Single parts, samples, parts from other suppliers, or manual stock adjustments.
+                </div>
                 <form id="addComponentForm">
-                    <p>Manually add a new component to inventory</p>
                     <div class="form-fields">
                         <label for="partNumber">LCSC Part Number*</label>
                         <input type="text" id="partNumber" required>
@@ -170,10 +196,15 @@
         <!-- Import Tab Content (LCSC Stock Import) -->
         <div id="import-tab" class="tab-content">
             <div class="import-container">
-                <h2>Import LCSC Cart/Order</h2>
+                <h2>📥 Import LCSC Orders to Stock</h2>
+                <p class="panel-description">
+                    The main way to stock your inventory! Import components directly from your LCSC Cart or Order History CSV export. 
+                    This automatically adds new components to your database and increases quantities for existing ones.
+                </p>
+                <div class="usage-note">
+                    <strong>Perfect for:</strong> Bulk orders from LCSC, restocking inventory, adding new component types to your database.
+                </div>
                 <form id="uploadCsvForm">
-                    <p>Import components directly from your LCSC Cart or Order History CSV export. New components will
-                        be added, and quantities for existing components will be increased.</p>
                     <div class="file-upload-container">
                         <label class="file-upload-label">
                             <span class="file-upload-icon">📁</span>
@@ -200,7 +231,8 @@
                 </form>
             </div>
         </div>
-    </div>
+        </div>
+    </div> <!-- End content-container -->
 
     <!-- Map Modal Dialog -->
     <div id="mapModal" class="map-modal">
