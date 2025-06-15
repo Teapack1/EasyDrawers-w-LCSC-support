@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Storage Map</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/map.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/map.css">
 </head>
 
 <body>
@@ -95,6 +95,10 @@
                         <p><i>Shift + Click</i> on a drawer to assign a component branch to it.</p>
                     </div>
                 </div>
+
+                <div class="control-section">
+                    <button id="clearDrawersBtn" class="primary-button danger-button">🗑️ Clear All Drawer Assignments</button>
+                </div>
             </div>
         </div>
 
@@ -149,12 +153,13 @@
                         <!-- Populated by JS -->
                     </select>
                 </div>
+                <div id="currentBranchesContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
                 <button id="assignBranchButton" class="primary-button" style="margin-top: 10px;">Assign Branch</button>
             </div>
         </div>
     </div>
 
-    <script src="/static/map.js"></script>
+    <script src="/static/js/map.js"></script>
 </body>
 
 </html>

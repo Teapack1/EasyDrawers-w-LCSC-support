@@ -1708,59 +1708,42 @@ async def upload_bom(file: UploadFile = File(...), user: str = Query(...)):
 
 @app.post("/assign_branch_to_location")
 async def assign_branch_to_location(request_data: AssignBranchRequest):
+    """Assign a branch to a storage location.
+    Multiple branches can share the same location now, so we **no longer** clear other
+    branches already mapped to that drawer. We still ensure that the selected branch
+    is not mapped to a different location to avoid duplicates.
+    """
     location = request_data.location
     component_type = request_data.component_type
     component_branch = request_data.component_branch
 
     if not location or not component_type or not component_branch:
-        raise HTTPException(
-            status_code=400, detail="Location, component type, and branch are required."
-        )
+        raise HTTPException(status_code=400, detail="Location, component type, and branch are required.")
 
     config_path = "component_config.json"
-
     try:
-        # Read the current config
         with open(config_path, "r") as f:
             config = json.load(f)
 
-        # --- Update logic ---
-        branch_found = False
-        # 1. Clear the target location from any *other* branch that might currently hold it
-        for c_type, type_data in config.items():
-            for branch, branch_data in type_data.get("Component Branch", {}).items():
-                if branch_data.get("Storage Place") == location and not (
-                    c_type == component_type and branch == component_branch
-                ):
-                    branch_data["Storage Place"] = ""  # Clear it
+        # 1. Ensure the branch exists
+        if component_type not in config or component_branch not in config[component_type].get("Component Branch", {}):
+            raise HTTPException(status_code=404, detail="Specified branch not found in configuration.")
 
-        # 2. Find the target branch and assign the location
-        if component_type in config and component_branch in config[component_type].get(
-            "Component Branch", {}
-        ):
-            config[component_type]["Component Branch"][component_branch][
-                "Storage Place"
-            ] = location
-            branch_found = True
-        else:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Component type '{component_type}' or branch '{component_branch}' not found in configuration.",
-            )
+        # 2. Remove this branch from its previous location (if any)
+        previous_location = config[component_type]["Component Branch"][component_branch].get("Storage Place", "")
+        if previous_location == location:
+            # Nothing to change
+            return {"message": f"'{component_branch}' is already assigned to '{location}'."}
 
-        # Write the updated config back
+        config[component_type]["Component Branch"][component_branch]["Storage Place"] = location
+
+        # Save config
         with open(config_path, "w") as f:
             json.dump(config, f, indent=4)
 
-        # Update database storage places for components of this branch
+        # Update DB: set storage_place for ALL components of this branch
         conn = sqlite3.connect("components.db")
         cursor = conn.cursor()
-        # Clear this location from any other branches in the DB
-        cursor.execute(
-            "UPDATE components SET storage_place = '' WHERE storage_place = ? AND NOT (component_type = ? AND component_branch = ?)",
-            (location, component_type, component_branch),
-        )
-        # Assign this location to all components of the selected branch
         cursor.execute(
             "UPDATE components SET storage_place = ? WHERE component_type = ? AND component_branch = ?",
             (location, component_type, component_branch),
@@ -1768,18 +1751,100 @@ async def assign_branch_to_location(request_data: AssignBranchRequest):
         conn.commit()
         conn.close()
 
-        return {
-            "message": f"Successfully assigned '{component_branch}' to location '{location}'"
-        }
+        return {"message": f"Successfully assigned '{component_branch}' to location '{location}'"}
 
     except FileNotFoundError:
-        raise HTTPException(
-            status_code=500, detail="Component configuration file not found."
-        )
+        raise HTTPException(status_code=500, detail="Component configuration file not found.")
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error updating configuration: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error updating configuration: {str(e)}")
+
+
+@app.post("/remove_branch_from_location")
+async def remove_branch_from_location(request_data: AssignBranchRequest):
+    """Remove a branch's mapping from a specific drawer, leaving the branch unassigned."""
+    location = request_data.location
+    component_type = request_data.component_type
+    component_branch = request_data.component_branch
+
+    config_path = "component_config.json"
+    try:
+        with open(config_path, "r") as f:
+            config = json.load(f)
+
+        if component_type not in config or component_branch not in config[component_type]["Component Branch"]:
+            raise HTTPException(status_code=404, detail="Branch not found in configuration.")
+
+        # Only clear if the current mapping matches supplied location
+        if config[component_type]["Component Branch"][component_branch].get("Storage Place") == location:
+            config[component_type]["Component Branch"][component_branch]["Storage Place"] = ""
+
+            with open(config_path, "w") as f:
+                json.dump(config, f, indent=4)
+
+            # Update DB
+            conn = sqlite3.connect("components.db")
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE components SET storage_place = '' WHERE component_type = ? AND component_branch = ?",
+                (component_type, component_branch),
+            )
+            conn.commit()
+            conn.close()
+
+        return {"message": f"Branch '{component_branch}' removed from location '{location}'."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/clear_all_drawers")
+async def clear_all_drawers(confirm: bool = Query(False, description="Set to true to confirm deletion")):
+    """Clear *all* drawer assignments in one action. Components remain in the database but lose their `storage_place`.
+    To avoid accidental clicks, the caller must set the query param `?confirm=true`.
+    """
+    if not confirm:
+        raise HTTPException(status_code=400, detail="Confirmation required: add ?confirm=true to the request URL.")
+
+    # 1. Reset config
+    config_path = "component_config.json"
+    try:
+        with open(config_path, "r") as f:
+            config = json.load(f)
+        for type_data in config.values():
+            for branch_data in type_data.get("Component Branch", {}).values():
+                branch_data["Storage Place"] = ""
+        with open(config_path, "w") as f:
+            json.dump(config, f, indent=4)
+    except FileNotFoundError:
+        pass  # no config yet
+
+    # 2. Reset DB
+    conn = sqlite3.connect("components.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE components SET storage_place = '' WHERE storage_place != ''")
+    conn.commit()
+    conn.close()
+
+    return {"message": "All drawer assignments cleared."}
+
+
+@app.get("/branch_counts")
+async def branch_counts():
+    """Return a nested dict {component_type: {component_branch: count}} of component quantities."""
+    conn = sqlite3.connect("components.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT component_type, component_branch, COUNT(DISTINCT part_number) as total
+        FROM components
+        GROUP BY component_type, component_branch
+        """
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    data = {}
+    for c_type, branch, total in rows:
+        data.setdefault(c_type, {})[branch] = total
+    return data
 
 
 # --- Unique values endpoint for populating dropdowns ---

@@ -7,7 +7,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "U1"
+                "Storage Place": ""
             },
             "Through Hole Resistors": {
                 "Parameters": [
@@ -15,7 +15,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "A2"
+                "Storage Place": ""
             },
             "Aluminum Case/Porcelain Tube Resistance": {
                 "Parameters": [
@@ -23,7 +23,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "A3"
+                "Storage Place": ""
             },
             "Current Sense Resistors / Shunt Resistors": {
                 "Parameters": [
@@ -39,7 +39,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "A7"
+                "Storage Place": ""
             },
             "Resistor Networks, Arrays": {
                 "Parameters": [
@@ -47,7 +47,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "A6"
+                "Storage Place": ""
             }
         }
     },
@@ -59,7 +59,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B1"
+                "Storage Place": "A1"
             },
             "Aluminum Electrolytic Capacitors - Leaded": {
                 "Parameters": [
@@ -67,7 +67,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B2"
+                "Storage Place": "A2"
             },
             "Multilayer Ceramic Capacitors MLCC - SMD/SMT": {
                 "Parameters": [
@@ -75,7 +75,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B3"
+                "Storage Place": "A1"
             },
             "Multilayer Ceramic Capacitors MLCC - Leaded": {
                 "Parameters": [
@@ -83,7 +83,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B4"
+                "Storage Place": ""
             },
             "Film Capacitors": {
                 "Parameters": [
@@ -91,7 +91,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B5"
+                "Storage Place": ""
             },
             "Tantalum Capacitors": {
                 "Parameters": [
@@ -99,7 +99,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B6"
+                "Storage Place": ""
             },
             "Through Hole Ceramic Capacitors": {
                 "Parameters": [
@@ -107,7 +107,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B7"
+                "Storage Place": ""
             },
             "Trimmers, Variable Capacitors": {
                 "Parameters": [
@@ -123,7 +123,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B9"
+                "Storage Place": ""
             },
             "Capacitor Networks, Arrays": {
                 "Parameters": [
@@ -131,7 +131,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "D10"
+                "Storage Place": ""
             },
             "Polymer Aluminum Capacitors": {
                 "Parameters": [
@@ -139,7 +139,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B8"
+                "Storage Place": ""
             },
             "Mica and PTFE Capacitors": {
                 "Parameters": [
@@ -147,7 +147,7 @@
                     "Voltage",
                     "Tolerance"
                 ],
-                "Storage Place": "B12"
+                "Storage Place": ""
             }
         }
     },
@@ -159,7 +159,7 @@
                     "Current/Power",
                     "Tolerance"
                 ],
-                "Storage Place": "C1"
+                "Storage Place": "A4"
             },
             "Color Ring Inductors / Through Hole Inductors": {
                 "Parameters": [
@@ -167,7 +167,7 @@
                     "Current/Power",
                     "Tolerance"
                 ],
-                "Storage Place": "C2"
+                "Storage Place": ""
             },
             "Power Inductors": {
                 "Parameters": [
@@ -175,7 +175,7 @@
                     "Current/Power",
                     "Tolerance"
                 ],
-                "Storage Place": "C3"
+                "Storage Place": ""
             },
             "Adjustable Inductors": {
                 "Parameters": [
@@ -183,7 +183,7 @@
                     "Current/Power",
                     "Tolerance"
                 ],
-                "Storage Place": "C4"
+                "Storage Place": ""
             }
         }
     },
@@ -201,56 +201,56 @@
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D2"
+                "Storage Place": ""
             },
             "Diodes - Variable Capacitance": {
                 "Parameters": [
                     "Capacitance",
                     "Voltage"
                 ],
-                "Storage Place": "D3"
+                "Storage Place": ""
             },
             "Super Barrier Rectifiers (SBR)": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D4"
+                "Storage Place": ""
             },
             "Avalanche Diodes": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D5"
+                "Storage Place": ""
             },
             "Schottky Diodes": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D6"
+                "Storage Place": ""
             },
             "Zener Diodes": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D1"
+                "Storage Place": ""
             },
             "Diodes - General Purpose": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D8"
+                "Storage Place": ""
             },
             "Trigger Diodes": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "D9"
+                "Storage Place": ""
             },
             "Switching Diodes": {
                 "Parameters": [
@@ -268,42 +268,42 @@
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "E1"
+                "Storage Place": ""
             },
             "Digital Tube Drivers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "E2"
+                "Storage Place": ""
             },
             "OLED Drivers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "E3"
+                "Storage Place": ""
             },
             "Laser Drivers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "E4"
+                "Storage Place": ""
             },
             "Lighting Drivers & Controllers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "E5"
+                "Storage Place": ""
             },
             "LED Drivers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "E6"
+                "Storage Place": ""
             }
         }
     },
@@ -314,138 +314,138 @@
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F1"
+                "Storage Place": ""
             },
             "Voltage Regulators - Linear, Low Drop Out (LDO) Regulators": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F2"
+                "Storage Place": "A3"
             },
             "Supervisor and Reset ICs": {
                 "Parameters": [
                     "Voltage"
                 ],
-                "Storage Place": "F3"
+                "Storage Place": ""
             },
             "Power Management - Specialized": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F4"
+                "Storage Place": ""
             },
             "ORing Controllers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F5"
+                "Storage Place": ""
             },
             "Motor Driver ICs": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F6"
+                "Storage Place": ""
             },
             "Power Over Ethernet (PoE) Controllers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F7"
+                "Storage Place": ""
             },
             "Synchronous Rectifier Controllers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F8"
+                "Storage Place": ""
             },
             "Power Distribution Switches": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F9"
+                "Storage Place": ""
             },
             "AC-DC Controllers and Regulators": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F10"
+                "Storage Place": ""
             },
             "USB PD": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F11"
+                "Storage Place": ""
             },
             "Isolated DC/DC Converters": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F12"
+                "Storage Place": ""
             },
             "Wireless Charge-Discharge ICs": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F13"
+                "Storage Place": ""
             },
             "Transformer Drivers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F14"
+                "Storage Place": ""
             },
             "Current Source / Constant Current Source": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F15"
+                "Storage Place": ""
             },
             "Battery Management": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F16"
+                "Storage Place": ""
             },
             "DC-DC Converters": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F17"
+                "Storage Place": ""
             },
             "Voltage Reference": {
                 "Parameters": [
                     "Voltage"
                 ],
-                "Storage Place": "F18"
+                "Storage Place": ""
             },
             "Leakage Protection ICs": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F19"
+                "Storage Place": ""
             },
             "Isolators - Gate Drivers": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
                 ],
-                "Storage Place": "F20"
+                "Storage Place": ""
             }
         }
     }

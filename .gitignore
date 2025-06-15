@@ -3,3 +3,10 @@
 /.vscode*
 /__pycache__*
 /routers*
+
+# YoYo AI version control directory
+.yoyo/
+
+
+# YoYo AI version control directory
+.yoyo/

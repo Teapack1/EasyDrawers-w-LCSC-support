@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Component Stock Monitor</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon_io/apple-touch-icon.png">
@@ -51,7 +51,7 @@
     </div>
 
     <div class="content-container">
-        <h1>Electronics Component Inventory Manager</h1>
+        <h1>Electronics Inventory Manager</h1>
 
         <!-- Tab Navigation (Desktop Only) -->
         <div class="tab-container desktop-only">
@@ -67,12 +67,12 @@
                 <button class="tab-button" data-tab="add">
                     <span class="tab-icon">➕</span>
                     <span class="tab-text">Add Component</span>
-                    <span class="tab-subtitle">Manually add single parts</span>
+                    <span class="tab-subtitle">Add parts to the database</span>
                 </button>
                 <button class="tab-button" data-tab="import">
                     <span class="tab-icon">📥</span>
-                    <span class="tab-text">Import from LCSC</span>
-                    <span class="tab-subtitle">Bulk import from CSV orders</span>
+                    <span class="tab-text">Supply from LCSC</span>
+                    <span class="tab-subtitle">Bulk import from CSV order list</span>
                 </button>
             </div>
         </div>
@@ -85,7 +85,11 @@
             <!-- Main Search & Primary Filters -->
             <div class="search-panel main-search-panel">
                 <h2>🔍 Search Your Component Database</h2>
-                <p class="panel-description">Search through your inventory to find components by part number, description, or specifications. Check stock levels and add parts to your project cart.</p>
+                <p class="panel-description">
+                    Quickly locate anything that is <strong>already in stock</strong>.
+                    Type an LCSC Part #, manufacturer PN, keyword, or even a spec (e.g. "100nF 0402").
+                    Results show live quantities and let you drop items straight into the <em>Cart</em> for withdrawal.
+                </p>
                 <div class="main-search-controls">
                     <div class="search-input-group">
                         <i class="material-icons search-icon">search</i>
@@ -111,17 +115,14 @@
 
             <!-- BOM Import Section -->
             <div class="search-panel bom-import-panel">
-                <h2>🛒 Quick Add: Import BOM to Cart</h2>
+                <h2>🛒 Get BOM from CSV</h2>
                 <p class="panel-description">
-                    Upload your project's BOM (Bill of Materials) as a CSV file. Components found in your inventory 
-                    will be automatically added to your cart for withdrawal. Perfect for checking project availability!
+                    Got a project BOM? Upload it here to instantly create a pick-list in your cart.
+                    <a href="#" class="help-link" data-help="bom-to-cart">How does this work? <i class="material-icons">help_outline</i></a>
                 </p>
                 <div class="bom-upload-group">
                     <input type="file" id="bomFile" accept=".csv">
                     <button id="uploadBomButton" class="secondary-button">Import BOM File</button>
-                </div>
-                <div class="feature-note">
-                    <small>💡 Tip: Export your BOM from KiCad, Altium, or any CAD tool as CSV with LCSC part numbers or MPNs.</small>
                 </div>
             </div>
 
@@ -130,10 +131,9 @@
         <!-- Add Component Tab Content -->
         <div id="add-tab" class="tab-content">
             <div class="form-section">
-                <h2>➕ Add New Component to Inventory</h2>
+                <h2>➕ Manually Add a Single Component</h2>
                 <p class="panel-description">
-                    Manually add individual components to your inventory database. Use this when you get single parts 
-                    or small quantities that aren't from LCSC bulk orders.
+                    For samples, local-supplier buys or any item <em>not</em> covered by an LCSC CSV. Fill in the fields, hit "Add Component" and it instantly becomes searchable.
                 </p>
                 <div class="usage-note">
                     <strong>When to use this:</strong> Single parts, samples, parts from other suppliers, or manual stock adjustments.
@@ -196,13 +196,14 @@
         <!-- Import Tab Content (LCSC Stock Import) -->
         <div id="import-tab" class="tab-content">
             <div class="import-container">
-                <h2>📥 Import LCSC Orders to Stock</h2>
-                <p class="panel-description">
-                    The main way to stock your inventory! Import components directly from your LCSC Cart or Order History CSV export. 
-                    This automatically adds new components to your database and increases quantities for existing ones.
+                <h2>📥 Bulk-Add Components to Stock</h2>
+                 <p class="panel-description">
+                    Populate your inventory in one go from an LCSC order. The app adds new parts and updates quantities automatically.
+                    <a href="#" class="help-link" data-help="lcsc-import">CSV format guide <i class="material-icons">help_outline</i></a>
                 </p>
                 <div class="usage-note">
-                    <strong>Perfect for:</strong> Bulk orders from LCSC, restocking inventory, adding new component types to your database.
+                    <strong>Perfect for first-time stock-in:</strong> drop a freshly downloaded order file, hit "Import" and the app does the tedious typing for you.
+                    Parts already in the database will simply increment their quantities; new part numbers are created on the fly.
                 </div>
                 <form id="uploadCsvForm">
                     <div class="file-upload-container">
@@ -445,6 +446,7 @@
                 <thead>
                     <tr>
                         <th>LCSC Part Number</th>
+                        <th class="mpn-col">MPN</th>
                         <th>Component Branch</th>
                         <th class="key-col capacitance-col">Capacitance</th>
                         <th class="key-col resistance-col">Resistance</th>
@@ -467,7 +469,75 @@
             </div>
         </div>
     </div>
-    <script src="/static/script.js"></script>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: left;">
+            <div class="modal-header">
+                <h2 id="helpModalTitle"></h2>
+                <button id="closeHelpModal" class="close-modal-btn">&times;</button>
+            </div>
+            <div id="helpModalBody" class="modal-body">
+                <!-- JS will populate this -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Help Content Templates -->
+    <div id="help-content-templates" style="display: none;">
+        <div id="help-bom-to-cart">
+            <h3>Project Stock Check - How It Works</h3>
+            <p>This feature analyzes your project's Bill of Materials (BOM) against your current inventory, showing which components you have in stock and automatically adding available parts to your cart for easy withdrawal.</p>
+            <h4>1. Export Your Project BOM</h4>
+            <ul>
+                <li><strong>From LCSC.com:</strong> Go to your <code>Cart</code> and use the <code>Export All Items</code> button.</li>
+                <li><strong>From EasyEDA:</strong> In the schematic editor, go to the top menu: <code>Export &gt; BOM</code>.</li>
+                <li><strong>From KiCad:</strong> Use the BOM export tool or generate a CSV from the schematic.</li>
+            </ul>
+            <h4>2. CSV Column Requirements</h4>
+            <p><strong>Required Column:</strong></p>
+            <ul>
+                <li><code>LCSC Part Number</code> - The unique LCSC part identifier used to match components in your inventory</li>
+            </ul>
+            <p><strong>Optional Columns (recommended for better results):</strong></p>
+            <ul>
+                <li><code>Order Qty.</code> or <code>Quantity</code> - Number of components needed (defaults to 1 if missing)</li>
+                <li><code>Description</code> - Component description for easier identification in results</li>
+                <li><code>Designator</code> or <code>Reference</code> - PCB reference designators (R1, C5, etc.)</li>
+                <li><code>Value</code> - Component value (10kΩ, 100nF, etc.)</li>
+                <li><code>Package</code> - Component package/footprint</li>
+                <li><code>Manufacturer</code> - Component manufacturer name</li>
+                <li><code>MPN</code> or <code>Manufacturer Part Number</code> - Manufacturer's part number</li>
+            </ul>
+            <p><em>Note: Column names are case-insensitive. Extra columns in your file are safely ignored.</em></p>
+            <h4>3. Results & Processing</h4>
+            <ul>
+                <li><strong>Available Components:</strong> Parts found in your inventory are automatically added to your cart with the requested quantity (limited by available stock)</li>
+                <li><strong>Missing Components:</strong> Parts not in your inventory are listed in a detailed report showing what you need to order</li>
+                <li><strong>Stock Warnings:</strong> Components with insufficient stock show available vs. required quantities</li>
+            </ul>
+        </div>
+        <div id="help-lcsc-import">
+            <h3>CSV Format Guide</h3>
+            <p>This is the main way to stock your inventory. It reads a standard LCSC order/cart export and intelligently adds or updates your components.</p>
+            <h4>Required Column</h4>
+            <p>The only column that is strictly required is:</p>
+            <ul><li><code>LCSC Part Number</code></li></ul>
+            <h4>Optional (Recommended) Columns</h4>
+            <p>For best results, your CSV should also include these standard LCSC columns. The app will use them to fill in details for new components.</p>
+            <ul>
+                <li><code>Order Qty.</code></li>
+                <li><code>Description</code></li>
+                <li><code>Manufacturer</code></li>
+                <li><code>Package</code></li>
+                <li><code>Unit Price($)</code></li>
+                <li>Spec columns (e.g., <code>Resistance</code>, <code>Capacitance</code>, etc.)</li>
+            </ul>
+            <p><em>Extra columns in your file are safely ignored. Column order does not matter.</em></p>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
 </body>
 
 </html>

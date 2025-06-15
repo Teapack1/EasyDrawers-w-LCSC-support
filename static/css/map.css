@@ -552,3 +552,33 @@
     box-sizing: border-box;
     font-size: 1em;
 }
+
+/* Branch row in assign modal */
+.branch-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.remove-branch-btn {
+    background: #f44336;
+    color: #fff;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-branch-btn:hover {
+    background: #d32f2f;
+}
+
+.danger-button {
+    background-color: #f44336;
+}
+
+.danger-button:hover {
+    background-color: #d32f2f;
+}

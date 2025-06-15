@@ -67,11 +67,30 @@ document.addEventListener('DOMContentLoaded', () => {
 let componentConfig = {};
 let storageData = {};
 let currentAssignLocation = null; // To store the location being assigned
+let branchCounts = {};
+
+async function loadBranchCounts() {
+    try {
+        const res = await fetch('/branch_counts');
+        branchCounts = await res.json();
+    } catch (e) {
+        console.error('Error loading branch counts', e);
+        branchCounts = {};
+    }
+}
+
+function withCountLabel(name, count) {
+    if (typeof count === 'number') {
+        return `${name} (${count})`;
+    }
+    return name;
+}
 
 async function loadComponentConfig() {
     try {
         const response = await fetch('/component_config');
         componentConfig = await response.json();
+        await loadBranchCounts();
         populateFilterDropdowns();
     } catch (error) {
         console.error('Error loading component configuration:', error);
@@ -202,21 +221,21 @@ function openAssignModal(location) {
     const typeSelect = document.getElementById('assignComponentType');
     const branchSelect = document.getElementById('assignComponentBranch');
 
-    // Populate type dropdown
     typeSelect.innerHTML = '<option value="">Select Type</option>';
     Object.keys(componentConfig).sort().forEach(type => {
+        const total = branchCounts[type] ? Object.values(branchCounts[type]).reduce((a,b)=>a+b,0) : undefined;
         const option = document.createElement('option');
         option.value = type;
-        option.textContent = type;
+        option.textContent = withCountLabel(type, total);
         typeSelect.appendChild(option);
     });
 
-    // Reset and disable branch dropdown
     branchSelect.innerHTML = '<option value="">Select Branch</option>';
     branchSelect.disabled = true;
 
-    // Show the modal
     document.getElementById('assignBranchModal').style.display = 'flex';
+
+    populateCurrentBranches(location);
 }
 
 // Function to close the assignment modal
@@ -236,9 +255,14 @@ function updateAssignBranchDropdown() {
     if (selectedType && componentConfig[selectedType] && componentConfig[selectedType]['Component Branch']) {
         const branches = componentConfig[selectedType]['Component Branch'];
         Object.keys(branches).sort().forEach(branch => {
+            const count = branchCounts[selectedType] ? branchCounts[selectedType][branch] : undefined;
+            const loc = branches[branch]['Storage Place'] || '';
             const option = document.createElement('option');
             option.value = branch;
-            option.textContent = branch;
+            option.textContent = `${withCountLabel(branch, count)}${loc ? ` @ ${loc}` : ''}`;
+            if (loc) {
+                option.style.color = loc === currentAssignLocation ? '#4CAF50' : '#888';
+            }
             branchSelect.appendChild(option);
         });
         branchSelect.disabled = false;
@@ -294,15 +318,14 @@ function populateFilterDropdowns() {
     const typeFilter = document.getElementById('componentTypeFilter');
     const branchFilter = document.getElementById('componentBranchFilter');
 
-    // Clear existing options
     typeFilter.innerHTML = '<option value="">Select Component Type</option>';
     branchFilter.innerHTML = '<option value="">Select Component Branch</option>';
 
-    // Populate component types
     Object.keys(componentConfig).forEach(type => {
+        const total = branchCounts[type] ? Object.values(branchCounts[type]).reduce((a,b)=>a+b,0) : undefined;
         const option = document.createElement('option');
         option.value = type;
-        option.textContent = type;
+        option.textContent = withCountLabel(type, total);
         typeFilter.appendChild(option);
     });
 }
@@ -317,9 +340,14 @@ function updateBranchFilter() {
     if (selectedType && componentConfig[selectedType]) {
         const branches = componentConfig[selectedType]['Component Branch'];
         Object.keys(branches).forEach(branch => {
+            const count = branchCounts[selectedType] ? branchCounts[selectedType][branch] : undefined;
+            const loc = branches[branch]['Storage Place'] || '';
             const option = document.createElement('option');
             option.value = branch;
-            option.textContent = branch;
+            option.textContent = `${withCountLabel(branch, count)}${loc ? ` @ ${loc}` : ''}`;
+            if (loc) {
+                option.style.color = loc === currentAssignLocation ? '#4CAF50' : '#888';
+            }
             branchFilter.appendChild(option);
         });
         branchFilter.disabled = false;
@@ -538,5 +566,102 @@ function applyFilters() {
     });
 }
 
+function populateCurrentBranches(location) {
+    const container = document.getElementById('currentBranchesContainer');
+    container.innerHTML = '';
+
+    // Build a map {"Type|Branch": count} for components actually stored in this drawer
+    const locationContents = storageData[location] || [];
+    const countByBranch = {};
+    locationContents.forEach(comp => {
+        const key = `${comp.component_type}||${comp.component_branch}`;
+        countByBranch[key] = (countByBranch[key] || 0) + comp.order_qty;
+    });
+
+    const branchesHere = [];
+    Object.entries(componentConfig).forEach(([type, typeData]) => {
+        Object.entries(typeData['Component Branch']).forEach(([branch]) => {
+            const key = `${type}||${branch}`;
+            if (typeData['Component Branch'][branch]['Storage Place'] === location) {
+                branchesHere.push({ type, branch, count: countByBranch[key] || 0 });
+            }
+        });
+    });
+
+    if (branchesHere.length === 0) {
+        container.innerHTML = '<p style="font-style: italic; color: #666;">No branches assigned to this drawer.</p>';
+        return;
+    }
+
+    branchesHere.sort((a, b) => (b.count || 0) - (a.count || 0));
+
+    branchesHere.forEach(({ type, branch, count }) => {
+        const row = document.createElement('div');
+        row.className = 'branch-row';
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.style.alignItems = 'center';
+
+        const label = document.createElement('span');
+        label.textContent = `${type} / ${branch}${count ? ` (${count})` : ''}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '−';
+        removeBtn.title = 'Remove branch from drawer';
+        removeBtn.className = 'remove-branch-btn';
+        removeBtn.addEventListener('click', () => {
+            removeBranchFromDrawer(location, type, branch);
+        });
+
+        row.appendChild(label);
+        row.appendChild(removeBtn);
+        container.appendChild(row);
+    });
+}
+
 // Initial load of storage data
 loadStorageData();
+
+async function removeBranchFromDrawer(location, componentType, branch) {
+    if (!confirm(`Remove ${branch} from drawer ${location}?`)) return;
+    try {
+        const res = await fetch('/remove_branch_from_location', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location, component_type: componentType, component_branch: branch })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert(data.message);
+            await loadComponentConfig();
+            initializeMap();
+        } else {
+            alert(data.detail || 'Failed to remove branch');
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+const clearBtn = document.getElementById('clearDrawersBtn');
+if (clearBtn) {
+    clearBtn.addEventListener('click', async () => {
+        const confirm1 = confirm('Are you sure you want to clear ALL drawer assignments?');
+        if (!confirm1) return;
+        const confirmWord = prompt('Type CLEAR to confirm');
+        if (confirmWord !== 'CLEAR') return;
+        try {
+            const res = await fetch('/clear_all_drawers?confirm=true', { method: 'POST' });
+            const msg = await res.json();
+            if (res.ok) {
+                alert(msg.message);
+                await loadComponentConfig();
+                initializeMap();
+            } else {
+                alert(msg.detail || 'Failed to clear drawers');
+            }
+        } catch(err) {
+            console.error(err);
+        }
+    });
+}
