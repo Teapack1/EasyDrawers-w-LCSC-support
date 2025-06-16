@@ -1,3 +1,5 @@
+const NULL_VALUE = 'null'; // Literal value used to represent missing / uncategorised fields
+
 let currentUser = localStorage.getItem('currentUser') || 'guest';
 let componentConfig = {};
 let searchResults = []; // Store current search results
@@ -395,7 +397,6 @@ function showBomResultModal(result) {
               ${c.description ? `<small>${c.description}</small>` : ''}`;
             ul.appendChild(li);
         });
-        body.appendChild(ul);
 
         // copy to clipboard button
         const copyBtn = document.createElement('button');
@@ -612,8 +613,14 @@ function applyFiltersAndSort() {
     const maxVal = maxValSel && !maxValSel.disabled ? maxValSel.value : '';
 
     // Apply type / branch filters
-    if (type) results = results.filter(r => r.component_type === type);
-    if (branch) results = results.filter(r => r.component_branch === branch);
+    if (type) {
+        if (type === NULL_VALUE) results = results.filter(r => !r.component_type);
+        else results = results.filter(r => r.component_type === type);
+    }
+    if (branch) {
+        if (branch === NULL_VALUE) results = results.filter(r => !r.component_branch);
+        else results = results.filter(r => r.component_branch === branch);
+    }
 
     // Apply numeric filters if applicable
     if (filterCat) {
@@ -831,12 +838,17 @@ function populateFilterComponentTypes() {
     if (Array.isArray(searchResults) && searchResults.length) {
         searchResults.forEach(c => {
             if (c.component_type) counts[c.component_type] = (counts[c.component_type] || 0) + 1;
+            else counts[NULL_VALUE] = (counts[NULL_VALUE] || 0) + 1;
         });
     } else if (Object.keys(branchCountsMain).length) {
         Object.entries(branchCountsMain).forEach(([type, branchObj]) => {
             const cnt = Object.values(branchObj).reduce((a, b) => a + b, 0);
             if (cnt) counts[type] = cnt;
         });
+        if (branchCountsMain[NULL_VALUE]) {
+            const cnt = Object.values(branchCountsMain[NULL_VALUE]).reduce((a,b)=>a+b,0);
+            if (cnt) counts[NULL_VALUE] = cnt;
+        }
     } else if (typeof componentConfig === 'object') {
         // Fallback to config structure
         Object.entries(componentConfig).forEach(([t, tData]) => {
@@ -850,16 +862,24 @@ function populateFilterComponentTypes() {
     const currentVal = sel.value;
 
     sel.innerHTML = '<option value="">All Component Types</option>';
-    Object.entries(counts)
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach(([type, cnt]) => {
-            if (cnt > 0) {
-                const opt = document.createElement('option');
-                opt.value = type;
-                opt.textContent = `${type} (${cnt})`;
-                sel.appendChild(opt);
-            }
-        });
+
+    const entries = Object.entries(counts);
+    // Ensure deterministic order: alphabetic, but put NULL_VALUE at end
+    entries.sort((a,b)=>{
+        if (a[0]===NULL_VALUE) return 1;
+        if (b[0]===NULL_VALUE) return -1;
+        return a[0].localeCompare(b[0]);
+    });
+
+    entries.forEach(([type, cnt]) => {
+        if (cnt > 0) {
+            const opt = document.createElement('option');
+            opt.value = type;
+            const label = type === NULL_VALUE ? 'Uncategorized' : type;
+            opt.textContent = `${label} (${cnt})`;
+            sel.appendChild(opt);
+        }
+    });
 
     sel.value = currentVal; // restore if still present
 
@@ -881,9 +901,14 @@ function populateFilterComponentBranches() {
     const branchCounts = {};
     if (Array.isArray(searchResults) && searchResults.length) {
         searchResults.forEach(c => {
-            if ((!selectedType || c.component_type === selectedType) && c.component_branch) {
+            const typeMatch = !selectedType || c.component_type === selectedType;
+            if (!typeMatch) return;
+
+            if (c.component_branch) {
                 const key = c.component_branch;
                 branchCounts[key] = (branchCounts[key] || 0) + 1;
+            } else {
+                branchCounts[NULL_VALUE] = (branchCounts[NULL_VALUE] || 0) + 1;
             }
         });
     } else if (selectedType && branchCountsMain[selectedType]) {
@@ -899,16 +924,23 @@ function populateFilterComponentBranches() {
     const currentVal = branchSel.value;
 
     branchSel.innerHTML = '<option value="">All Component Branches</option>';
-    Object.entries(branchCounts)
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach(([branch, cnt]) => {
-            if (cnt > 0) {
-                const opt = document.createElement('option');
-                opt.value = branch;
-                opt.textContent = `${branch} (${cnt})`;
-                branchSel.appendChild(opt);
-            }
-        });
+
+    const branchEntries = Object.entries(branchCounts);
+    branchEntries.sort((a,b)=> {
+        if (a[0]===NULL_VALUE) return 1;
+        if (b[0]===NULL_VALUE) return -1;
+        return a[0].localeCompare(b[0]);
+    });
+
+    branchEntries.forEach(([branch, cnt]) => {
+        if (cnt > 0) {
+            const opt = document.createElement('option');
+            opt.value = branch;
+            const label = branch === NULL_VALUE ? 'Uncategorized' : branch;
+            opt.textContent = `${label} (${cnt})`;
+            branchSel.appendChild(opt);
+        }
+    });
 
     branchSel.disabled = Object.keys(branchCounts).length === 0;
     branchSel.value = currentVal;
