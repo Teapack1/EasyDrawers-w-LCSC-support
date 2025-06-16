@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Storage Map</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/map.css">
+</head>
+
+<body>
+    <div class="top-bar">
+        <button onclick="window.location.href='/'">Back to Home</button>
+        <span id="currentUserDisplay">Current User: None</span>
+    </div>
+
+    <div class="map-container">
+        <!-- Side Panel -->
+        <div class="side-panel"
+            style="display: flex; flex-direction: column; height: 100%; justify-content: flex-start;">
+            <h2>Storage Map Controls</h2>
+
+            <!-- Search Section -->
+            <div class="control-section">
+                <h3>Search</h3>
+                <div class="map-search-section">
+                    <input type="text" id="partNumberSearch" placeholder="Search by LCSC Part Number"
+                        class="search-input-wide">
+                    <button id="searchButton" class="search-button-compact">Search</button>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="control-section">
+                <h3>Filters</h3>
+                <div class="filter-section">
+                    <select id="componentTypeFilter">
+                        <option value="">Select Component Type</option>
+                    </select>
+                    <select id="componentBranchFilter">
+                        <option value="">Select Component Branch</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Spacer to push the rest to the bottom -->
+            <div style="flex: 1 1 auto;"></div>
+
+            <!-- Bottom Tools/Settings Section -->
+            <div class="bottom-controls">
+                <!-- Legend Section -->
+                <div class="control-section">
+                    <h3>Legend</h3>
+                    <div class="legend-section">
+                        <div class="legend-item">
+                            <div class="legend-color empty"></div>
+                            <span>Empty</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color occupied"></div>
+                            <span>Occupied</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color highlighted"></div>
+                            <span>Selected/Filtered</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout Settings -->
+                <div class="control-section">
+                    <h3>Layout Settings</h3>
+                    <div class="layout-controls">
+                        <div class="input-group">
+                            <label for="mapRows">Rows:</label>
+                            <input type="number" id="mapRows" min="1" max="20" value="6" class="number-input">
+                        </div>
+                        <div class="input-group">
+                            <label for="mapCols">Columns:</label>
+                            <input type="number" id="mapCols" min="1" max="20" value="8" class="number-input">
+                        </div>
+                        <div class="input-group">
+                            <label for="mapExtra">Extra:</label>
+                            <input type="number" id="mapExtra" min="0" max="10" value="0" class="number-input">
+                        </div>
+                        <button id="applyLayoutBtn" class="primary-button">Apply Layout</button>
+                    </div>
+                </div>
+
+                <!-- Help Section (Optional - adds a nice hint about using Shift key) -->
+                <div class="control-section">
+                    <h3>Tips</h3>
+                    <div class="help-section">
+                        <p><i>Shift + Click</i> on a drawer to assign a component branch to it.</p>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <button id="clearDrawersBtn" class="primary-button danger-button">🗑️ Clear All Drawer Assignments</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Area Wrapper -->
+        <div class="map-area-wrapper">
+            <!-- Map Grid -->
+            <div class="map-grid">
+                <!-- Grid will be populated by JavaScript -->
+                <!-- Both main and extra drawers (+ separator) go here -->
+            </div>
+
+            <!-- Extra Drawers Container REMOVED -->
+            <!-- 
+            <div class="extra-drawers-container">
+                
+            </div> 
+            -->
+        </div> <!-- End Map Area Wrapper -->
+
+        <!-- Drawer Info Panel -->
+        <div class="drawer-info-panel" style="display: none;">
+            <div class="drawer-info-header">
+                <h3>Drawer Contents</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="drawer-info-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Branch Modal -->
+    <div id="assignBranchModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Assign Branch to Location: <span id="assignLocationLabel"></span></h2>
+                <button id="closeAssignModal" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 15px;">
+                <p>Select the component type and branch to assign to this storage location.</p>
+                <div>
+                    <label for="assignComponentType">Component Type:</label>
+                    <select id="assignComponentType" style="width: 100%; padding: 8px; margin-top: 5px;">
+                        <option value="">Select Type</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label for="assignComponentBranch">Component Branch:</label>
+                    <select id="assignComponentBranch" style="width: 100%; padding: 8px; margin-top: 5px;" disabled>
+                        <option value="">Select Branch</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div id="currentBranchesContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
+                <button id="assignBranchButton" class="primary-button" style="margin-top: 10px;">Assign Branch</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/map.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Database Management - Component Stock Monitor</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/database.css">
+</head>
+
+<body>
+    <div class="top-bar">
+        <button onclick="window.location.href='/'">Back to Home</button>
+        <h2>Database Management</h2>
+    </div>
+
+    <div class="database-container">
+        <div class="database-actions">
+            <div class="action-card">
+                <h3>Export Database</h3>
+                <p>Download the complete database in CSV format</p>
+                <button id="exportDatabaseBtn" class="action-btn">Export Database</button>
+            </div>
+
+            <div class="action-card">
+                <h3>Format Database</h3>
+                <p>Warning: This will delete all data and create a new empty database</p>
+                <button id="formatDatabaseBtn" class="action-btn warning">Format Database</button>
+            </div>
+
+            <div class="action-card">
+                <h3>Import Database</h3>
+                <p>Replace the current database with data from a previously exported CSV file. This will delete existing
+                    data.</p>
+                <input type="file" id="importFile" accept=".csv" style="margin-bottom: 10px;">
+                <button id="importDatabaseBtn" class="action-btn" disabled>Import Database</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Action</h2>
+            <p id="confirmationMessage"></p>
+            <div class="modal-buttons">
+                <button id="confirmAction" class="warning">Confirm</button>
+                <button id="cancelAction">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/database.js"></script>
+</body>
+
+</html>

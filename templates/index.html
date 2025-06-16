@@ -1,137 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Component Stock Monitor</title>
-    <link rel="stylesheet" href="/static/style.css">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon_io/favicon-16x16.png">
     <link rel="manifest" href="/static/favicon_io/site.webmanifest">
 </head>
+
 <body>
     <!-- User Selection Modal -->
     <div id="userSelectionModal" class="modal">
         <div class="modal-content">
             <h2>Select User</h2>
-            <button class="user-button" data-user="Ondrej">Ondrej</button>
-            <button class="user-button" data-user="Pavel">Pavel</button>
-            <button class="user-button" data-user="Lukas">Lukas</button>
+            <div class="user-buttons">
+                <button class="user-button" data-user="guest">Guest</button>
+                <button class="user-button" data-user="ondra">Ondra</button>
+                <button class="user-button" data-user="lukas">Lukas</button>
+                <button class="user-button" data-user="pavel">Pavel</button>
+            </div>
         </div>
     </div>
 
-
-    <!-- Top Bar with Login, Changelog, and Current User Display -->
+    <!-- Top Bar -->
     <div class="top-bar">
-        <button id="loginButton">Login</button>
-        <button id="changelogButton">Changelog</button>
-        <span id="currentUserDisplay">Current User: None</span>
+        <div class="hamburger-menu">
+            <button id="menuButton" class="menu-button">
+                <span class="menu-icon"></span>
+            </button>
+            <div class="menu-items">
+                <button id="mapButtonMenu">Storage Map</button>
+                <button id="databaseButton">Database</button>
+                <button id="changelogButton">Changelog</button>
+            </div>
+        </div>
+        <div class="user-section">
+            <button id="loginButton">Login</button>
+            <span id="currentUserDisplay">Current User: guest</span>
+            <button id="cartButton" class="cart-button empty" title="View Cart">
+                🛒
+                <span class="cart-indicator" style="display: none">0</span>
+            </button>
+        </div>
     </div>
 
-    <h1>Electronics Stock Search</h1>
-    <div class="container">
-        <!-- Left Panel: Upload Components from CSV -->
-        <div class="left-panel">
-            <form id="uploadCsvForm">
-                <h2>Upload Components from CSV</h2>
-                <input type="file" id="csvFile" accept=".csv">
-                <button type="submit">Upload CSV</button>
-            </form>
-        </div>
+    <div class="content-container">
+        <h1>Electronics Inventory Manager</h1>
 
-        <!-- Middle Panel: Search Components -->
-        <div class="middle-panel">
-            <!-- Filters -->
-            <div class="filter-container">
-                <select id="filterComponentType">
-                    <option value="">Select Component Type</option>
-                    <!-- Options populated dynamically -->
-                </select>
-                <select id="filterComponentBranch" disabled>
-                    <option value="">Select Component Branch</option>
-                    <!-- Options populated dynamically -->
-                </select>
-                <label>
-                    <input type="checkbox" id="inStockCheckbox">
-                    In Stock
-                </label>
+        <!-- Tab Navigation (Desktop Only) -->
+        <div class="tab-container desktop-only">
+            <div class="tab-descriptions">
+                <p class="tab-help">Choose your action below:</p>
             </div>
-            <!-- Search Bar -->
-            <div class="search-container">
-                <input type="text" id="searchQuery" placeholder="Search Component">
-                <button id="searchButton">Search</button>
+            <div class="tabs">
+                <button class="tab-button active" data-tab="search">
+                    <span class="tab-icon">🔍</span>
+                    <span class="tab-text">Search Components</span>
+                    <span class="tab-subtitle">Find parts in your inventory</span>
+                </button>
+                <button class="tab-button" data-tab="add">
+                    <span class="tab-icon">➕</span>
+                    <span class="tab-text">Add Component</span>
+                    <span class="tab-subtitle">Add parts to the database</span>
+                </button>
+                <button class="tab-button" data-tab="import">
+                    <span class="tab-icon">📥</span>
+                    <span class="tab-text">Supply from LCSC</span>
+                    <span class="tab-subtitle">Bulk import from CSV order list</span>
+                </button>
             </div>
         </div>
 
-        <!-- Right Panel: Add Component -->
-        <div class="right-panel">
-            <h2><button id="toggleAddComponentButton">Add Component</button></h2>
-            <div id="addComponentContainer" style="display: none;">
+        <!-- Tab Content Container -->
+        <div class="tab-content-container">
+        <!-- Search Tab Content -->
+        <div id="search-tab" class="tab-content active">
+
+            <!-- Main Search & Primary Filters -->
+            <div class="search-panel main-search-panel">
+                <h2>🔍 Search Your Component Database</h2>
+                <p class="panel-description">
+                    Quickly locate anything that is <strong>already in stock</strong>.
+                    Type an LCSC Part #, manufacturer PN, keyword, or even a spec (e.g. "100nF 0402").
+                    Results show live quantities and let you drop items straight into the <em>Cart</em> for withdrawal.
+                </p>
+                <div class="main-search-controls">
+                    <div class="search-input-group">
+                        <i class="material-icons search-icon">search</i>
+                        <input type="text" id="searchQuery" placeholder="Search LCSC Part#, MPN, Description, Specs...">
+                    </div>
+                    <div class="primary-filters">
+                        <select id="filterComponentType">
+                            <option value="">All Component Types</option>
+                            <!-- Options populated dynamically -->
+                        </select>
+                        <select id="filterComponentBranch" disabled>
+                            <option value="">All Component Branches</option>
+                            <!-- Options populated dynamically -->
+                        </select>
+                        <label class="inline-checkbox">
+                            <input type="checkbox" id="inStockCheckbox">
+                            In Stock Only
+                        </label>
+                    </div>
+                </div>
+                <button id="searchButton" class="primary-button search-action-button">Search</button>
+            </div>
+
+            <!-- BOM Import Section -->
+            <div class="search-panel bom-import-panel">
+                <h2>🛒 Get BOM from CSV</h2>
+                <p class="panel-description">
+                    Got a project BOM? Upload it here to instantly create a pick-list in your cart.
+                    <a href="#" class="help-link" data-help="bom-to-cart">How does this work? <i class="material-icons">help_outline</i></a>
+                </p>
+                <div class="bom-upload-group">
+                    <input type="file" id="bomFile" accept=".csv">
+                    <button id="uploadBomButton" class="secondary-button">Import BOM File</button>
+                </div>
+            </div>
+
+        </div> <!-- End Search Tab Content -->
+
+        <!-- Add Component Tab Content -->
+        <div id="add-tab" class="tab-content">
+            <div class="form-section">
+                <h2>➕ Manually Add a Single Component</h2>
+                <p class="panel-description">
+                    For samples, local-supplier buys or any item <em>not</em> covered by an LCSC CSV. Fill in the fields, hit "Add Component" and it instantly becomes searchable.
+                </p>
+                <div class="usage-note">
+                    <strong>When to use this:</strong> Single parts, samples, parts from other suppliers, or manual stock adjustments.
+                </div>
                 <form id="addComponentForm">
-                    <label for="componentType">Component Type:</label>
-                    <select id="componentType" required>
-                        <!-- Options populated dynamically -->
-                    </select>
-                    <label for="componentBranch">Component Branch:</label>
-                    <select id="componentBranch" required>
-                        <!-- Options populated dynamically -->
-                    </select>
-                    <label for="partNumber">Part Number:</label>
-                    <input type="text" id="partNumber" required>
-                    <label for="manufacturePartNumber">Manufacturer Part Number:</label>
-                    <input type="text" id="manufacturePartNumber">
-                    <!-- Dynamic Fields Container -->
-                    <div id="dynamicFields"></div>
-                    <label for="storagePlace">Storage Place:</label>
-                    <input type="text" id="storagePlace" required>
-                    <label for="orderQty">Order Quantity:</label>
-                    <input type="number" id="orderQty" value="0" required>
-                    <label for="unitPrice">Unit Price ($):</label>
-                    <input type="number" id="unitPrice" step="0.01">
-                    <label for="description">Description:</label>
-                    <input type="text" id="description">
-                    <label for="package">Package:</label>
-                    <input type="text" id="package">
-                    <label for="manufacturer">Manufacturer:</label>
-                    <input type="text" id="manufacturer">
-                    <!-- Optional Fields -->
-                    <div id="optionalFields"></div>
-                    <button type="submit">Add Component</button>
+                    <div class="form-fields">
+                        <label for="partNumber">LCSC Part Number*</label>
+                        <input type="text" id="partNumber" required>
+
+                        <label for="storagePlace">Storage Location*</label>
+                        <input type="text" id="storagePlace" required>
+
+                        <label for="orderQty">Quantity*</label>
+                        <input type="number" id="orderQty" required min="0">
+
+                        <label for="componentType">Component Type*</label>
+                        <select id="componentType" required>
+                            <option value="">Select Component Type</option>
+                        </select>
+
+                        <label for="componentBranch">Component Branch*</label>
+                        <select id="componentBranch" required disabled>
+                            <option value="">Select Component Branch</option>
+                        </select>
+
+                        <details>
+                            <summary>Optional Fields</summary>
+                            <div id="optionalFields" class="collapsible-content">
+                                <label for="unitPrice" class="optional">Unit Price ($)</label>
+                                <input type="number" id="unitPrice" step="0.01">
+
+                                <label for="description" class="optional">Description</label>
+                                <input type="text" id="description">
+
+                                <label for="package" class="optional">Package</label>
+                                <input type="text" id="package">
+
+                                <label for="manufacturer" class="optional">Manufacturer</label>
+                                <input type="text" id="manufacturer">
+
+                                <label for="manufacturePartNumber" class="optional">Manufacturer Part
+                                    Number</label>
+                                <input type="text" id="manufacturePartNumber">
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>Component Specifications</summary>
+                            <div id="dynamicFields" class="collapsible-content">
+                                <!-- Dynamic fields will be populated based on component type -->
+                            </div>
+                        </details>
+
+                        <button type="submit" class="primary-button">Add Component</button>
+                    </div>
                 </form>
             </div>
         </div>
+
+        <!-- Import Tab Content (LCSC Stock Import) -->
+        <div id="import-tab" class="tab-content">
+            <div class="import-container">
+                <h2>📥 Bulk-Add Components to Stock</h2>
+                 <p class="panel-description">
+                    Populate your inventory in one go from an LCSC order. The app adds new parts and updates quantities automatically.
+                    <a href="#" class="help-link" data-help="lcsc-import">CSV format guide <i class="material-icons">help_outline</i></a>
+                </p>
+                <div class="usage-note">
+                    <strong>Perfect for first-time stock-in:</strong> drop a freshly downloaded order file, hit "Import" and the app does the tedious typing for you.
+                    Parts already in the database will simply increment their quantities; new part numbers are created on the fly.
+                </div>
+                <form id="uploadCsvForm">
+                    <div class="file-upload-container">
+                        <label class="file-upload-label">
+                            <span class="file-upload-icon">📁</span>
+                            Select LCSC CSV File
+                            <input type="file" id="csvFile" accept=".csv" class="file-upload-input">
+                        </label>
+                        <div id="selected-file-name">No file selected</div>
+                    </div>
+                    <div class="import-actions">
+                        <button type="submit" class="primary-button">Import LCSC Components</button>
+                    </div>
+                    <div class="import-help">
+                        <h3>
+                            How to import components
+                            <i class="material-icons info-icon" tabindex="0"
+                                data-tooltip="Export your cart or order history from LCSC as a CSV file. The import uses 'LCSC Part Number' to identify components. It adds the 'Order Qty.' from the CSV to the existing stock quantity in the database. New part numbers will be added automatically.">info_outline</i>
+                        </h3>
+                        <ol>
+                            <li>Export cart or order from LCSC (CSV format)</li>
+                            <li>Select the CSV file above</li>
+                            <li>Click "Import LCSC Components"</li>
+                        </ol>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div> <!-- End content-container -->
+
+    <!-- Map Modal Dialog -->
+    <div id="mapModal" class="map-modal">
+        <div class="map-modal-content">
+            <div class="map-modal-header">
+                <h2>Storage Map</h2>
+                <button id="closeMapModal" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="map-modal-body">
+                <!-- Map content structure similar to map.html -->
+                <div class="map-container" style="height: 100%;"> <!-- Ensure map-container takes full height -->
+                    <!-- Side Panel -->
+                    <div class="side-panel"
+                        style="display: flex; flex-direction: column; height: 100%; justify-content: flex-start;">
+                        <h2>Storage Map Controls</h2>
+
+                        <!-- Search Section -->
+                        <div class="control-section">
+                            <h3>Search</h3>
+                            <div class="search-section">
+                                <input type="text" id="modalPartNumberSearch" placeholder="Search by LCSC Part Number">
+                                <button id="modalSearchButton">Search</button> <!-- Changed ID -->
+                            </div>
+                        </div>
+
+                        <!-- Filters Section -->
+                        <div class="control-section">
+                            <h3>Filters</h3>
+                            <div class="filter-section">
+                                <select id="modalComponentTypeFilter">
+                                    <option value="">Select Component Type</option>
+                                </select>
+                                <select id="modalComponentBranchFilter">
+                                    <option value="">Select Component Branch</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Spacer to push the rest to the bottom -->
+                        <div style="flex: 1 1 auto;"></div>
+
+                        <!-- Bottom Tools/Settings Section -->
+                        <div class="bottom-controls">
+                            <!-- Legend Section -->
+                            <div class="control-section">
+                                <h3>Legend</h3>
+                                <div class="legend-section">
+                                    <div class="legend-item">
+                                        <div class="legend-color empty"></div>
+                                        <span>Empty</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color occupied"></div>
+                                        <span>Occupied</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color highlighted"></div>
+                                        <span>Selected/Filtered</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Area Wrapper (inside modal) -->
+                    <div class="map-area-wrapper">
+                        <!-- Map Grid -->
+                        <div class="map-grid">
+                            <!-- Grid will be populated by JavaScript -->
+                            <!-- Both main and extra drawers (+ separator) go here -->
+                        </div>
+
+                        <!-- Extra Drawers Container REMOVED -->
+                        <!-- 
+                        <div class="extra-drawers-container">
+                            
+                        </div> 
+                        -->
+                    </div> <!-- End Map Area Wrapper -->
+
+                    <!-- Drawer Info Panel (inside modal) -->
+                    <div class="drawer-info-panel" style="display: none;">
+                        <div class="drawer-info-header">
+                            <h3>Drawer Contents</h3>
+                            <button class="close-button">&times;</button>
+                        </div>
+                        <div class="drawer-info-content">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="searchResults">
-        <h3>Search Results:</h3>
-        <table id="resultsTable">
-            <thead>
-                <tr>
-                    <th>LCSC Part Number</th>
-                    <th>MPN</th>
-                    <th>Manufacturer</th>
-                    <th>Package</th>
-                    <th>Description</th>
-                    <th>Unit Price($)</th>
-                    <th>Component Type</th>
-                    <th>Component Branch</th>
-                    <th>Capacitance</th>
-                    <th>Resistance</th>
-                    <th>Voltage</th>
-                    <th>Tolerance</th>
-                    <th>Inductance</th>
-                    <th>Current/Power</th>
-                    <th>Quantity</th>  <!-- Renamed from Order Qty. -->
-                    <th>Storage Place</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="resultsTableBody">
-            </tbody>
-        </table>
+    <!-- Assign Branch Modal -->
+    <div id="assignBranchModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Assign Branch to Location: <span id="assignLocationLabel"></span></h2>
+                <button id="closeAssignModal" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 15px;">
+                <p>Select the component type and branch to assign to this storage location.</p>
+                <div>
+                    <label for="assignComponentType">Component Type:</label>
+                    <select id="assignComponentType" style="width: 100%; padding: 8px; margin-top: 5px;">
+                        <option value="">Select Type</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label for="assignComponentBranch">Component Branch:</label>
+                    <select id="assignComponentBranch" style="width: 100%; padding: 8px; margin-top: 5px;" disabled>
+                        <option value="">Select Branch</option>
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <button id="assignBranchButton" class="primary-button" style="margin-top: 10px;">Assign Branch</button>
+            </div>
+        </div>
     </div>
-    <script src="/static/script.js"></script>
+
+    <!-- Floating Map Button (Desktop Only) -->
+    <button id="mapFloatingBtn" class="floating-btn">
+        <i class="material-icons">map</i>
+    </button>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-tab-bar">
+        <button id="mobileSearchBtn" class="mobile-tab-btn active">
+            <i class="material-icons">search</i>
+            <span>Search</span>
+        </button>
+        <button id="mobileMapBtn" class="mobile-tab-btn">
+            <i class="material-icons">map</i>
+            <span>Map</span>
+        </button>
+        <button id="mobileAddBtn" class="mobile-tab-btn">
+            <i class="material-icons">add_circle</i>
+            <span>Add</span>
+        </button>
+        <button id="mobileImportBtn" class="mobile-tab-btn">
+            <i class="material-icons">cloud_upload</i>
+            <span>Import</span>
+        </button>
+    </div>
+
+    <!-- Withdrawal Summary Section (Hidden by default) -->
+    <div id="withdrawalSummary" class="summary-section" style="display: none;">
+        <h2>Withdrawal Summary / Picking List</h2>
+        <div id="summaryContent"></div>
+        <button id="clearSummaryBtn" class="secondary-button">Clear Summary</button>
+    </div>
+
+    <!-- Search Results Area (Remains outside Tab Content Container) -->
+    <div id="searchResults">
+        <div class="results-header">
+            <h3>Search Results</h3>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="filterCategory">Filter by:</label>
+                    <select id="filterCategory" class="select-control">
+                        <option value="">Select category...</option>
+                        <option value="resistance">Resistance</option>
+                        <option value="capacitance">Capacitance</option>
+                        <option value="inductance">Inductance</option>
+                        <option value="voltage">Voltage</option>
+                        <option value="package">Package</option>
+                        <option value="component_branch">Component Branch</option>
+                        <option value="manufacturer">Manufacturer</option>
+                        <option value="storage_place">Storage Place</option>
+                    </select>
+                    <select id="filterMinValue" class="select-control" disabled>
+                        <option value="">Min/Exact value...</option>
+                    </select>
+                    <select id="filterMaxValue" class="select-control" disabled>
+                        <option value="">Max value (optional)...</option>
+                    </select>
+                </div>
+                <div class="sort-group">
+                    <label for="sortCategory">Sort by:</label>
+                    <select id="sortCategory" class="select-control">
+                        <option value="">Select field...</option>
+                        <option value="resistance">Resistance</option>
+                        <option value="capacitance">Capacitance</option>
+                        <option value="inductance">Inductance</option>
+                        <option value="voltage">Voltage</option>
+                        <option value="package">Package</option>
+                        <option value="component_branch">Component Branch</option>
+                        <option value="manufacturer">Manufacturer</option>
+                        <option value="storage_place">Storage Place</option>
+                    </select>
+                    <select id="sortOrder" class="select-control">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile view selector -->
+        <div class="view-toggle">
+            <button id="tableView" class="view-button active">Table View</button>
+            <button id="cardView" class="view-button">Card View</button>
+        </div>
+
+        <!-- Table view (original) -->
+        <div id="tableViewContainer" class="view-container">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>LCSC Part Number</th>
+                        <th class="mpn-col">MPN</th>
+                        <th>Component Branch</th>
+                        <th class="key-col capacitance-col">Capacitance</th>
+                        <th class="key-col resistance-col">Resistance</th>
+                        <th class="key-col voltage-col">Voltage</th>
+                        <th class="key-col inductance-col">Inductance</th>
+                        <th class="key-col package-col">Package</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Card view (new mobile-friendly view) -->
+        <div id="cardViewContainer" class="view-container" style="display: none">
+            <div class="results-grid">
+                <!-- Cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: left;">
+            <div class="modal-header">
+                <h2 id="helpModalTitle"></h2>
+                <button id="closeHelpModal" class="close-modal-btn">&times;</button>
+            </div>
+            <div id="helpModalBody" class="modal-body">
+                <!-- JS will populate this -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Help Content Templates -->
+    <div id="help-content-templates" style="display: none;">
+        <div id="help-bom-to-cart">
+            <h3>Project Stock Check - How It Works</h3>
+            <p>This feature analyzes your project's Bill of Materials (BOM) against your current inventory, showing which components you have in stock and automatically adding available parts to your cart for easy withdrawal.</p>
+            <h4>1. Export Your Project BOM</h4>
+            <ul>
+                <li><strong>From LCSC.com:</strong> Go to your <code>Cart</code> and use the <code>Export All Items</code> button.</li>
+                <li><strong>From EasyEDA:</strong> In the schematic editor, go to the top menu: <code>Export &gt; BOM</code>.</li>
+                <li><strong>From KiCad:</strong> Use the BOM export tool or generate a CSV from the schematic.</li>
+            </ul>
+            <h4>2. CSV Column Requirements</h4>
+            <p><strong>Required Column:</strong></p>
+            <ul>
+                <li><code>LCSC Part Number</code> - The unique LCSC part identifier used to match components in your inventory</li>
+            </ul>
+            <p><strong>Optional Columns (recommended for better results):</strong></p>
+            <ul>
+                <li><code>Order Qty.</code> or <code>Quantity</code> - Number of components needed (defaults to 1 if missing)</li>
+                <li><code>Description</code> - Component description for easier identification in results</li>
+                <li><code>Designator</code> or <code>Reference</code> - PCB reference designators (R1, C5, etc.)</li>
+                <li><code>Value</code> - Component value (10kΩ, 100nF, etc.)</li>
+                <li><code>Package</code> - Component package/footprint</li>
+                <li><code>Manufacturer</code> - Component manufacturer name</li>
+                <li><code>MPN</code> or <code>Manufacturer Part Number</code> - Manufacturer's part number</li>
+            </ul>
+            <p><em>Note: Column names are case-insensitive. Extra columns in your file are safely ignored.</em></p>
+            <h4>3. Results & Processing</h4>
+            <ul>
+                <li><strong>Available Components:</strong> Parts found in your inventory are automatically added to your cart with the requested quantity (limited by available stock)</li>
+                <li><strong>Missing Components:</strong> Parts not in your inventory are listed in a detailed report showing what you need to order</li>
+                <li><strong>Stock Warnings:</strong> Components with insufficient stock show available vs. required quantities</li>
+            </ul>
+        </div>
+        <div id="help-lcsc-import">
+            <h3>CSV Format Guide</h3>
+            <p>This is the main way to stock your inventory. It reads a standard LCSC order/cart export and intelligently adds or updates your components.</p>
+            <h4>Required Column</h4>
+            <p>The only column that is strictly required is:</p>
+            <ul><li><code>LCSC Part Number</code></li></ul>
+            <h4>Optional (Recommended) Columns</h4>
+            <p>For best results, your CSV should also include these standard LCSC columns. The app will use them to fill in details for new components.</p>
+            <ul>
+                <li><code>Order Qty.</code></li>
+                <li><code>Description</code></li>
+                <li><code>Manufacturer</code></li>
+                <li><code>Package</code></li>
+                <li><code>Unit Price($)</code></li>
+                <li>Spec columns (e.g., <code>Resistance</code>, <code>Capacitance</code>, etc.)</li>
+            </ul>
+            <p><em>Extra columns in your file are safely ignored. Column order does not matter.</em></p>
+        </div>
+    </div>
+
+    <script src="/static/js/script.js"></script>
 </body>
+
 </html>

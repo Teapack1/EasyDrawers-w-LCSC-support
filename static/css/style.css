@@ -1,0 +1,4992 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Main container for centered content */
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Container for forms and main interface elements */
+.content-container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* App Overview Styling */
+.app-overview {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+    border: 1px solid #dee2e6;
+}
+
+.app-description {
+    text-align: center;
+    font-size: 1.1em;
+    color: #495057;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.workflow-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.workflow-step {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+}
+
+.step-number {
+    background: #007bff;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.step-content {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.step-content strong {
+    color: #333;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Tab styling improvements */
+.tab-descriptions {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.tab-help {
+    color: #6c757d;
+    font-style: italic;
+    margin: 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border: none;
+    border-bottom: 2px solid #e9ecef;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.tab-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.tab-text {
+    font-weight: 600;
+}
+
+.tab-subtitle {
+    font-size: 12px;
+    font-weight: normal;
+    color: #868e96;
+    line-height: 1.2;
+}
+
+.tab-button.active .tab-subtitle {
+    color: #495057;
+}
+
+/* Panel descriptions */
+.panel-description {
+    color: #6c757d;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.usage-note {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #1565c0;
+}
+
+.feature-note {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #28a745;
+}
+
+.feature-note small {
+    color: #495057;
+    font-size: 13px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Desktop and Mobile Display Classes */
+.desktop-only {
+    display: block;
+}
+
+.mobile-only {
+    display: none;
+}
+
+/* Tab Container Styles */
+.tab-container {
+    width: 100%;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tabs {
+    display: flex;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabs .tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border: none;
+    border-bottom: 2px solid #e9ecef;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.tab-button:hover {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.tab-button.active {
+    background-color: #fff;
+    color: var(--primary-color, #0077cc);
+    border-bottom: 2px solid var(--primary-color, #0077cc);
+}
+
+.tab-content-container {
+    background-color: #fff;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Map Modal Styles */
+.map-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1100;
+    animation: fadeIn 0.3s ease;
+}
+
+.map-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-modal-content {
+    width: 90%;
+    max-width: 1200px;
+    height: 90%;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.map-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.map-modal-header h2 {
+    margin: 0;
+    color: #343a40;
+    font-size: 20px;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-modal-btn:hover {
+    color: #343a40;
+}
+
+.map-modal-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 15px;
+    display: flex;
+}
+
+/* Map Container Styles (for modal) */
+.map-container {
+    display: flex;
+    height: 100%;
+    gap: 20px;
+}
+
+.side-panel {
+    width: 250px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.side-panel h3,
+.side-panel h4 {
+    margin: 0 0 10px 0;
+    color: #343a40;
+}
+
+.search-section {
+    display: flex;
+    gap: 8px;
+}
+
+.search-section input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.search-section button {
+    padding: 8px 12px;
+    background-color: var(--primary-color, #0077cc);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.legend-section {
+    margin-top: auto;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+}
+
+.legend-color.empty {
+    background-color: #f0f0f0;
+    border: 1px solid #ced4da;
+}
+
+.legend-color.occupied {
+    background-color: #b8e6ff;
+    border: 1px solid #7fd4ff;
+}
+
+.legend-color.highlighted {
+    background-color: #ffd700;
+    border: 1px solid #ffc700;
+}
+
+.map-grid {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    overflow: auto;
+}
+
+/* Import Container Styles */
+.import-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.file-upload-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: var(--primary-color, #0077cc);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-upload-label:hover {
+    background-color: var(--primary-color-dark, #005fa3);
+}
+
+.file-upload-icon {
+    margin-right: 8px;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+#selected-file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.import-actions {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.import-help {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.import-help h3 {
+    margin-top: 0;
+    color: #495057;
+}
+
+.import-help ol {
+    margin-left: 20px;
+    padding-left: 0;
+}
+
+.import-help li {
+    margin-bottom: 8px;
+    color: #6c757d;
+}
+
+/* Floating Button */
+.floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color, #0077cc);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.floating-btn:hover {
+    background-color: var(--primary-color-dark, #005fa3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.floating-btn i {
+    font-size: 24px;
+}
+
+/* Mobile Tab Bar */
+.mobile-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    background-color: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+}
+
+.mobile-tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.mobile-tab-btn i {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.mobile-tab-btn span {
+    font-size: 12px;
+}
+
+.mobile-tab-btn.active {
+    color: var(--primary-color, #0077cc);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .desktop-only {
+        display: none;
+    }
+
+    .mobile-only {
+        display: block;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tabs .tab-button {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .tabs .tab-button.active {
+        border-left: 3px solid var(--primary-color, #0077cc);
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-field {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .floating-btn {
+        display: none;
+    }
+
+    .mobile-tab-bar {
+        display: flex;
+    }
+
+    .tab-content-container {
+        margin-bottom: 70px;
+        /* Add space for mobile tab bar */
+        max-width: none;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .content-container {
+        max-width: none;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .app-overview {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .workflow-steps {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .workflow-step {
+        min-width: auto;
+        padding: 12px;
+    }
+
+    .tabs .tab-button {
+        padding: 12px 15px;
+        gap: 4px;
+    }
+
+    .tab-icon {
+        font-size: 18px;
+    }
+
+    .tab-subtitle {
+        font-size: 11px;
+    }
+
+    #searchResults {
+        margin-bottom: 70px;
+        max-width: none;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    /* Map Modal Styles for Mobile */
+    .map-modal-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .map-container {
+        flex-direction: column;
+    }
+
+    .side-panel {
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .map-grid {
+        height: 100%;
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Use CSS variables for consistent colors */
+:root {
+    --primary-color: #0077cc;
+    --primary-color-dark: #005fa3;
+    --secondary-color: #6c757d;
+    --light-bg: #f8f9fa;
+    --border-color: #e9ecef;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+/* Form Layout Improvements */
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+    margin-bottom: 15px;
+}
+
+.form-field {
+    flex: 1;
+    min-width: 250px;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Accordion Style */
+.accordion {
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.accordion-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.accordion-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.accordion.active .accordion-icon {
+    transform: rotate(45deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background-color: #fff;
+    padding: 0 20px;
+}
+
+.accordion.active .accordion-content {
+    max-height: 1000px;
+    padding: 20px;
+}
+
+/* File Upload Styling */
+.import-container {
+    margin: 20px 0;
+}
+
+.file-upload-container {
+    margin-bottom: 20px;
+}
+
+.file-upload-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #e9e9e9;
+}
+
+.file-upload-icon {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+#selected-file-name {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.import-actions {
+    margin-top: 20px;
+}
+
+.import-help {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.import-help h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+
+.import-help ol {
+    margin: 10px 0 0;
+    padding-left: 20px;
+}
+
+.import-help li {
+    margin-bottom: 8px;
+}
+
+/* Button Styles */
+.primary-button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+    background-color: #0056b3;
+}
+
+.secondary-button {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.secondary-button:hover {
+    background-color: #ddd;
+}
+
+/* Container for the three panels */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 0 15px;
+}
+
+/* Left Panel */
+.left-panel {
+    flex: 1;
+    min-width: 250px;
+    max-width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Middle Panel */
+.middle-panel {
+    flex: 2;
+    min-width: 300px;
+    max-width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Right Panel */
+.right-panel {
+    flex: 1;
+    min-width: 250px;
+    max-width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Panel Styles */
+.left-panel,
+.middle-panel,
+.right-panel {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.form-section,
+.upload-section,
+.search-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#searchResults {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    table-layout: fixed;
+    /* Added to make columns fit within the table */
+    word-wrap: break-word;
+    /* Added to ensure long text breaks within cells */
+}
+
+/* Adjust the column widths */
+table th:nth-last-child(1),
+/* Actions column */
+table td:nth-last-child(1) {
+    min-width: 90px;
+    width: 90px;
+    padding: 2px 4px;
+}
+
+table th:nth-last-child(2),
+/* Storage Place column */
+table td:nth-last-child(2) {
+    width: 80px;
+    /* Decrease this value as needed */
+}
+
+table th,
+table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    overflow: hidden;
+    /* Prevents overflow */
+    white-space: nowrap;
+    /* Prevents long text from wrapping */
+    text-overflow: ellipsis;
+    /* Adds ellipsis for any overflowed text */
+    cursor: pointer;
+    /* Changes cursor to pointer to indicate clickability */
+    padding-top: 2px;
+    padding-bottom: 2px;
+    font-size: 12px;
+    height: 26px;
+}
+
+table tr.expanded td {
+    white-space: normal;
+    /* Allows text to wrap within cells */
+    overflow: visible;
+    /* Allows overflowed content to be visible */
+    text-overflow: clip;
+    /* Removes ellipsis */
+}
+
+table td .quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+table td .quantity-controls button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    margin: 0 2px;
+    width: 30px;
+    /* Adjust width */
+    height: 30px;
+    /* Adjust height */
+    font-size: 16px;
+    /* Adjust font size */
+}
+
+table td .quantity-controls button:hover {
+    background-color: #0056b3;
+}
+
+table th {
+    background-color: #007BFF;
+    color: white;
+    white-space: normal;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-controls button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    margin: 0 2px;
+    width: 30px;
+    /* Adjust width */
+    height: 30px;
+    /* Adjust height */
+    font-size: 16px;
+    /* Adjust font size */
+}
+
+.quantity-controls input.quantity-input {
+    width: 40px;
+    /* Adjust width */
+    text-align: center;
+    margin: 0 2px;
+    height: 30px;
+    /* Match height to buttons */
+    font-size: 16px;
+    /* Adjust font size */
+}
+
+quantity-controls button:hover {
+    background-color: #0056b3;
+}
+
+.top-panel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.top-panel>div {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.top-panel>div:first-child {
+    margin-left: 0;
+}
+
+.top-panel>div:last-child {
+    margin-right: 0;
+}
+
+/* style.css */
+.sortable {
+    cursor: pointer;
+}
+
+.sortable:hover {
+    text-decoration: underline;
+}
+
+sortable .sort-indicator {
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+.storage-place-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px;
+    font-size: 14px;
+}
+
+/* Styles for the delete button */
+.delete-button {
+    background-color: transparent;
+    color: red;
+    border: none;
+    font-size: 16px;
+    /* Decrease font size for smaller 'X' */
+    cursor: pointer;
+    margin-left: 5px;
+    padding: 0;
+    /* Remove padding */
+    width: 24px;
+    /* Fixed width */
+    height: 24px;
+    /* Fixed height */
+    line-height: 24px;
+    /* Center the 'X' vertically */
+    text-align: center;
+}
+
+.delete-button:hover {
+    color: darkred;
+}
+
+/* Modal Styles */
+.modal {
+    display: block;
+    /* Show the modal by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h2 {
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 24px;
+}
+
+.user-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.user-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.cart-button {
+    position: relative;
+    background: none;
+    border: none;
+    font-size: 1.4em;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    color: #666;
+}
+
+.cart-button:hover {
+    background-color: #e9ecef;
+    opacity: 0.8;
+}
+
+/* Cart has items */
+.cart-button.has-items {
+    opacity: 1;
+    color: #007bff;
+}
+
+.cart-button.has-items::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background-color: #dc3545;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.cart-button.has-items:hover {
+    transform: scale(1.05);
+}
+
+/* Remove old indicator styles */
+.cart-indicator {
+    display: none;
+}
+
+.cart-button.empty::after {
+    display: none;
+}
+
+/* Style for required fields */
+form label {
+    font-weight: bold;
+}
+
+/* Style for optional fields */
+form label.optional {
+    font-weight: normal;
+    color: #666;
+}
+
+/* Additional styles for the form */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form h2 {
+    margin-top: 0;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+form input,
+form select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+form button {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* Adjust the widths of the sections */
+.upload-section {
+    width: 18.75%;
+    /* Reduced from 25% */
+}
+
+.search-section {
+    width: 62.5%;
+    /* Increased from 50% */
+    margin: 0 auto;
+    text-align: center;
+}
+
+.form-section {
+    width: 100%;
+    padding: 15px;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-fields label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.form-fields input,
+.form-fields select {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    height: 32px;
+}
+
+#optionalFields,
+#dynamicFields {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+
+.form-fields button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.form-fields button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Style the search field */
+.search-section .search-field {
+    margin-bottom: 10px;
+}
+
+.search-section input[type="text"] {
+    width: 80%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Style the search button */
+.search-section .search-button button {
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+/* Reduce font size in the form section */
+.form-section {
+    font-size: 14px;
+    /* Reduced from default */
+}
+
+/* Adjust label styles */
+.form-section label {
+    margin-bottom: 5px;
+    /* Reduced margin */
+}
+
+/* Adjust input and select styles */
+.form-section input,
+.form-section select {
+    width: 100%;
+    padding: 6px;
+    /* Reduced padding */
+    margin-top: 3px;
+    margin-bottom: 8px;
+    /* Reduced margin */
+    font-size: 14px;
+    /* Reduced font size */
+}
+
+/* Adjust optional fields */
+.form-section .optional {
+    margin-bottom: 5px;
+}
+
+/* Adjust button styles */
+.form-section button {
+    padding: 8px 16px;
+    /* Reduced padding */
+    font-size: 14px;
+    /* Reduced font size */
+}
+
+/* Styles for the revert button */
+.revert-button {
+    padding: 5px 10px;
+    background-color: #dc3545;
+    /* Red color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.revert-button:hover {
+    background-color: #c82333;
+}
+
+/* Changelog styles */
+.reverted {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.revert-button {
+    padding: 4px 8px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.revert-button:hover {
+    background-color: #c82333;
+}
+
+.revert-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Table styles for changelog */
+#changelogTableBody td {
+    vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* ...existing code... */
+
+.middle-panel {
+    /* ...existing styles... */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Logo and heading */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.app-logo {
+    width: 100px;
+    /* Adjust size as needed */
+    height: auto;
+}
+
+.app-heading {
+    margin: 10px 0;
+    font-size: 24px;
+}
+
+/* Filters */
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.filter-container select {
+    flex: 1;
+    min-width: 150px;
+}
+
+.filter-container label {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* Search container */
+.search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.search-input-group input {
+    flex: 1;
+    min-width: 0;
+}
+
+.bom-upload-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.bom-upload-group input[type="file"] {
+    flex: 1;
+    padding: 4px;
+    font-size: 14px;
+}
+
+.bom-upload-group button,
+.search-input-group button {
+    white-space: nowrap;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.bom-upload-group button:hover,
+.search-input-group button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .middle-panel,
+    .right-panel {
+        width: 100%;
+        max-width: none;
+    }
+
+    .right-panel {
+        max-height: 400px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        margin: 10px 0;
+        padding: 0 10px;
+    }
+
+    .left-panel,
+    .middle-panel,
+    .right-panel {
+        padding: 10px;
+    }
+
+    .form-section {
+        padding: 10px;
+    }
+
+    .form-fields {
+        gap: 8px;
+    }
+
+    .form-fields input,
+    .form-fields select {
+        font-size: 16px;
+        /* Better for mobile touch */
+        height: 36px;
+    }
+
+    .right-panel {
+        max-height: 350px;
+    }
+
+    /* Improve mobile search experience */
+    .search-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-input-group {
+        width: 100%;
+    }
+
+    .search-input-group input {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .bom-upload-group {
+        width: 100%;
+    }
+
+    /* Adjust filter container for mobile */
+    .filter-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-container select {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+}
+
+/* Top Buttons */
+.top-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0;
+}
+
+.top-buttons button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Adjusted button widths to fit text */
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Form Styles */
+form h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+form label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="file"],
+form select {
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding: 6px;
+}
+
+form button {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+/* Adjust the Upload CSV button */
+#uploadCsvForm button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Make the Add Component section more compact */
+.right-panel form {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Adjust headings and text to fit within section width */
+.left-panel h2,
+.right-panel h2 {
+    font-size: 18px;
+    margin-top: 0;
+}
+
+/* Adjust input field widths */
+.left-panel input,
+.right-panel input,
+.right-panel select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Top Bar Styles */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#loginButton {
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#loginButton:hover {
+    background-color: #0056b3;
+}
+
+.cart-button {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.cart-button:hover {
+    background-color: #e9ecef;
+}
+
+#currentUserDisplay {
+    font-size: 0.9em;
+    color: #495057;
+}
+
+/* Existing hamburger menu styles */
+.hamburger-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.menu-icon {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: #333;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+.menu-icon::before,
+.menu-icon::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+    transition: transform 0.3s;
+}
+
+.menu-icon::before {
+    top: -6px;
+}
+
+.menu-icon::after {
+    bottom: -6px;
+}
+
+.menu-button.active .menu-icon {
+    background-color: transparent;
+}
+
+.menu-button.active .menu-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.menu-button.active .menu-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+.menu-items {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 5px 0;
+    z-index: 1000;
+}
+
+.menu-items.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-items button {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.menu-items button:hover {
+    background-color: #f8f9fa;
+}
+
+/* ...existing code... */
+
+#toggleAddComponentButton {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#toggleAddComponentButton:hover {
+    background-color: #0056b3;
+}
+
+/* ...existing code... */
+
+/* Mobile-first approach */
+:root {
+    --primary-color: #007BFF;
+    --touch-target-size: 44px;
+    --card-spacing: 12px;
+}
+
+/* Touch-friendly button sizes */
+button,
+.quantity-controls button,
+.storage-place-input {
+    min-height: var(--touch-target-size);
+    min-width: var(--touch-target-size);
+    padding: 8px 16px;
+    margin: 4px;
+    border-radius: 8px;
+}
+
+/* Card View Styles */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: var(--card-spacing);
+}
+
+.component-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.card-content {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.card-label {
+    font-weight: bold;
+    color: #666;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+
+/* View Toggle Buttons */
+.view-toggle {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.view-button {
+    padding: 8px 16px;
+    border: 1px solid var(--primary-color);
+    background: white;
+    color: var(--primary-color);
+}
+
+.view-button.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+
+    /* Hide table view on mobile */
+    #tableViewContainer {
+        display: none !important;
+    }
+
+    #cardViewContainer {
+        display: block !important;
+    }
+
+    /* Adjust container padding */
+    .container {
+        padding: 8px;
+    }
+
+    /* Make search more prominent */
+    .search-container input[type="text"] {
+        font-size: 16px;
+        padding: 12px;
+        width: calc(100% - 24px);
+    }
+
+    /* Stack panels vertically */
+    .left-panel,
+    .middle-panel,
+    .right-panel {
+        width: 100%;
+        margin-bottom: 16px;
+    }
+}
+
+/* Touch-friendly scrolling */
+.component-card {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+}
+
+/* Essential fields highlighting */
+.essential-field {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Optional fields collapsible */
+.optional-fields {
+    display: none;
+}
+
+.show-more {
+    color: var(--primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Card View Improvements */
+.component-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.component-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.card-content {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.show-more {
+    color: #666;
+    background: none;
+    border: none;
+    padding: 8px 0;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    width: auto;
+    transition: color 0.2s;
+}
+
+.show-more:hover {
+    color: #333;
+    background: none;
+}
+
+.essential-field {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.card-label {
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Quantity Controls Improvement */
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quantity-controls button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #f0f0f0;
+    color: #333;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.quantity-controls button:hover {
+    background: #e0e0e0;
+}
+
+/* Table View Improvements */
+#tableViewContainer {
+    margin-top: 20px;
+}
+
+table th {
+    background: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 600;
+    padding: 12px;
+}
+
+table td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+/* View Toggle Improvements */
+.view-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.view-button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    color: #666;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.view-button.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* Responsive Improvements */
+@media screen and (max-width: 768px) {
+    .results-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .component-card {
+        padding: 16px;
+    }
+}
+
+/* Expandable table rows */
+tr.expanded td {
+    white-space: normal;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    word-wrap: break-word;
+    transition: all 0.3s ease;
+}
+
+tr:not(.expanded) td {
+    max-height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Add hover effect to indicate clickable rows */
+#resultsTableBody tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#resultsTableBody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Transition for smooth expansion */
+#resultsTableBody td {
+    transition: all 0.3s ease;
+}
+
+/* Cart-specific styles */
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.warning-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.warning-button:hover {
+    background-color: #c82333;
+}
+
+.primary-button {
+    background-color: #28a745;
+    color: white;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.primary-button:hover {
+    background-color: #218838;
+}
+
+.add-to-cart-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.add-to-cart-button:hover {
+    background-color: #218838;
+}
+
+/* Pickup Sheet Styles */
+.pickup-sheet {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    font-size: 14px;
+}
+
+.pickup-sheet table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.pickup-sheet th,
+.pickup-sheet td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.pickup-sheet th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+@media print {
+    .modal-actions {
+        display: none;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    .pickup-sheet,
+    .pickup-sheet * {
+        visibility: visible;
+    }
+
+    .pickup-sheet {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    #cartTable,
+    #cartTable * {
+        visibility: visible;
+    }
+
+    #cartTable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .cart-actions,
+    .top-bar {
+        display: none !important;
+    }
+}
+
+/* Actions column improvements */
+table td:last-child {
+    min-width: 220px;
+    /* Increased width */
+    width: 220px;
+    padding: 8px;
+}
+
+.actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.add-to-cart-button {
+    width: 100%;
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    height: 28px;
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    gap: 2px;
+}
+
+.quantity-controls button,
+.delete-button {
+    padding: 4px;
+    min-height: 24px;
+    min-width: 24px;
+    font-size: 12px;
+}
+
+.quantity-controls input {
+    width: 40px;
+    height: 24px;
+    padding: 2px 4px;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Tooltip styles */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background-color: #333;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+}
+
+[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.5s;
+}
+
+/* Cart actions improvements */
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.right-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.secondary-button {
+    background-color: #6c757d;
+    color: white;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.secondary-button:hover {
+    background-color: #5a6268;
+}
+
+/* Results Header and Sorting Controls */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sorting-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sorting-controls label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.sorting-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 14px;
+    min-width: 160px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sorting-controls select:hover {
+    border-color: #adb5bd;
+}
+
+.sorting-controls select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.sort-order-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sort-order-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.sort-order-btn .sort-icon {
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.sort-order-btn.descending .sort-icon {
+    transform: rotate(180deg);
+}
+
+/* Tooltip for sort values */
+.sort-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    background-color: #333;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.sorting-controls:hover .sort-tooltip {
+    opacity: 1;
+}
+
+/* Mobile/Tablet Optimizations */
+@media (max-width: 768px) {
+    .results-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .sorting-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .sorting-controls select {
+        flex-grow: 1;
+    }
+}
+
+/* Category Filter Controls */
+.category-filter-controls {
+    display: none;
+}
+
+.category-filter-controls label {
+    font-weight: 500;
+}
+
+.category-filter-controls select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Ensure the sort button icon is visible */
+.sort-icon {
+    font-size: 16px;
+}
+
+/* Results Header and Filter Controls */
+.results-header {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: start;
+    margin-top: 15px;
+}
+
+.filter-group,
+.sort-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 300px;
+}
+
+.select-control {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    min-width: 160px;
+    width: auto;
+    max-width: 200px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-control:hover {
+    border-color: #007bff;
+}
+
+.select-control:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-button:hover {
+    background: #f8f9fa;
+    border-color: #007bff;
+}
+
+.icon-button .material-icons {
+    font-size: 20px;
+}
+
+.sort-icon {
+    transition: transform 0.2s ease;
+}
+
+.sort-label {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Active states */
+.icon-button.active {
+    background: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.icon-button.active .sort-label {
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .filter-group,
+    .sort-group {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .select-control {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* Fixed width buttons and improved filters */
+.icon-button.fixed-width {
+    min-width: 120px;
+    width: 120px;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+/* Fixed width small button for sort toggle */
+.icon-button.fixed-width-small {
+    min-width: 36px;
+    width: 36px;
+    padding: 8px;
+    justify-content: center;
+    aspect-ratio: 1;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+}
+
+.icon-button.fixed-width-small:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+}
+
+.sort-icon {
+    font-size: 18px;
+    line-height: 1;
+    color: #333;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.sort-icon::after {
+    content: '↑';
+    display: block;
+}
+
+#sortOrderBtn.descending .sort-icon::after {
+    content: '↓';
+}
+
+/* Hide sort label text */
+.sort-label {
+    display: none;
+}
+
+/* Top bar and hamburger menu styles */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.hamburger-menu {
+    position: relative;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.menu-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.menu-icon {
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background-color: #333;
+    transition: all 0.3s ease;
+}
+
+.menu-icon:before,
+.menu-icon:after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background-color: #333;
+    transition: all 0.3s ease;
+}
+
+.menu-icon:before {
+    top: -6px;
+}
+
+.menu-icon:after {
+    bottom: -6px;
+}
+
+.menu-btn.active .menu-icon {
+    background-color: transparent;
+}
+
+.menu-btn.active .menu-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.menu-btn.active .menu-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+.menu-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 8px 0;
+    min-width: 200px;
+    display: none;
+    flex-direction: column;
+}
+
+.menu-items.active {
+    display: flex;
+}
+
+.menu-items button {
+    background: none;
+    border: none;
+    padding: 12px 20px;
+    text-align: left;
+    color: #333;
+    width: 100%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.menu-items button:hover {
+    background-color: #f0f0f0;
+}
+
+#currentUserDisplay {
+    color: #333;
+    font-size: 14px;
+}
+
+/* Remove old styles */
+.settings-container,
+.settings-btn,
+.settings-dropdown,
+.hamburger-icon {
+    display: none;
+}
+
+/* Map Grid Styles */
+.map-grid {
+    display: grid;
+    margin: 20px auto;
+    justify-content: center;
+}
+
+.drawer {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Empty drawer style */
+.drawer.empty {
+    background-color: #f0f0f0;
+}
+
+/* Occupied drawer style */
+.drawer.occupied {
+    background-color: #007bff;
+    color: white;
+}
+
+.drawer-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.drawer.highlighted {
+    border-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+/* Drawer Info Panel */
+.drawer-info-panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 80%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.drawer-info-content {
+    margin-top: 20px;
+}
+
+.content-section {
+    margin-bottom: 15px;
+}
+
+.content-section h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.content-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.content-section li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Card-Based Modal Tabs Design */
+.main-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.search-panel {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+}
+
+.action-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary-color, #0077cc);
+    color: white;
+    border: none;
+    box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    position: relative;
+}
+
+.action-button:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-color-dark, #005fa3);
+}
+
+.action-button i {
+    font-size: 24px;
+}
+
+.action-button span {
+    font-size: 10px;
+    position: absolute;
+    bottom: -20px;
+    white-space: nowrap;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.action-button:hover span {
+    opacity: 1;
+}
+
+/* Feature Modals */
+.feature-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-modal.active {
+    display: flex;
+    animation: fadeIn 0.3s forwards;
+}
+
+.modal-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(50px);
+    opacity: 0;
+    animation: slideUp 0.3s forwards;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color, #0077cc);
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+}
+
+.close-modal-btn:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(90vh - 70px);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile Tab Bar */
+.mobile-tab-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 900;
+    height: 60px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.mobile-tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    height: 100%;
+    color: #777;
+    flex: 1;
+    transition: color 0.2s;
+    padding: 5px 0;
+}
+
+.mobile-tab-btn i {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.mobile-tab-btn span {
+    font-size: 12px;
+}
+
+.mobile-tab-btn.active {
+    color: var(--primary-color, #0077cc);
+}
+
+/* Collapsible Content */
+details {
+    margin: 10px 0;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+details summary {
+    padding: 10px 15px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+    color: #555;
+    position: relative;
+}
+
+details summary:hover {
+    background-color: #e5e5e5;
+}
+
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+details summary::after {
+    content: '+';
+    position: absolute;
+    right: 15px;
+    transition: transform 0.3s;
+}
+
+details[open] summary::after {
+    content: '-';
+}
+
+.collapsible-content {
+    padding: 15px;
+    background-color: #fcfcfc;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .action-buttons {
+        display: none;
+    }
+
+    .mobile-tab-bar {
+        display: flex;
+    }
+
+    .modal-card {
+        width: 100%;
+        max-width: 100%;
+        height: 80%;
+        border-radius: 8px 8px 0 0;
+        position: absolute;
+        bottom: 0;
+        top: auto;
+    }
+
+    .feature-modal.active-mobile {
+        display: flex;
+    }
+
+    .modal-body {
+        max-height: calc(80vh - 60px);
+    }
+
+    /* Hide bottom navigation when modal is open */
+    .modal-open .mobile-tab-bar {
+        display: none;
+    }
+}
+
+/* Update existing styles to work with new layout */
+.filter-container,
+.search-container,
+.search-input-group,
+.bom-upload-group {
+    margin-bottom: 15px;
+}
+
+#searchResults {
+    margin-top: 20px;
+    padding: 0 20px;
+}
+
+/* Fix for existing container styles */
+.container {
+    display: block;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.left-panel,
+.middle-panel,
+.right-panel {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Override some existing form styles */
+.form-section {
+    max-height: none;
+}
+
+.form-fields {
+    grid-template-columns: 1fr;
+}
+
+@media screen and (min-width: 768px) {
+    .form-fields {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Style adjustments for primary buttons */
+.primary-button {
+    width: 100%;
+}
+
+/* Map Modal Specific Styles (Copied and Adapted from map.css) */
+#mapModal .map-container {
+    display: flex;
+    gap: 15px;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    /* Ensure container takes full width of body */
+    flex-grow: 1;
+    /* Allow container to grow */
+}
+
+#mapModal .side-panel {
+    width: 280px;
+    /* Slightly narrower for modal */
+    min-width: 240px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Adjusted gap */
+    height: 100%;
+    overflow-y: auto;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+#mapModal .map-area-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: auto;
+    min-width: 0;
+    padding: 0;
+    height: 100%;
+    /* Ensure wrapper takes full height */
+}
+
+#mapModal .map-grid {
+    /* ... variable defs ... */
+    display: grid;
+    grid-template-columns: repeat(var(--map-cols), minmax(0, var(--map-drawer-size)));
+    gap: var(--map-gap);
+    padding: 10px;
+    /* Padding inside grid */
+    background: white;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    align-content: start;
+    /* Remove width/height/overflow - wrapper handles scroll */
+    min-height: 100px;
+    /* Example, adjust as needed */
+}
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    /* ... */
+}
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    #mapModal .map-container {
+        flex-direction: column;
+    }
+
+    #mapModal .side-panel {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        /* Override desktop height */
+        max-height: 40vh;
+        overflow-y: auto;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        /* Include padding in width */
+    }
+
+    #mapModal .map-grid {
+        /* Override grid columns directly for mobile */
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        height: auto;
+        padding: 10px;
+        flex-grow: 1;
+    }
+
+    #mapModal .drawer-label {
+        font-size: 0.8rem;
+    }
+
+    #mapModal .map-area-wrapper {
+        /* ... existing styles ... */
+        height: auto;
+        /* Allow height adjustment based on flex */
+    }
+}
+
+@media (max-width: 600px) {
+    #mapModal .map-area-wrapper {
+        gap: 10px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        padding: 5px;
+        gap: 5px;
+    }
+
+    #mapModal .side-panel {
+        padding: 10px;
+        max-height: 35vh;
+        /* Further reduce height */
+    }
+
+    #mapModal .drawer-label {
+        font-size: 0.7rem;
+    }
+
+    /* Make modal content take more screen height */
+    #mapModal .map-modal-content {
+        height: 95%;
+        width: 98%;
+    }
+}
+
+/* ... rest of style.css ... */
+
+/* ... existing modal drawer styles ... */
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    grid-column: 1 / -1;
+    height: 0;
+    border-top: 2px dashed #ccc;
+    margin: var(--map-gap, 10px) 0;
+    padding: 0;
+}
+
+/* Extra Drawers Container Styles for Modal */
+#mapModal .extra-drawers-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--map-gap, 10px);
+    padding: 10px 0;
+    /* Vertical padding */
+    justify-content: flex-start;
+    border-top: 2px dashed #e0e0e0;
+    width: 100%;
+    grid-template-columns: repeat(var(--map-cols), minmax(0, var(--map-drawer-size)));
+}
+
+#mapModal .extra-drawers-container .drawer {
+    width: var(--map-drawer-size, 100px);
+    height: var(--map-drawer-size, 100px);
+    max-width: 100px;
+    flex-shrink: 0;
+}
+
+/* ... drawer info panel styles ... */
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    /* ... existing modal side panel styles ... */
+
+    #mapModal .map-area-wrapper {
+        padding: 0;
+        gap: 15px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        /* ... other styles ... */
+        padding: 10px 5px;
+    }
+
+    #mapModal .extra-drawers-container {
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        padding: 10px 5px;
+        justify-content: flex-start;
+    }
+
+    /* ... */
+}
+
+@media (max-width: 600px) {
+    #mapModal .map-area-wrapper {
+        gap: 10px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        /* ... other styles ... */
+        padding: 5px;
+        gap: 5px;
+    }
+
+    #mapModal .extra-drawers-container {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        padding: 10px 5px;
+        gap: 5px;
+        border-top: none;
+    }
+
+    /* ... */
+}
+
+/* ... rest of style.css ... */
+
+/* ... existing modal drawer styles ... */
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    grid-column: 1 / -1;
+    height: 0;
+    border-top: 2px dashed #ccc;
+    margin: var(--map-gap, 10px) 0;
+    padding: 0;
+}
+
+/* Extra Drawers Container Styles for Modal REMOVED */
+/* #mapModal .extra-drawers-container { ... } */
+/* #mapModal .extra-drawers-container .drawer { ... } */
+
+/* ... existing modal drawer info panel styles ... */
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    /* ... */
+    /* Remove responsive styles for #mapModal .extra-drawers-container */
+    /* #mapModal .extra-drawers-container { ... } */
+    /* ... */
+}
+
+@media (max-width: 600px) {
+
+    /* ... */
+    #mapModal .grid-separator {
+        margin: 5px 0;
+        border-top-width: 1px;
+    }
+
+    /* Remove responsive styles for #mapModal .extra-drawers-container */
+    /* #mapModal .extra-drawers-container { ... } */
+    /* ... */
+}
+
+/* ... rest of style.css ... */
+
+/* style.css */
+/* ... */
+
+/* Map Modal Specific Styles */
+#mapModal .map-container {
+    display: flex;
+    gap: 15px;
+    /* Adjusted gap for modal */
+    padding: 0;
+    height: 100%;
+}
+
+#mapModal .side-panel {
+    width: 280px;
+    /* Slightly narrower for modal */
+    min-width: 240px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Adjusted gap */
+    height: 100%;
+    overflow-y: auto;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+#mapModal .map-area-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: auto;
+    min-width: 0;
+    /* Prevent flex overflow */
+    padding: 0;
+    /* Padding is inside grid now */
+}
+
+#mapModal .map-grid {
+    /* ... variable defs ... */
+    display: grid;
+    grid-template-columns: repeat(var(--map-cols), minmax(0, var(--map-drawer-size)));
+    gap: var(--map-gap);
+    padding: 10px;
+    /* Padding inside grid */
+    background: white;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+    align-content: start;
+    /* Remove width/height/overflow - wrapper handles scroll */
+}
+
+/* Grid Separator for Modal */
+#mapModal .grid-separator {
+    /* ... */
+}
+
+/* Responsive Styles for Map Modal */
+@media (max-width: 900px) {
+    #mapModal .map-container {
+        flex-direction: column;
+    }
+
+    #mapModal .side-panel {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        max-height: 40vh;
+        /* Reduced height for modal context */
+        overflow-y: auto;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+
+    #mapModal .map-area-wrapper {
+        flex-grow: 1;
+        /* Take remaining vertical space */
+        overflow: auto;
+        /* Scroll if grid+extra is too tall */
+        gap: 10px;
+        padding: 0 5px 5px 5px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(4, minmax(0, var(--map-drawer-size)));
+        padding: 10px 5px;
+    }
+
+    /* ... */
+}
+
+@media (max-width: 600px) {
+
+    /* ... */
+    #mapModal .map-area-wrapper {
+        gap: 5px;
+    }
+
+    #mapModal .map-grid {
+        grid-template-columns: repeat(3, minmax(0, var(--map-drawer-size)));
+        padding: 5px;
+        gap: 5px;
+    }
+
+    /* ... */
+}
+
+/* ... existing style.css ... */
+
+/* Drawer Info Panel Styles (Copied for Modal) */
+#mapModal .drawer-info-panel {
+    /* ... existing panel styles ... */
+}
+
+#mapModal .drawer-info-header {
+    /* ... existing header styles ... */
+}
+
+#mapModal .drawer-info-panel .close-button {
+    /* ... existing close button styles ... */
+}
+
+#mapModal .drawer-info-content {
+    padding: 15px 18px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+#mapModal .drawer-info-content p {
+    /* ... existing empty message style ... */
+}
+
+#mapModal .drawer-info-content .content-section {
+    /* ... existing section style ... */
+}
+
+#mapModal .drawer-info-content .content-section h4 {
+    /* ... existing heading style ... */
+}
+
+#mapModal .drawer-info-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* Re-add gap for spacing */
+}
+
+#mapModal .drawer-info-content li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee;
+    gap: 10px;
+    font-size: 0.9em;
+}
+
+#mapModal .drawer-info-content li:last-child {
+    border-bottom: none;
+}
+
+#mapModal .drawer-info-content li span:first-child {
+    /* Part Number */
+    font-weight: 500;
+    color: #007bff;
+    flex-basis: 40%;
+    word-break: break-all;
+}
+
+#mapModal .drawer-info-content li small {
+    /* Description */
+    color: #666;
+    font-size: 0.85em;
+    flex-grow: 1;
+    text-align: left;
+    padding: 0 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#mapModal .drawer-info-content li span:last-child {
+    /* Quantity */
+    font-weight: bold;
+    flex-shrink: 0;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* ... rest of style.css ... */
+
+#mapModal .drawer.highlighted {
+    background-color: #ffd700;
+    /* Solid yellow background */
+    border-color: #e6b800;
+    /* Slightly darker border for definition */
+    color: #333;
+    /* Ensure text is readable */
+    transform: scale(1.02);
+    /* Slightly less pronounced scale */
+    z-index: 1;
+    box-shadow: none;
+    /* Remove box shadow, background is highlight */
+}
+
+/* Ensure occupied style doesn't override highlight */
+#mapModal .drawer.occupied.highlighted {
+    background-color: #ffd700;
+    border-color: #e6b800;
+    color: #333;
+}
+
+/* ... rest of styles ... */
+
+/* ... existing styles ... */
+
+/* Withdrawal Summary Section */
+.summary-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #e9f5ff;
+    /* Light blue background */
+    border: 1px solid #b3d7ff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.summary-section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #0056b3;
+    /* Darker blue heading */
+    font-size: 1.4em;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+.summary-table th,
+.summary-table td {
+    border: 1px solid #cce0ff;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.summary-table th {
+    background-color: #cce0ff;
+    color: #003d80;
+    font-weight: 600;
+}
+
+.summary-table tr:nth-child(even) {
+    background-color: #f0f8ff;
+}
+
+.summary-table .storage-location {
+    font-weight: bold;
+    background-color: #fffacd;
+    /* Light yellow highlight for location */
+}
+
+.summary-table .qty-taken {
+    text-align: center;
+    font-weight: bold;
+}
+
+.summary-table .description-summary {
+    font-size: 0.9em;
+    color: #555;
+    /* Flexible description width */
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+}
+
+#clearSummaryBtn {
+    display: block;
+    /* Center button */
+    margin: 10px auto 0 auto;
+    background-color: #6c757d;
+    /* Use secondary color */
+}
+
+#clearSummaryBtn:hover {
+    background-color: #5a6268;
+}
+
+
+/* Cart Table Mobile Responsiveness */
+@media (max-width: 768px) {
+
+    /* Hide specific columns in the main cart view */
+    #cartTable th:nth-child(2),
+    /* MPN */
+    #cartTable td:nth-child(2),
+    #cartTable th:nth-child(4),
+    /* Package */
+    #cartTable td:nth-child(4),
+    #cartTable th:nth-child(5),
+    /* Description */
+    #cartTable td:nth-child(5) {
+        display: none;
+    }
+
+    #cartTable th,
+    #cartTable td {
+        padding: 8px 5px;
+        /* Reduce padding */
+        font-size: 0.9em;
+        /* Slightly smaller font */
+    }
+
+    #cartTable .cart-quantity {
+        width: 40px;
+        /* Smaller quantity input */
+    }
+
+    /* Adjust summary table for mobile */
+    .summary-table th,
+    .summary-table td {
+        padding: 8px 6px;
+        font-size: 0.9em;
+    }
+
+    .summary-table .description-summary {
+        max-width: 100px;
+        /* Further limit description */
+    }
+}
+
+
+/* ... rest of style.css ... */
+
+/* Key column coloring for table view */
+.key-col.capacitance-col {
+    background-color: #e6f7ff;
+}
+
+.key-col.resistance-col {
+    background-color: #fffbe6;
+}
+
+.key-col.voltage-col {
+    background-color: #e6ffe6;
+}
+
+.key-col.inductance-col {
+    background-color: #f0e6ff;
+}
+
+.key-col.package-col {
+    background-color: #f9e6ff;
+}
+
+/* Slimmer table rows for compact view */
+#resultsTable th,
+#resultsTable td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 13px;
+    height: 28px;
+}
+
+/* Highlight key columns on hover for better orientation */
+#resultsTable tr:hover .key-col {
+    filter: brightness(0.95);
+}
+
+/* ... existing code ... */
+
+/* ... existing styles ... */
+
+/* Info icon styling */
+.info-icon {
+    font-size: 16px;
+    /* Adjust size */
+    color: #007bff;
+    /* Match primary color */
+    vertical-align: middle;
+    margin-left: 5px;
+    cursor: pointer;
+    position: relative;
+    /* Needed for tooltip positioning */
+    outline: none;
+    /* Remove default focus outline if desired */
+}
+
+/* Tooltip styling (reusing/adapting existing) */
+[data-tooltip] {
+    position: relative;
+}
+
+/* Adjusted tooltip positioning and appearance */
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    /* Position above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    /* Allow more space for text */
+    max-width: 300px;
+    padding: 8px 12px;
+    background-color: rgba(51, 51, 51, 0.9);
+    /* Slightly transparent dark background */
+    color: white;
+    font-size: 12px;
+    font-weight: normal;
+    /* Ensure tooltip text isn't bold */
+    line-height: 1.4;
+    /* Improve readability */
+    border-radius: 4px;
+    white-space: normal;
+    /* Allow text wrapping */
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+    pointer-events: none;
+    /* Prevent tooltip from interfering with clicks */
+}
+
+/* Show tooltip on hover (desktop) */
+[data-tooltip]:hover:before,
+/* Show tooltip on focus (accessibility/mobile tap) */
+[data-tooltip]:focus:before {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.3s;
+    /* Slight delay on hover */
+    pointer-events: auto;
+    /* Allow interaction if needed, though unlikely here */
+}
+
+/* Reset delay for focus */
+[data-tooltip]:focus:before {
+    transition-delay: 0s;
+}
+
+
+/* ... rest of style.css ... */
+
+/* ==========================================================================
+   Override Tooltip Styling for Info Icon
+   ========================================================================== */
+
+/* Target only the info-icon to avoid conflicts with other data-tooltip elements */
+.info-icon[data-tooltip] {
+    position: relative;
+}
+
+.info-icon[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    white-space: normal;
+    /* Allow wrapping */
+    text-align: left;
+    max-width: 250px;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s;
+    font-family: Arial, sans-serif;
+    /* Use a readable font for tooltip text */
+}
+
+.info-icon[data-tooltip]:hover:before,
+.info-icon[data-tooltip]:focus:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ... existing styles ... */
+
+/* ==========================================================================
+   Search Tab Redesign Styles
+   ========================================================================== */
+
+.search-panel {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    transition: box-shadow 0.2s ease;
+}
+
+.search-panel:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.main-search-panel h2,
+.bom-import-panel h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #333;
+    display: flex;
+    /* For aligning info icon */
+    align-items: center;
+}
+
+.main-search-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0 10px;
+    background-color: #fff;
+}
+
+.search-input-group:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.search-icon {
+    color: #777;
+    margin-right: 8px;
+}
+
+#searchQuery {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 10px 0;
+    font-size: 1em;
+}
+
+.primary-filters {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow wrapping on smaller screens */
+    gap: 10px;
+    align-items: center;
+}
+
+.primary-filters select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    min-width: 180px;
+    /* Give dropdowns some base width */
+    flex: 1;
+    /* Allow shrinking/growing */
+}
+
+.inline-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    /* Prevent label text wrapping */
+}
+
+.search-action-button {
+    align-self: flex-end;
+    /* Position button to the right */
+    padding: 10px 25px;
+}
+
+.bom-import-panel {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.bom-import-panel h2 .info-icon {
+    font-size: 18px;
+    /* Adjust size */
+}
+
+.bom-upload-group {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow wrapping */
+    gap: 10px;
+    align-items: center;
+}
+
+#bomFile {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    flex-grow: 1;
+    /* Take available space */
+    min-width: 150px;
+}
+
+.bom-upload-group .secondary-button {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+}
+
+.bom-upload-group .secondary-button:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .search-panel {
+        padding: 15px;
+    }
+
+    .primary-filters {
+        flex-direction: column;
+        align-items: stretch;
+        /* Make dropdowns full width */
+    }
+
+    .primary-filters select {
+        min-width: 0;
+    }
+
+    .search-action-button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .bom-upload-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bom-upload-group button {
+        width: 100%;
+    }
+}
+
+/* Existing tooltip styles should still apply */
+/* ... */
+
+/* Adjust results header margin */
+#searchResults .results-header {
+    margin-top: 20px;
+    /* Add space above results filters */
+}
+
+
+/* ... rest of style.css ... */
+
+/* Compact Add to Cart button (icon-only) */
+.add-to-cart-button.icon-only {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #28a745;
+    color: #fff;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.add-to-cart-button.icon-only:hover {
+    background: #218838;
+}
+
+/* Expanded row actions row: compact and horizontal */
+.expanded-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.expanded-actions-row .quantity-controls.compact {
+    flex-direction: row;
+    gap: 2px;
+    min-width: 0;
+}
+
+.expanded-actions-row .quantity-controls.compact button,
+.expanded-actions-row .quantity-controls.compact input {
+    height: 22px;
+    min-width: 22px;
+    font-size: 12px;
+    padding: 0 4px;
+}
+
+.expanded-actions-row .add-to-cart-button.icon-only {
+    width: 24px;
+    height: 24px;
+    font-size: 15px;
+}
+
+.expanded-actions-row .delete-button {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    padding: 0;
+    margin-left: 2px;
+}
+
+/* Compact detail content for expanded row */
+.compact-detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    padding: 2px 0;
+}
+
+.compact-detail-content .detail-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* Responsive: fit expanded row on small screens */
+@media (max-width: 900px) {
+    .compact-detail-content .detail-fields {
+        flex-direction: column;
+        gap: 2px 0;
+    }
+
+    .expanded-actions-row {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+}
+
+/* Make table row thinner */
+table th,
+table td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    font-size: 12px;
+    height: 26px;
+}
+
+/* Expanded actions cell alignment */
+.expanded-actions-cell {
+    vertical-align: top;
+    text-align: right;
+    padding-top: 4px;
+    min-width: 110px;
+    width: 110px;
+}
+
+/* Thin rectangular Add to Cart button for expanded row */
+.add-to-cart-button.thin-rect {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    min-width: 32px;
+    padding: 0 6px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    margin: 0 2px;
+    box-shadow: none;
+    transition: background 0.2s;
+}
+
+.add-to-cart-button.thin-rect:hover {
+    background: #218838;
+}
+
+.expanded-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+/* Make sure delete button is also compact */
+.expanded-actions-row .delete-button {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    padding: 0;
+    margin-left: 2px;
+}
+
+/* Expanded actions cell alignment - simplified version */
+.expanded-actions-cell {
+    vertical-align: top;
+    padding-top: 4px;
+    min-width: 110px;
+    width: 110px;
+}
+
+/* Quantity input in expanded row - standalone version */
+.expanded-actions-row .quantity-input {
+    width: 50px;
+    height: 22px;
+    padding: 0 4px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-right: 4px;
+}
+
+/* Clean, simple layout for expanded actions */
+.expanded-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+/* Make numerical columns narrower */
+.key-col.capacitance-col,
+.key-col.resistance-col,
+.key-col.voltage-col,
+.key-col.inductance-col {
+    width: 80px;
+    min-width: 80px;
+}
+
+/* Package column slightly narrower */
+.key-col.package-col {
+    width: 90px;
+    min-width: 90px;
+}
+
+/* Quantity column slightly narrower */
+table th:nth-last-child(2),
+/* Quantity column */
+table td:nth-last-child(2) {
+    width: 60px;
+    min-width: 60px;
+}
+
+/* Cart actions styling */
+.cart-actions-cell {
+    min-width: 140px;
+    width: 140px;
+    padding: 6px 8px;
+}
+
+.cart-actions-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.cart-quantity-controls {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.cart-decrease-btn,
+.cart-increase-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-decrease-btn:hover,
+.cart-increase-btn:hover {
+    background-color: #0056b3;
+}
+
+.cart-quantity {
+    width: 40px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 4px;
+    margin: 0 2px;
+}
+
+.cart-delete-button {
+    background: none;
+    color: #dc3545;
+    border: none;
+    font-size: 13px;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    margin-left: 1px;
+    margin-right: 0;
+    line-height: 1;
+}
+
+.cart-delete-button:hover {
+    color: #fff;
+    background: #dc3545;
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-actions-cell {
+        min-width: 100px;
+        padding: 4px;
+    }
+
+    .cart-quantity-controls {
+        flex-wrap: nowrap;
+    }
+
+    .cart-decrease-btn,
+    .cart-increase-btn {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        font-size: 12px;
+    }
+
+    .cart-quantity {
+        width: 30px;
+        height: 22px;
+        font-size: 12px;
+    }
+
+    .cart-delete-button {
+        font-size: 16px;
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Ensure the cart table is usable on mobile */
+    #cartTable th,
+    #cartTable td {
+        font-size: 12px;
+    }
+}
+
+/* Cart actions styling - simplified version */
+.cart-actions-cell {
+    min-width: 100px;
+    width: 100px;
+    padding: 4px 8px;
+}
+
+/* Make cart actions container better aligned */
+.cart-actions-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* Simplified quantity input */
+.cart-quantity {
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 4px;
+    font-size: 14px;
+}
+
+.cart-delete-button {
+    background-color: transparent;
+    color: #dc3545;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.cart-delete-button:hover {
+    color: #bd2130;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-actions-cell {
+        min-width: 80px;
+        width: 80px;
+        padding: 4px;
+    }
+
+    .cart-quantity {
+        width: 40px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .cart-delete-button {
+        font-size: 18px;
+        width: 26px;
+        height: 26px;
+    }
+}
+
+/* Cart actions styling - make wider */
+.cart-actions-cell {
+    min-width: 110px;
+    width: 110px;
+    padding: 4px 8px;
+}
+
+/* Ensure delete button is not overly large */
+.cart-delete-button {
+    font-size: 18px;
+    width: 26px;
+    height: 26px;
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-actions-cell {
+        min-width: 90px;
+        width: 90px;
+        padding: 4px;
+    }
+
+    .cart-quantity {
+        width: 35px;
+        height: 26px;
+        font-size: 12px;
+    }
+
+    .cart-delete-button {
+        font-size: 16px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Cart actions styling - simplified and renamed to Quantity */
+.cart-quantity-cell {
+    min-width: 170px;
+    width: 170px;
+    padding: 4px 8px;
+}
+
+.cart-quantity {
+    width: 36px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 2px;
+    font-size: 13px;
+    margin-right: 4px;
+}
+
+.cart-delete-button {
+    background: none;
+    color: #dc3545;
+    border: none;
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    margin-left: 2px;
+    line-height: 1;
+}
+
+.cart-delete-button:hover {
+    color: #fff;
+    background: #dc3545;
+}
+
+/* Mobile optimizations for cart */
+@media (max-width: 768px) {
+    .cart-quantity-cell {
+        min-width: 100px;
+        width: 100px;
+        padding: 4px;
+    }
+
+    .cart-quantity {
+        width: 40px;
+        height: 26px;
+        font-size: 12px;
+    }
+}
+
+/* --- Unified Modern Button Styles --- */
+button,
+.primary-button,
+.secondary-button,
+.warning-button,
+.add-to-cart-button,
+.cart-delete-button,
+.user-button,
+.cart-button,
+.sort-order-btn,
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 16px;
+    background: var(--primary-color, #007bff);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    text-align: center;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    min-width: 36px;
+    min-height: 32px;
+}
+
+button:disabled,
+.primary-button:disabled,
+.secondary-button:disabled,
+.warning-button:disabled {
+    background: #e0e0e0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.primary-button {
+    background: #007bff;
+    color: #fff;
+}
+
+.primary-button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.secondary-button {
+    background: #6c757d;
+    color: #fff;
+}
+
+.secondary-button:hover:not(:disabled) {
+    background: #495057;
+}
+
+.warning-button {
+    background: #dc3545;
+    color: #fff;
+}
+
+.warning-button:hover:not(:disabled) {
+    background: #a71d2a;
+}
+
+.add-to-cart-button {
+    background: #28a745;
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 36px;
+    min-height: 32px;
+}
+
+.add-to-cart-button:hover:not(:disabled) {
+    background: #218838;
+}
+
+.user-button {
+    background: #007bff;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 0;
+    border-radius: 8px;
+}
+
+.user-button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.cart-button {
+    background: #f8f9fa;
+    color: #007bff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+}
+
+.cart-button:hover {
+    background: #e9ecef;
+}
+
+.sort-order-btn,
+.icon-button {
+    background: #fff;
+    color: #007bff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    min-width: 36px;
+    min-height: 32px;
+    padding: 0 8px;
+}
+
+.sort-order-btn:hover,
+.icon-button:hover {
+    background: #f0f8ff;
+    color: #0056b3;
+}
+
+/* --- Cart Remove Button (SVG icon) --- */
+.cart-delete-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 2px;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.cart-delete-button svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+}
+
+.cart-delete-button:hover {
+    background: #ffeaea;
+}
+
+/* --- Table Row Thinning --- */
+table th,
+table td {
+    padding: 2px 6px !important;
+    font-size: 12px !important;
+    height: 20px !important;
+    line-height: 1.2 !important;
+    vertical-align: middle !important;
+}
+
+#cartTable th,
+#cartTable td {
+    padding: 2px 4px !important;
+    font-size: 12px !important;
+    height: 20px !important;
+    line-height: 1.2 !important;
+}
+
+/* --- Center text in all buttons --- */
+button,
+.primary-button,
+.secondary-button,
+.warning-button,
+.add-to-cart-button,
+.user-button,
+.cart-button,
+.sort-order-btn,
+.icon-button {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+/* --- General Layout/Text Improvements --- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 600;
+    color: #222;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.5em;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
+}
+
+label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+input,
+select,
+textarea {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    font-size: 14px;
+    background: #fff;
+    color: #222;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    background: #f0f8ff;
+}
+
+/* --- Panel/Section Improvements --- */
+.top-bar,
+.cart-actions,
+.cart-actions-container,
+.right-buttons {
+    gap: 8px;
+}
+
+/* --- Misc --- */
+::-webkit-input-placeholder {
+    color: #aaa;
+}
+
+::-moz-placeholder {
+    color: #aaa;
+}
+
+:-ms-input-placeholder {
+    color: #aaa;
+}
+
+::placeholder {
+    color: #aaa;
+}
+
+/* ... existing code ... */
+.key-col.package-col {
+    width: 10%;
+}
+
+.info-icon {
+    font-size: 16px;
+    color: #6c757d;
+    cursor: help;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+/* Help Link Style */
+.help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--primary-color, #0077cc);
+    text-decoration: none;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.help-link:hover {
+    text-decoration: underline;
+}
+
+.help-link .material-icons {
+    font-size: 16px;
+}
+
+/* Help Modal Content Styling */
+#helpModal .modal-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+#helpModal .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+/* BOM Import Result Modal */
+#bomResultModal .modal-content {
+    max-width: 700px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+#bomResultModal .modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+#bomResultModal ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 15px 0;
+}
+#bomResultModal ul li {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+#bomResultModal ul li .item-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+#bomResultModal ul li small {
+    color:#555;
+}
+#bomResultModal .found-header { color: #28a745; }
+#bomResultModal .notfound-header { color: #dc3545; }
+#bomResultModal .copy-btn {
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+#bomResultModal .copy-btn:hover { background:#5a6268; }
+
+/* Truncated cells for long text */
+.mpn-col, .mpn-cell {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Compact numeric/text columns */
+.lcsc-col,
+.order-qty,
+.qty-col {
+    max-width: 110px;
+    white-space: nowrap;
+}
