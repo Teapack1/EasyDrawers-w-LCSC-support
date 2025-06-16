@@ -4258,8 +4258,8 @@ table td {
     vertical-align: top;
     text-align: right;
     padding-top: 4px;
-    min-width: 90px;
-    width: 90px;
+    min-width: 110px;
+    width: 110px;
 }
 
 /* Thin rectangular Add to Cart button for expanded row */
@@ -4305,13 +4305,13 @@ table td {
 .expanded-actions-cell {
     vertical-align: top;
     padding-top: 4px;
-    min-width: 70px;
-    width: 70px;
+    min-width: 110px;
+    width: 110px;
 }
 
 /* Quantity input in expanded row - standalone version */
 .expanded-actions-row .quantity-input {
-    width: 40px;
+    width: 50px;
     height: 22px;
     padding: 0 4px;
     font-size: 12px;

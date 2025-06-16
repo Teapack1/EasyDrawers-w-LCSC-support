@@ -791,7 +791,11 @@ async def delete_component(request: Request):
     cursor.execute("DELETE FROM components WHERE id=?", (component_id,))
     conn.commit()
 
-    # Log the deletion in the change_log
+    # Log the deletion in the change_log with a JSON payload so it can be reverted accurately
+    component_dict = dict(component)
+    # Convert any non-serialisable types (e.g. bytes) to str
+    safe_component_json = json.dumps({k: (v if not isinstance(v, bytes) else v.decode('utf-8')) for k, v in component_dict.items() if k != 'id'})
+
     cursor.execute(
         """
         INSERT INTO change_log (user, action_type, component_id, part_number, details)
@@ -802,7 +806,7 @@ async def delete_component(request: Request):
             "delete",
             component_id,
             part_number,
-            f"Deleted component ID {component_id}, Part Number {part_number}",
+            safe_component_json,
         ),
     )
 
@@ -900,26 +904,21 @@ async def revert_change(data: dict):
             )
 
         elif action_type == "delete":
-            # Get the component details from the log
-            component_details = json.loads(log_entry["details"])
+            # Parse the component details from the JSON payload (legacy plain-text supported)
+            try:
+                component_details = json.loads(log_entry["details"])
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail="Cannot revert: legacy log entry without component details.")
+
+            # Build column/value lists dynamically (ignore id)
+            cols = [k for k in component_details.keys() if k != "id"]
+            placeholders = ", ".join(["?"] * len(cols))
+            col_clause = ", ".join(cols)
+            values = [component_details[c] for c in cols]
+
             cursor.execute(
-                """
-                INSERT INTO components (
-                    part_number, storage_place, order_qty, component_type, component_branch,
-                    unit_price, description, package, manufacturer
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-                (
-                    component_details["part_number"],
-                    component_details["storage_place"],
-                    component_details["order_qty"],
-                    component_details["component_type"],
-                    component_details["component_branch"],
-                    component_details["unit_price"],
-                    component_details["description"],
-                    component_details["package"],
-                    component_details["manufacturer"],
-                ),
+                f"INSERT OR IGNORE INTO components ({col_clause}) VALUES ({placeholders})",
+                values,
             )
 
         elif action_type == "csv_import_batch":
@@ -1018,44 +1017,44 @@ async def add_to_cart(data: dict):
         """,
             (user, component_id),
         )
-        existing_item = cursor.fetchone()
-
-        if existing_item:
-            # If item exists, update its quantity
-            cart_item_id, current_quantity = existing_item
-            # Ensure current_quantity is an integer
-            current_quantity = (
-                int(current_quantity) if current_quantity is not None else 0
-            )
-            new_quantity = current_quantity + quantity
-            print(
-                f"Updating existing cart item: current={current_quantity}, adding={quantity}, new={new_quantity}"
-            )  # Debug log
-
-            cursor.execute(
-                """
-                UPDATE cart
-                SET quantity = ?
-                WHERE id = ?
-            """,
-                (new_quantity, cart_item_id),
-            )
-            message = f"Updated cart quantity to {new_quantity}"
+        row = cursor.fetchone()
+        if row:
+            # Update quantity if exists
+            new_qty = row[1] + quantity
+            cursor.execute("UPDATE cart SET quantity = ? WHERE id = ?", (new_qty, row[0]))
         else:
-            # If item doesn't exist, insert it with the provided quantity
-            print(f"Adding new cart item with quantity={quantity}")  # Debug log
-
             cursor.execute(
                 """
-                INSERT INTO cart (user, component_id, quantity)
+                INSERT INTO cart (user, component_id, quantity) 
                 VALUES (?, ?, ?)
             """,
                 (user, component_id, quantity),
             )
-            message = f"Item added to cart (Qty: {quantity})"
+
+        # --- NEW: immediately decrease stock quantity ---
+        cursor.execute("SELECT order_qty, part_number FROM components WHERE id = ?", (component_id,))
+        comp_row = cursor.fetchone()
+        if comp_row:
+            prev_qty = comp_row[0]
+            new_stock = max(0, prev_qty - quantity)
+            cursor.execute("UPDATE components SET order_qty = ? WHERE id = ?", (new_stock, component_id))
+
+            # log the change
+            cursor.execute(
+                """INSERT INTO change_log (user, action_type, component_id, part_number, details)
+                VALUES (?, ?, ?, ?, ?)""",
+                (
+                    user,
+                    "update_quantity",
+                    component_id,
+                    comp_row[1],
+                    f"Quantity changed by {-quantity} to {new_stock}",
+                ),
+            )
 
         conn.commit()
-        return {"message": message}
+        return {"message": "Added to cart"}
+
     except Exception as e:
         conn.rollback()
         print(f"Error in add_to_cart: {str(e)}")  # Debug log

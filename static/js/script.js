@@ -525,11 +525,14 @@ function displaySearchResults(results) {
                     <td class="expanded-actions-cell">
                         <div class="expanded-actions-row">
                             <input type="number" class="quantity-input" value="1" min="1" max="${component.order_qty}">
-                           <button class="add-to-cart-button thin-rect" data-id="${component.id}">Add</button>
                             <button class="delete-button" data-id="${component.id}" data-tooltip="Delete component">×</button>
                         </div>
                    </td>`;
                 row.after(detail);
+
+                // --- Attach listeners for the newly added controls ---
+                addAddToCartButtonEventListeners();
+                addDeleteButtonEventListeners();
             } else {
                 if (row.nextSibling && row.nextSibling.classList.contains('detail-row')) row.nextSibling.remove();
             }
@@ -713,7 +716,17 @@ function addDeleteButtonEventListeners() {
             if(!ok) return;
             try {
                 await fetch('/delete_component',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({component_id:id,user:currentUser})});
-                btn.closest('tr')?.remove();
+                // Remove from searchResults
+                searchResults = searchResults.filter(c=>String(c.id)!==String(id));
+                // Remove table rows
+                const mainRow=btn.closest('tr');
+                const next=mainRow?.nextSibling;
+                mainRow?.remove();
+                if(next?.classList?.contains('detail-row')) next.remove();
+                // Remove card view element
+                document.querySelectorAll('.component-card').forEach(card=>{
+                    if(card.querySelector('.delete-button')?.dataset.id===String(id)) card.remove();
+                });
             } catch(err){ alert('Delete failed'); }
         });
     });
@@ -727,14 +740,60 @@ function addAddToCartButtonEventListeners() {
             if (!currentUser) {alert('Please log in first'); return;}
             const id=btn.dataset.id;
             let qty=1;
-            const row=btn.closest('tr');
-            if(row?.classList.contains('expanded')){
-                const qinput=row.nextSibling?.querySelector('.quantity-input');
-                if(qinput) qty=parseInt(qinput.value)||1;
+
+            // 1) If button is inside an expanded detail row, grab qty directly
+            const detailRow = btn.closest('tr.detail-row');
+            if(detailRow){
+                const qi = detailRow.querySelector('.quantity-input');
+                if(qi) qty = parseInt(qi.value) || 1;
+            } else {
+                // 2) If button is in main row that is expanded, look at its sibling detail row
+                const mainRow = btn.closest('tr.expanded');
+                if(mainRow){
+                    const qi = mainRow.nextSibling?.querySelector('.quantity-input');
+                    if(qi) qty = parseInt(qi.value) || 1;
+                }
             }
-            const card=btn.closest('.component-card');
+
+            // 3) Card view
+            const card = btn.closest('.component-card');
             if(card){ const qi=card.querySelector('.quantity-input'); if(qi) qty=parseInt(qi.value)||1; }
-            try{ await fetch('/add_to_cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:currentUser,component_id:id,quantity:qty})}); alert('Added to cart'); updateCartState(); }catch(err){alert('Failed to add');}
+
+            try{
+                await fetch('/add_to_cart',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({user:currentUser,component_id:id,quantity:qty})
+                });
+                // --- Update UI stock quantity ---
+                // Update searchResults array
+                const comp = searchResults.find(c=>String(c.id)===String(id));
+                if(comp){ comp.order_qty = Math.max(0, (parseInt(comp.order_qty)||0) - qty); }
+
+                // Update table view cell
+                document.querySelectorAll(`#resultsTableBody tr`).forEach(r=>{
+                    const btn=r.querySelector('.add-to-cart-button');
+                    if(btn && btn.dataset.id===String(id)){
+                        const qtyCell=r.querySelector('.order-qty');
+                        if(qtyCell) qtyCell.textContent = comp? comp.order_qty : '';
+                        if((comp?.order_qty||0)<=0){ r.remove(); r.nextSibling?.classList.contains('detail-row')&&r.nextSibling.remove(); }
+                    }
+                });
+                // Update card view element
+                document.querySelectorAll('.component-card').forEach(cardEl=>{
+                    const btn=cardEl.querySelector('.add-to-cart-button');
+                    if(btn && btn.dataset.id===String(id)){
+                        const headerSpan=cardEl.querySelector('.card-header span:nth-child(2)');
+                        if(headerSpan) headerSpan.textContent = `${comp?comp.order_qty:0} pcs`;
+                        if((comp?.order_qty||0)<=0){ cardEl.remove(); }
+                    }
+                });
+
+                alert('Added to cart');
+                updateCartState();
+            }catch(err){
+                alert('Failed to add');
+            }
         });
         btn.dataset.listenerAttached='true';
     });
