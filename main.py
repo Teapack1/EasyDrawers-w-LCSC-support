@@ -319,11 +319,18 @@ async def search_component(
 
     # Apply filters (remain single-select for now)
     if component_type:
-        sql_query += " AND component_type = ?"
-        params.append(component_type)
+        if component_type.lower() == "null":
+            # Special case: filter for uncategorised components (NULL or empty string)
+            sql_query += " AND (component_type IS NULL OR component_type = '')"
+        else:
+            sql_query += " AND component_type = ?"
+            params.append(component_type)
     if component_branch:
-        sql_query += " AND component_branch = ?"
-        params.append(component_branch)
+        if component_branch.lower() == "null":
+            sql_query += " AND (component_branch IS NULL OR component_branch = '')"
+        else:
+            sql_query += " AND component_branch = ?"
+            params.append(component_branch)
     if in_stock:
         sql_query += " AND order_qty > 0"
 
@@ -1842,7 +1849,10 @@ async def branch_counts():
     conn.close()
     data = {}
     for c_type, branch, total in rows:
-        data.setdefault(c_type, {})[branch] = total
+        # Normalise NULL / empty strings to the literal key "null" for easier handling in the UI
+        type_key = c_type if c_type not in (None, "") else "null"
+        branch_key = branch if branch not in (None, "") else "null"
+        data.setdefault(type_key, {})[branch_key] = total
     return data
 
 

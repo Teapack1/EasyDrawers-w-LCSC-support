@@ -51,6 +51,140 @@
             }
         }
     },
+    "Amplifiers/Comparators": {
+        "Component Branch": {
+            "Audio Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Comparators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Current Sense Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Differential Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "FET Input Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Instrumentation Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Linear - Analog Multipliers, Dividers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Operational Amplifier": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Precision Op Amps": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Programmable / Variable Gain Amplifiers (PGA/VGA)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Sample / Hold Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Special Purpose Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Video Amplifiers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Audio Products / Vibration Motors": {
+        "Component Branch": {
+            "Buzzers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "MEMS Microphones": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Microphones": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Speakers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Vibration Motors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
     "Capacitor": {
         "Component Branch": {
             "Aluminum Electrolytic Capacitors - SMD": {
@@ -146,6 +280,723 @@
                     "Capacitance",
                     "Voltage",
                     "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Aluminum Electrolytic Capacitors (Can - Screw Terminals)": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Horn-Type Electrolytic Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Hybrid Aluminum Electrolytic Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Lithium Ion Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Niobium Oxide Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Paper Dielectric Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Safety Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Silicon Capacitors": {
+                "Parameters": [
+                    "Capacitance",
+                    "Voltage",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Circuit Protection": {
+        "Component Branch": {
+            "Automotive Fuses": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Disposable fuses": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "ESD and Surge Protection (TVS/ESD)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Fuseholders": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Gas Discharge Tube Arresters (GDT)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Glass Discharge Tubes": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LED Protection": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Resettable Fuses": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Semiconductor Discharge Tubes (TSS)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Surge Protection Devices (SPDs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Thermal Fuses (TCO)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Varistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Clock/Timing": {
+        "Component Branch": {
+            "555 Timers / Counters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Application Specific Clock/Timing": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Clock and Data Recovery / Retiming": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Clock Buffers, Drivers, Distributors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Clock Generators, PLLs, Frequency Synthesizers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Clock Multipliers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Jitter Attenuators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Network Clock Synchronization(SyncE,IEEE 1588)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Real Time Clocks": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Time Delays": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Timers / Counters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Connectors": {
+        "Component Branch": {
+            "AC Power Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Audio Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Automobile Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Banana Connectors / Alligator Clips": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Barrier Terminal Blocks": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Blade / Shrapnel Contact Battery Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Board-to-Board and Backplane Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Button And Strip Battery Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Circular Connectors & Cable Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Circular DIN Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Coaxial Connectors (RF)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Cold-pressed Terminals": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Connector Accessories": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Connector Housings": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "D-Sub / VGA Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "DC Power Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "DIN41612 Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "DisplayPort (DP) Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "DVI Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Edgeboard Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ethernet Connectors / Modular Connectors (RJ45 RJ11)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Feed-Voltage/Radio-Frequency Insulator": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Female Headers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "FFC Cable (Flexible Flat Cable)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "FFC, FPC (Flat Flexible) Connector Assemblies": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Fiber Optic Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Hard Disk Connector (SAS/SATA/M.2)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "HDMI Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Housing Contact": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Housings (Wire To Board / Wire To Wire )": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "IC / Transistor Socket": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "IDC Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "IEEE 1394 / Firewire Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Memory Connector (DDR)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Micro-Match Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Optical Module Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "PCI / PCIe Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Photovoltaic(Solar Panel)Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pin / Jack": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pin Headers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pluggable System Terminal Block": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pogo Pin Spring Probe Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pre-ordered Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "RCA Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Screw Terminal Blocks": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SD Card / Memory Card Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Shunts, Jumpers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SIM Card Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Spring Clamp System Terminal Block": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Test Points / Test Rings": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "USB Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Wire To Board Connector": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Wiring Quick-Connect Terminals": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "XLR (Cannon) Connectors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Crystals, Oscillators, Resonators": {
+        "Component Branch": {
+            "Ceramic Resonators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Crystal Oscillators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Crystals": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Digitally Controlled Oscillators(DCOs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Oven Controlled Crystal Oscillators (OCXOs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Programmable Oscillators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SAW Oscillators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SAW Resonators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Spread Spectrum Oscillators(SSOs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Temperature Compensated Crystal Oscillators (TCXO)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Temperature Sensing Resonators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Voltage Controlled Oscillators (VCOs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Voltage Controlled Temperature Compensated Oscillators (VCTXO)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Voltage-Controlled Crystal Oscillators (VCXOs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
                 ],
                 "Storage Place": ""
             }
@@ -307,6 +1158,511 @@
             }
         }
     },
+    "Data Acquisition": {
+        "Component Branch": {
+            "ADCs/DACs - Special Purpose": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Analog Front End (AFE)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Analog to Digital Converters (ADC)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Digital Potentiometers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Digital to Analog Converters (DAC)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Direct Digital Synthesis (DDS)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Energy Metering": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "RMS to DC Converters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Touch Screen Controllers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "V/F and F/V Converters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Displays": {
+        "Component Branch": {
+            "E-ink Display": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LCD Screen": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LED Dot Matrix and Cluster": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LED Segment Displays": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "OLED Display": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Vacuum Fluorescent Display Screen": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Embedded Processors & Controllers": {
+        "Component Branch": {
+            "Digital Signal Processors (DSP/DSC)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Microcontrollers (MCU/MPU/SOC)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pre-ordered MCUs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Programmable Logic Device (CPLDs/FPGAs)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Filters": {
+        "Component Branch": {
+            "Active Filters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ceramic Filters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Clamp Filters (Ferrite Core with Case)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Common Mode Filters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Crystal Filters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "EMC Filters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "EMI/RFI Filters (LC, RC Networks)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Feed Through Capacitors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ferrite Beads": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Noise Suppressors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Switched Capacitor Filters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Interface": {
+        "Component Branch": {
+            "Analog Switches - Special Purpose": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Analog Switches, Multiplexers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Audio Interface ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "CAN Controllers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "CAN Transceivers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ethernet Controllers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ethernet Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ethernet Transceivers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "I/O Expanders": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Interface - PCIs / PCIEs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Interface - Specialized": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LIN Transceivers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LVDS ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pre-ordered Chips": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "RS-485 / RS-422 ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "RS232 ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Security Verification / Encryption ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Serializers, Deserializers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Signal Buffers, Repeaters, Splitters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Telecom Interface ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "UART": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "USB Converters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "USB HUB Controllers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Video Interface ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Inductors, Coils, Chokes": {
+        "Component Branch": {
+            "Accessories - Inductors/Transformers": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Adjustable Inductors": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Audio Transformers": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Color Ring Inductors / Through Hole Inductors": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Current Sense Transformers": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Inductors (SMD)": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": "A4"
+            },
+            "Power Inductors": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Power Transformers": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Pre-ordered RLCs": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Pulse Transformers": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Pulse Transformers(LAN)": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            },
+            "Wireless Charging Coils": {
+                "Parameters": [
+                    "Inductance",
+                    "Current/Power",
+                    "Tolerance"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
     "Power Management (PMIC)": {
         "Component Branch": {
             "Charge Pumps": {
@@ -441,6 +1797,765 @@
                 "Storage Place": ""
             },
             "Isolators - Gate Drivers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Wireless Charge-Discharge ICs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Logic": {
+        "Component Branch": {
+            "Buffers, Drivers, Receivers, Transceivers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Counters, Dividers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Digital Comparators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "FIFOs Memory": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Flip Flops": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Inverters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Latches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Logic Gates": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Monostable Multivibrators": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Parity Generators and Checkers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Shift Registers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Signal Switches, Multiplexers, Decoders": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Specialty Logic": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Translators, Level Shifters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Memory": {
+        "Component Branch": {
+            "DDR SDRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "DRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "EEPROM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "eMMC": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "FRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "iButton Memory": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Memory - Configuration Proms for FPGAs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Memory - Serial MCP (Multi Chip Package)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Memory Controllers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "NAND FLASH": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Non-Volatile Memory (ROM)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "NOR FLASH": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "nvSRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "PSRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Random Access Memory (RAM)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SDRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "SSRAM": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "UFS": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Sensors": {
+        "Component Branch": {
+            "Accelerometers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ambient Light Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Capacitive Sensor IC": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Fiber Optic / Laser Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Float Level Senors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Flow Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Force Sensors, Load Cells": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Gas Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Heart Rate Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Human Body Sensing Sensor": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Image Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "NTC Thermistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Photointerrupters - Slot Type - Logic Output": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Photoresistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Position Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pressure Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Proximity Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "PTC Thermistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Sensor Modules": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Specialized Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Temperature and Humidity Sensor": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Temperature Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Thermostat Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Touch Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ultrasonic Receivers, Transmitters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Vibration Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "VOC Sensors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Switches": {
+        "Component Branch": {
+            "DIP Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Keylock Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Limit Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Mechanical Keyboard Shaft": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Metal Dome Pot": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Multi-Directional Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Multidirectional Switch": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Navigation Switches, Joystick": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pushbutton Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Rocker Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Rotary Coding Switch": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Rotary Encoders": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Rotary Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Rotary Wheel Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Slide Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Specialty Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Switch Accessories / Caps": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Tactile Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Toggle Switches": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Transistors/Thyristors": {
+        "Component Branch": {
+            "Bipolar (BJT)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Darlington Transistor Arrays": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Darlington Transistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Digital Transistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "IGBT Transistors / Modules": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Intelligent Power Modules (IPM)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "JFETs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "MOSFETs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Pre-ordered transistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Thyristors (SCR)/Modules": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            }
+        }
+    },
+    "Optoelectronics": {
+        "Component Branch": {
+            "Chip On Board (COB) Light Sources": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Fiber Optical Transceivers": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Infrared LED Emitters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Infrared Remote Receiver (IRM)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "IrDA Transceiver Modules": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Laser Diodes": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "LED Indication - Discrete": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Optoelectronics Accessories": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Photodiodes": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Photointerrupters - Slot Type - Transistor Output": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Phototransistors": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Reflective Optical Interrupters": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "RGB LEDs": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "RGB LEDs(Built-in IC)": {
+                "Parameters": [
+                    "Voltage",
+                    "Current/Power"
+                ],
+                "Storage Place": ""
+            },
+            "Ultraviolet LEDs (UVLED)": {
                 "Parameters": [
                     "Voltage",
                     "Current/Power"
