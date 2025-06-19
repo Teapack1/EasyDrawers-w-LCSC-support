@@ -141,6 +141,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("searchButton")?.addEventListener("click", searchComponent);
     document.getElementById("searchQuery")?.addEventListener("keydown", (e) => { if (e.key === "Enter") searchComponent() });
 
+    // NEW: Display chosen file name for LCSC CSV import
+    const csvFileInput = document.getElementById('csvFile');
+    csvFileInput?.addEventListener('change', (e) => {
+        const fileNameDisplay = document.getElementById('selected-file-name');
+        const fileName = e.target.files?.[0]?.name || 'No file selected';
+        if (fileNameDisplay) fileNameDisplay.textContent = fileName;
+    });
+
     // View Toggles & Filters
     initializeFilterAndSort();
     document.getElementById('tableView')?.addEventListener('click', () => switchView('tableView'));
@@ -166,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Initial dropdown population
             populateComponentTypes();
             populateFilterComponentTypes();
+            populateStoragePlaces();
 
             document.getElementById("componentType")?.addEventListener("change", () => {
                 populateComponentBranches();
@@ -288,31 +297,47 @@ async function handleLCSCImport(event) {
 
 async function handleAddComponent(event) {
     event.preventDefault();
-    // This is a simplified version. The original file has more complex validation and data gathering.
-        const formData = {
-            component_type: document.getElementById("componentType").value,
-            component_branch: document.getElementById("componentBranch").value,
-            part_number: document.getElementById("partNumber").value.trim(),
-            storage_place: document.getElementById("storagePlace").value.trim(),
-            order_qty: parseInt(document.getElementById("orderQty").value),
+    // Gather required fields
+    const formData = {
+        component_type: document.getElementById("componentType").value,
+        component_branch: document.getElementById("componentBranch").value,
+        part_number: document.getElementById("partNumber").value.trim(),
+        storage_place: document.getElementById("storagePlace").value.trim(),
+        order_qty: parseInt(document.getElementById("orderQty").value) || 0,
     };
 
-        try {
-            const response = await fetch("/add_component", {
-                method: "POST",
+    // Collect optional inputs
+    const optionalMap = {
+        unit_price: parseFloat(document.getElementById('unitPrice').value) || null,
+        description: document.getElementById('description').value.trim(),
+        package: document.getElementById('package').value.trim(),
+        manufacturer: document.getElementById('manufacturer').value.trim(),
+        manufacture_part_number: document.getElementById('manufacturePartNumber').value.trim(),
+        capacitance: document.getElementById('capacitance').value.trim(),
+        resistance: document.getElementById('resistance').value.trim(),
+        voltage: document.getElementById('voltage').value.trim(),
+        tolerance: document.getElementById('tolerance').value.trim(),
+        inductance: document.getElementById('inductance').value.trim(),
+        current_power: document.getElementById('currentPower').value.trim(),
+    };
+    Object.entries(optionalMap).forEach(([k, v]) => { if (v !== '' && v !== null && v !== undefined && !(typeof v === 'number' && isNaN(v))) formData[k] = v; });
+
+    try {
+        const response = await fetch("/add_component", {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
+            body: JSON.stringify(formData),
+        });
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.detail);
         }
-                alert("Component added successfully.");
-                document.getElementById("addComponentForm").reset();
-                document.getElementById("searchQuery").value = formData.part_number;
+        alert("Component added successfully.");
+        document.getElementById("addComponentForm").reset();
+        document.getElementById("searchQuery").value = formData.part_number;
         showTabContent('search');
-                searchComponent();
-        } catch (error) {
+        searchComponent();
+    } catch (error) {
         alert(`Error: ${error.message}`);
     }
 }
@@ -471,6 +496,10 @@ async function searchComponent() {
 }
 
 function displaySearchResults(results) {
+    // Update count badge
+    const countEl = document.getElementById('resultsCount');
+    if (countEl) countEl.textContent = `(${results.length})`;
+
     const tableView = document.getElementById("tableViewContainer");
     const cardView = document.getElementById("cardViewContainer");
     const resultsGrid = cardView.querySelector(".results-grid");
@@ -1273,6 +1302,52 @@ async function lazyInitializeModalMap() {
             locs.forEach(l=>gridEl.querySelector(`.drawer[data-location="${l}"]`)?.classList.add('highlighted'));
         } catch(e){ alert('Component not found'); }
     }
+}
+
+function populateStoragePlaces() {
+    const sel = document.getElementById('storagePlace');
+    if (!sel) return;
+
+    // Collect places from multiple sources for completeness
+    const placeSet = new Set();
+
+    // 1) From componentConfig branches
+    if (componentConfig && typeof componentConfig === 'object') {
+        Object.values(componentConfig).forEach(type => {
+            Object.values(type['Component Branch'] || {}).forEach(br => {
+                if (br['Storage Place']) placeSet.add(br['Storage Place']);
+            });
+        });
+    }
+
+    // 2) From storage_data endpoint (includes already-used drawers)
+    fetch('/storage_data')
+        .then(res => res.json())
+        .then(data => {
+            Object.keys(data || {}).forEach(k => placeSet.add(k));
+
+            // 3) Fallback to full map grid based on localStorage layout
+            const rows = parseInt(localStorage.getItem('mapRows')) || 6;
+            const cols = parseInt(localStorage.getItem('mapCols')) || 8;
+            const extras = parseInt(localStorage.getItem('mapExtra')) || 0;
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let r = 0; r < rows; r++) {
+                for (let c = 1; c <= cols; c++) {
+                    placeSet.add(`${alphabet[r]}${c}`);
+                }
+            }
+            for (let i = 1; i <= extras; i++) placeSet.add(`U${i}`);
+
+            // Populate select options
+            const currentVal = sel.value;
+            sel.innerHTML = '<option value="">Select Storage Place</option>';
+            Array.from(placeSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).forEach(loc => {
+                const opt = document.createElement('option');
+                opt.value = loc; opt.textContent = loc; sel.appendChild(opt);
+            });
+            sel.value = currentVal;
+        })
+        .catch(() => { /* ignore errors */ });
 }
 
 // Note: All other helper functions from the original file should be included here at the top level.

@@ -145,8 +145,10 @@
                         <label for="partNumber">LCSC Part Number*</label>
                         <input type="text" id="partNumber" required>
 
-                        <label for="storagePlace">Storage Location*</label>
-                        <input type="text" id="storagePlace" required>
+                        <label for="storagePlace">Storage Place</label>
+                        <select id="storagePlace">
+                            <option value="">Select Storage Place</option>
+                        </select>
 
                         <label for="orderQty">Quantity*</label>
                         <input type="number" id="orderQty" required min="0">
@@ -165,7 +167,13 @@
                             <summary>Optional Fields</summary>
                             <div id="optionalFields" class="collapsible-content">
                                 <label for="unitPrice" class="optional">Unit Price ($)</label>
-                                <input type="number" id="unitPrice" step="0.01">
+                                <input type="number" id="unitPrice" step="0.0001">
+
+                                <label for="manufacturePartNumber" class="optional">MPN</label>
+                                <input type="text" id="manufacturePartNumber">
+
+                                <label for="manufacturer" class="optional">Manufacturer</label>
+                                <input type="text" id="manufacturer">
 
                                 <label for="description" class="optional">Description</label>
                                 <input type="text" id="description">
@@ -173,19 +181,23 @@
                                 <label for="package" class="optional">Package</label>
                                 <input type="text" id="package">
 
-                                <label for="manufacturer" class="optional">Manufacturer</label>
-                                <input type="text" id="manufacturer">
+                                <label for="capacitance" class="optional">Capacitance</label>
+                                <input type="text" id="capacitance">
 
-                                <label for="manufacturePartNumber" class="optional">Manufacturer Part
-                                    Number</label>
-                                <input type="text" id="manufacturePartNumber">
-                            </div>
-                        </details>
+                                <label for="resistance" class="optional">Resistance</label>
+                                <input type="text" id="resistance">
 
-                        <details>
-                            <summary>Component Specifications</summary>
-                            <div id="dynamicFields" class="collapsible-content">
-                                <!-- Dynamic fields will be populated based on component type -->
+                                <label for="voltage" class="optional">Voltage</label>
+                                <input type="text" id="voltage">
+
+                                <label for="inductance" class="optional">Inductance</label>
+                                <input type="text" id="inductance">
+
+                                <label for="tolerance" class="optional">Tolerance</label>
+                                <input type="text" id="tolerance">
+
+                                <label for="currentPower" class="optional">Current/Power</label>
+                                <input type="text" id="currentPower">
                             </div>
                         </details>
 
@@ -394,7 +406,7 @@
     <!-- Search Results Area (Remains outside Tab Content Container) -->
     <div id="searchResults">
         <div class="results-header">
-            <h3>Search Results</h3>
+            <h3>Search Results <span id="resultsCount" class="results-count">(0)</span></h3>
             <div class="filter-controls">
                 <div class="filter-group">
                     <label for="filterCategory">Filter by:</label>

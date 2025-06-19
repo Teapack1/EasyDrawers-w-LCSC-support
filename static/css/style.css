@@ -4990,3 +4990,52 @@ textarea:focus {
     max-width: 110px;
     white-space: nowrap;
 }
+
+/* === Custom Overrides: Improved visibility for LCSC CSV upload button === */
+.file-upload-label {
+    background-color: var(--primary-color, #0077cc);
+    color: #fff;
+    border: 2px solid var(--primary-color-dark, #005fa3);
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+#selected-file-name {
+    color: #495057; /* Darker text for better readability */
+    font-style: normal;
+}
+
+.results-count {
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-left: 6px;
+    display: inline-block;
+}
+
+/* === Changelog table tweaks === */
+#changelogTable {
+    table-layout: fixed;
+    width: 100%;
+}
+#changelogTable th:nth-child(1) { width: 160px; }
+#changelogTable th:nth-child(2) { width: 80px; }
+#changelogTable th:nth-child(3) { width: 120px; }
+#changelogTable th:nth-child(4),
+#changelogTable th:nth-child(5) { width: 100px; }
+#changelogTable td.details-cell {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#changelogTable tr.detail-row td {
+    background: #f8f9fa;
+}
+#changelogTable .detail-content {
+    padding: 10px;
+    white-space: pre-wrap;
+}
